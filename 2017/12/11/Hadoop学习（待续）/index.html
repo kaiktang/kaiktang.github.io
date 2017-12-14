@@ -88,7 +88,7 @@
 <meta property="og:description" content="Hadoop的介绍 Hadoop是一个使用java编写的Apache开放源代码框架，它允许使用简单的编程模型跨大型计算机的大型数据集进行分布式处理。Hadoop框架工作的应用程序可以在跨计算机群集提供分布式存储和计算的环境中工作。Hadoop旨在从单一服务器扩展到数千台机器，每台机器都提供本地计算和存储。  Hadoop的架构 MapReduce：这是基于YARN的大型数据集并行处理系统。 YAR">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://p0tsgngca.bkt.clouddn.com/yarn-structure.png">
-<meta property="og:updated_time" content="2017-12-12T08:17:42.399Z">
+<meta property="og:updated_time" content="2017-12-12T13:06:46.169Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hadoop学习（待续）">
 <meta name="twitter:description" content="Hadoop的介绍 Hadoop是一个使用java编写的Apache开放源代码框架，它允许使用简单的编程模型跨大型计算机的大型数据集进行分布式处理。Hadoop框架工作的应用程序可以在跨计算机群集提供分布式存储和计算的环境中工作。Hadoop旨在从单一服务器扩展到数千台机器，每台机器都提供本地计算和存储。  Hadoop的架构 MapReduce：这是基于YARN的大型数据集并行处理系统。 YAR">
@@ -336,6 +336,17 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/12/11/Hadoop学习（待续）/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/12/11/Hadoop学习（待续）/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -521,16 +532,14 @@
 <li><p>Map Task输出压缩</p>
 </li>
 <li><p>Shuffle Phase参数</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">The number of streams to merge at once <span class="keyword">while</span> sorting files. This determines the number of open file handles.</span></span><br><span class="line">mapreduce.task.io.sort.factor=10</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">The total amount of buffer memory to use <span class="keyword">while</span> sorting files, <span class="keyword">in</span> megabytes. By default, gives each merge stream 1MB, <span class="built_in">which</span> should minimize seeks.</span></span><br><span class="line">mapreduce.task.io.sort.mb=100</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">The soft <span class="built_in">limit</span> <span class="keyword">in</span> the serialization buffer. Once reached, a thread will begin to spill the contents to disk <span class="keyword">in</span> the background. Note that collection will not block <span class="keyword">if</span> this threshold is exceeded <span class="keyword">while</span> a spill is already <span class="keyword">in</span> progress, so spills may be larger than this threshold when it is <span class="built_in">set</span> to less than .5</span></span><br><span class="line">mapreduce.map.sort.spill.percent=0.80</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">The number of virtual cores to request from the scheduler <span class="keyword">for</span> each map task.</span></span><br><span class="line">mapreduce.map.cpu.vcores=1</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">The amount of memory to request from the scheduler <span class="keyword">for</span> each reduce task.</span></span><br><span class="line">mapreduce.reduce.cpu.vcores=1</span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#The number of streams to merge at once while sorting files. This determines the number of open file handles.</span><br><span class="line">mapreduce.task.io.sort.factor=10</span><br><span class="line"></span><br><span class="line">#The total amount of buffer memory to use while sorting files, in megabytes. By default, gives each merge stream 1MB, which should minimize seeks.</span><br><span class="line">mapreduce.task.io.sort.mb=100</span><br><span class="line"></span><br><span class="line">#The soft limit in the serialization buffer. Once reached, a thread will begin to spill the contents to disk in the background. Note that collection will not block if this threshold is exceeded while a spill is already in progress, so spills may be larger than this threshold when it is set to less than .5</span><br><span class="line">mapreduce.map.sort.spill.percent=0.80</span><br><span class="line"></span><br><span class="line">#The number of virtual cores to request from the scheduler for each map task.</span><br><span class="line">mapreduce.map.cpu.vcores=1</span><br><span class="line"></span><br><span class="line">#The amount of memory to request from the scheduler for each reduce task.</span><br><span class="line">mapreduce.reduce.cpu.vcores=1</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <blockquote>
 <p>参考：<a href="http://blog.javachen.com/2014/06/24/tuning-in-mapreduce.html" target="_blank" rel="noopener">MapReduce任务参数调优</a></p>
 </blockquote>
 <hr>
-<p>所有的数据类型都实现了</p>
-<p>​    <strong>Writable</strong>接口，其中有<strong>write</strong>和<strong>readFilelds</strong>两个方法，用于序列化和反序列化，需要注意write和read的顺序相对应。</p>
-<p>​    还实现了<strong>WritableComparable</strong>接口，其继承了<strong>Comparable</strong>接口，因为在Map阶段会有根据key值sort的过程。</p>
+<p>所有的数据类型都实现了<strong>Writable</strong>接口，其中有<strong>write</strong>和<strong>readFilelds</strong>两个方法，用于序列化和反序列化，需要注意write和read的顺序相对应。还实现了<strong>WritableComparable</strong>接口，其继承了<strong>Comparable</strong>接口，因为在Map阶段会有根据key值sort的过程。</p>
 <p>​    所以如果需要自定义key的类型的话，需要继承<strong>WritableComparable</strong>接口，value则不用。</p>
 
       
@@ -571,6 +580,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/13/整合spring-boot、spring-mvc、mybatis实践/" rel="prev" title="整合spring boot、spring mvc、mybatis实践">
+                整合spring boot、spring mvc、mybatis实践 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -626,6 +639,16 @@ var jiathis_config={
           
 
   
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
 
 
 
@@ -667,7 +690,7 @@ var jiathis_config={
                 alt="TomKK" />
             
               <p class="site-author-name" itemprop="name">TomKK</p>
-              <p class="site-description motion-element" itemprop="description">If I press the buttons in the right order, I can do everything.</p>
+              <p class="site-description motion-element" itemprop="description">学而后知不足</p>
           </div>
 
           <nav class="site-state motion-element">
@@ -677,7 +700,7 @@ var jiathis_config={
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -689,10 +712,10 @@ var jiathis_config={
               
               
               <div class="site-state-item site-state-tags">
-                
-                  <span class="site-state-item-count">1</span>
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">标签</span>
-                
+                </a>
               </div>
             
 
@@ -888,6 +911,26 @@ var jiathis_config={
 
   
 
+    
+      <script id="dsq-count-scr" src="https://http-tomkklalala-github-io.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/12/11/Hadoop学习（待续）/';
+          this.page.identifier = '2017/12/11/Hadoop学习（待续）/';
+          this.page.title = 'Hadoop学习（待续）';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://http-tomkklalala-github-io.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
 
 
 
@@ -900,10 +943,6 @@ var jiathis_config={
   
 
 
-
-
-
-  
 
 
 
