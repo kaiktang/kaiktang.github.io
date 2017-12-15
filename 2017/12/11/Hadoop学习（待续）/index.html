@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hadoop," />
+  <meta name="keywords" content="Hadoop,java,分布式," />
 
 
 
@@ -80,7 +80,7 @@
 
 
 <meta name="description" content="Hadoop的介绍 Hadoop是一个使用java编写的Apache开放源代码框架，它允许使用简单的编程模型跨大型计算机的大型数据集进行分布式处理。Hadoop框架工作的应用程序可以在跨计算机群集提供分布式存储和计算的环境中工作。Hadoop旨在从单一服务器扩展到数千台机器，每台机器都提供本地计算和存储。  Hadoop的架构 MapReduce：这是基于YARN的大型数据集并行处理系统。 YAR">
-<meta name="keywords" content="Hadoop">
+<meta name="keywords" content="Hadoop,java,分布式">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hadoop学习（待续）">
 <meta property="og:url" content="http://yoursite.com/2017/12/11/Hadoop学习（待续）/index.html">
@@ -88,7 +88,7 @@
 <meta property="og:description" content="Hadoop的介绍 Hadoop是一个使用java编写的Apache开放源代码框架，它允许使用简单的编程模型跨大型计算机的大型数据集进行分布式处理。Hadoop框架工作的应用程序可以在跨计算机群集提供分布式存储和计算的环境中工作。Hadoop旨在从单一服务器扩展到数千台机器，每台机器都提供本地计算和存储。  Hadoop的架构 MapReduce：这是基于YARN的大型数据集并行处理系统。 YAR">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://p0tsgngca.bkt.clouddn.com/yarn-structure.png">
-<meta property="og:updated_time" content="2017-12-12T13:06:46.169Z">
+<meta property="og:updated_time" content="2017-12-15T03:50:04.301Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hadoop学习（待续）">
 <meta name="twitter:description" content="Hadoop的介绍 Hadoop是一个使用java编写的Apache开放源代码框架，它允许使用简单的编程模型跨大型计算机的大型数据集进行分布式处理。Hadoop框架工作的应用程序可以在跨计算机群集提供分布式存储和计算的环境中工作。Hadoop旨在从单一服务器扩展到数千台机器，每台机器都提供本地计算和存储。  Hadoop的架构 MapReduce：这是基于YARN的大型数据集并行处理系统。 YAR">
@@ -391,11 +391,106 @@
 <li><strong>HDFS</strong>：提供对应用程序数据的高吞吐量访问的分布式文件系统。能够存储海量数据，具有分布式、安全性（提供副本）等特点</li>
 <li><strong>Common</strong>：这些是其他Hadoop模块所需的Java库和实用程序。这些库提供文件系统和操作系统级抽象，并包含启动Hadoop所需的必要Java文件和脚本。</li>
 </ul>
+<h2 id="Hadoop的运行模式"><a href="#Hadoop的运行模式" class="headerlink" title="Hadoop的运行模式"></a>Hadoop的运行模式</h2><ul>
+<li>Local mode</li>
+<li>Distributed Mode<ul>
+<li>伪分布式<ul>
+<li>一台机器，运行所有的守护进程</li>
+</ul>
+</li>
+<li>完全分布式<ul>
+<li>有多个从节点</li>
+<li>配置文件 slaves</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="完全分布式下的配置"><a href="#完全分布式下的配置" class="headerlink" title="完全分布式下的配置"></a>完全分布式下的配置</h3><ul>
+<li><p>hdfs</p>
+<ul>
+<li>hadoop-env.sh</li>
+</ul>
+<blockquote>
+<p>配置java环境变量</p>
+</blockquote>
+<ul>
+<li>core-site.xml</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>fs.defaultFS</code>配置NameNode的地址</li>
+<li><code>hadoop.tmp.dir</code>配置Hadoop临时目录</li>
+<li><code>fs.trash.interval</code>垃圾回收周期</li>
+</ul>
+</blockquote>
+<ul>
+<li>hdfs-site.xml</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>dfs.replication</code>配置副本数</li>
+<li><code>dfs.namenode.secondary.http-address</code>配置secondary namenode的地址</li>
+<li><code>dfs.datanode.data.dir</code>设置DataNode实际存放数据的目录</li>
+</ul>
+</blockquote>
+<ul>
+<li>slaves</li>
+</ul>
+<blockquote>
+<p>配置DataNode和NodeManager</p>
+</blockquote>
+</li>
+<li><p>yarn</p>
+<ul>
+<li>yarn-env.sh</li>
+</ul>
+<blockquote>
+<p>配置java环境变量</p>
+</blockquote>
+<ul>
+<li>yarn-site.xml</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>yarn.resourcemanager.hostname</code>配置resource manager的位置</li>
+<li><code>yarn.nodemanager.resource.memory-mb</code>配置NodeManager资源</li>
+<li><code>yarn.log-aggregation-enable</code>配置日志聚合</li>
+<li><code>yarn.log-aggregation.retain-seconds</code>配置日志保存时间</li>
+</ul>
+<p>​</p>
+</blockquote>
+<ul>
+<li>slaves</li>
+</ul>
+</li>
+<li><p>mapreduce</p>
+<ul>
+<li>mapred-env.sh</li>
+<li>mapred-site.xml</li>
+</ul>
+</li>
+<li><p>通过ntp来进行集群的时间同步</p>
+<blockquote>
+<ul>
+<li>服务器编辑：/etc/ntp.conf</li>
+<li>服务器编辑：/etc/sysconfig/ntpd  SYNC_HWCLOCK=yes</li>
+<li>客户端每十分钟校正：<ul>
+<li><code>crontable -e</code></li>
+<li><code>0-59/10 * * * * /user/sbin/ntpdate SERVER_HOST_NAME</code></li>
+</ul>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
 <h2 id="Hadoop生态"><a href="#Hadoop生态" class="headerlink" title="Hadoop生态"></a>Hadoop生态</h2><ul>
 <li><strong>sqoop</strong>：SQL to Hadoop，即将关系型数据库如Oracle、Mysql等的数据导入到HDFS中<ul>
 <li>Map读数据，Reduce写数据</li>
 </ul>
 </li>
+<li><strong>Cloudera Manager</strong>：方便部署安装集群、监控集群、配置同步集群、预警等等</li>
+<li><strong>Zoo Keeper</strong>：开源的基于观察者模式的分布式框架，为分布式应用提供协调服务的Apache项目</li>
 </ul>
 <h2 id="各个监控界面"><a href="#各个监控界面" class="headerlink" title="各个监控界面"></a>各个监控界面</h2><ul>
 <li><a href="http://localhost-centos:50070/" target="_blank" rel="noopener">HDFS信息监控</a></li>
@@ -462,6 +557,16 @@
 </li>
 </ul>
 <p>可以想象如果只是单纯的这种模式的话，那么如果整个集群长时间不重启，edits文件将会非常大，那么下一次重启合并的时间将会非常长，而解决这个问题的方案就是Secondary NameNode。即定期将fsimage和edits合并，并生成新的fsimage并且生成空的edits，周期大约1小时。</p>
+<h3 id="HDFS-HA"><a href="#HDFS-HA" class="headerlink" title="HDFS HA"></a>HDFS HA</h3><ul>
+<li>NameNode Active<ul>
+<li>向JournalNode写edits文件，超过半数写成功即可保证正确</li>
+</ul>
+</li>
+<li>NameNode Standby<ul>
+<li>向JournalNode读edits文件</li>
+</ul>
+</li>
+</ul>
 <h2 id="YARN"><a href="#YARN" class="headerlink" title="YARN"></a>YARN</h2><p>每个从节点有一个NodeManager来管理该节点的资源，集群资源通过ResourceManager来管理。</p>
 <h3 id="主要组件"><a href="#主要组件" class="headerlink" title="主要组件"></a>主要组件</h3><ul>
 <li>ResourceManager<ul>
@@ -559,6 +664,10 @@
         <div class="post-tags">
           
             <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/分布式/" rel="tag"># 分布式</a>
           
         </div>
       
@@ -700,7 +809,7 @@ var jiathis_config={
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -713,7 +822,7 @@ var jiathis_config={
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -748,7 +857,7 @@ var jiathis_config={
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hadoop的介绍"><span class="nav-number">1.</span> <span class="nav-text"><a href="#Hadoop&#x7684;&#x4ECB;&#x7ECD;" class="headerlink" title="Hadoop&#x7684;&#x4ECB;&#x7ECD;"></a>Hadoop&#x7684;&#x4ECB;&#x7ECD;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hadoop的架构"><span class="nav-number">2.</span> <span class="nav-text"><a href="#Hadoop&#x7684;&#x67B6;&#x6784;" class="headerlink" title="Hadoop&#x7684;&#x67B6;&#x6784;"></a>Hadoop&#x7684;&#x67B6;&#x6784;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hadoop生态"><span class="nav-number">3.</span> <span class="nav-text"><a href="#Hadoop&#x751F;&#x6001;" class="headerlink" title="Hadoop&#x751F;&#x6001;"></a>Hadoop&#x751F;&#x6001;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#各个监控界面"><span class="nav-number">4.</span> <span class="nav-text"><a href="#&#x5404;&#x4E2A;&#x76D1;&#x63A7;&#x754C;&#x9762;" class="headerlink" title="&#x5404;&#x4E2A;&#x76D1;&#x63A7;&#x754C;&#x9762;"></a>&#x5404;&#x4E2A;&#x76D1;&#x63A7;&#x754C;&#x9762;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hadoop-HDFS"><span class="nav-number">5.</span> <span class="nav-text"><a href="#Hadoop-HDFS" class="headerlink" title="Hadoop HDFS"></a>Hadoop HDFS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#主节点：NameNode"><span class="nav-number">5.1.</span> <span class="nav-text"><a href="#&#x4E3B;&#x8282;&#x70B9;&#xFF1A;NameNode" class="headerlink" title="&#x4E3B;&#x8282;&#x70B9;&#xFF1A;NameNode"></a>&#x4E3B;&#x8282;&#x70B9;&#xFF1A;NameNode</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#介绍"><span class="nav-number">5.1.1.</span> <span class="nav-text"><a href="#&#x4ECB;&#x7ECD;" class="headerlink" title="&#x4ECB;&#x7ECD;"></a>&#x4ECB;&#x7ECD;</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安全模式"><span class="nav-number">5.1.2.</span> <span class="nav-text"><a href="#&#x5B89;&#x5168;&#x6A21;&#x5F0F;" class="headerlink" title="&#x5B89;&#x5168;&#x6A21;&#x5F0F;"></a>&#x5B89;&#x5168;&#x6A21;&#x5F0F;</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从节点：DataNode"><span class="nav-number">5.2.</span> <span class="nav-text"><a href="#&#x4ECE;&#x8282;&#x70B9;&#xFF1A;DataNode" class="headerlink" title="&#x4ECE;&#x8282;&#x70B9;&#xFF1A;DataNode"></a>&#x4ECE;&#x8282;&#x70B9;&#xFF1A;DataNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Secondary-NameNode"><span class="nav-number">5.3.</span> <span class="nav-text"><a href="#Secondary-NameNode" class="headerlink" title="Secondary NameNode"></a>Secondary NameNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HDFS的启动过程"><span class="nav-number">5.4.</span> <span class="nav-text"><a href="#HDFS&#x7684;&#x542F;&#x52A8;&#x8FC7;&#x7A0B;" class="headerlink" title="HDFS&#x7684;&#x542F;&#x52A8;&#x8FC7;&#x7A0B;"></a>HDFS&#x7684;&#x542F;&#x52A8;&#x8FC7;&#x7A0B;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#YARN"><span class="nav-number">6.</span> <span class="nav-text"><a href="#YARN" class="headerlink" title="YARN"></a>YARN</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#主要组件"><span class="nav-number">6.1.</span> <span class="nav-text"><a href="#&#x4E3B;&#x8981;&#x7EC4;&#x4EF6;" class="headerlink" title="&#x4E3B;&#x8981;&#x7EC4;&#x4EF6;"></a>&#x4E3B;&#x8981;&#x7EC4;&#x4EF6;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YARN上运行应用"><span class="nav-number">6.2.</span> <span class="nav-text"><a href="#YARN&#x4E0A;&#x8FD0;&#x884C;&#x5E94;&#x7528;" class="headerlink" title="YARN&#x4E0A;&#x8FD0;&#x884C;&#x5E94;&#x7528;"></a>YARN&#x4E0A;&#x8FD0;&#x884C;&#x5E94;&#x7528;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MapReduce"><span class="nav-number">7.</span> <span class="nav-text"><a href="#MapReduce" class="headerlink" title="MapReduce"></a>MapReduce</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MapReduce任务八股文"><span class="nav-number">7.1.</span> <span class="nav-text"><a href="#MapReduce&#x4EFB;&#x52A1;&#x516B;&#x80A1;&#x6587;" class="headerlink" title="MapReduce&#x4EFB;&#x52A1;&#x516B;&#x80A1;&#x6587;"></a>MapReduce&#x4EFB;&#x52A1;&#x516B;&#x80A1;&#x6587;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MapReduce的执行过程"><span class="nav-number">7.2.</span> <span class="nav-text"><a href="#MapReduce&#x7684;&#x6267;&#x884C;&#x8FC7;&#x7A0B;" class="headerlink" title="MapReduce&#x7684;&#x6267;&#x884C;&#x8FC7;&#x7A0B;"></a>MapReduce&#x7684;&#x6267;&#x884C;&#x8FC7;&#x7A0B;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MapReduce调优"><span class="nav-number">7.3.</span> <span class="nav-text"><a href="#MapReduce&#x8C03;&#x4F18;" class="headerlink" title="MapReduce&#x8C03;&#x4F18;"></a>MapReduce&#x8C03;&#x4F18;</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hadoop的介绍"><span class="nav-number">1.</span> <span class="nav-text"><a href="#Hadoop&#x7684;&#x4ECB;&#x7ECD;" class="headerlink" title="Hadoop&#x7684;&#x4ECB;&#x7ECD;"></a>Hadoop&#x7684;&#x4ECB;&#x7ECD;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hadoop的架构"><span class="nav-number">2.</span> <span class="nav-text"><a href="#Hadoop&#x7684;&#x67B6;&#x6784;" class="headerlink" title="Hadoop&#x7684;&#x67B6;&#x6784;"></a>Hadoop&#x7684;&#x67B6;&#x6784;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hadoop的运行模式"><span class="nav-number">3.</span> <span class="nav-text"><a href="#Hadoop&#x7684;&#x8FD0;&#x884C;&#x6A21;&#x5F0F;" class="headerlink" title="Hadoop&#x7684;&#x8FD0;&#x884C;&#x6A21;&#x5F0F;"></a>Hadoop&#x7684;&#x8FD0;&#x884C;&#x6A21;&#x5F0F;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#完全分布式下的配置"><span class="nav-number">3.1.</span> <span class="nav-text"><a href="#&#x5B8C;&#x5168;&#x5206;&#x5E03;&#x5F0F;&#x4E0B;&#x7684;&#x914D;&#x7F6E;" class="headerlink" title="&#x5B8C;&#x5168;&#x5206;&#x5E03;&#x5F0F;&#x4E0B;&#x7684;&#x914D;&#x7F6E;"></a>&#x5B8C;&#x5168;&#x5206;&#x5E03;&#x5F0F;&#x4E0B;&#x7684;&#x914D;&#x7F6E;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hadoop生态"><span class="nav-number">4.</span> <span class="nav-text"><a href="#Hadoop&#x751F;&#x6001;" class="headerlink" title="Hadoop&#x751F;&#x6001;"></a>Hadoop&#x751F;&#x6001;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#各个监控界面"><span class="nav-number">5.</span> <span class="nav-text"><a href="#&#x5404;&#x4E2A;&#x76D1;&#x63A7;&#x754C;&#x9762;" class="headerlink" title="&#x5404;&#x4E2A;&#x76D1;&#x63A7;&#x754C;&#x9762;"></a>&#x5404;&#x4E2A;&#x76D1;&#x63A7;&#x754C;&#x9762;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hadoop-HDFS"><span class="nav-number">6.</span> <span class="nav-text"><a href="#Hadoop-HDFS" class="headerlink" title="Hadoop HDFS"></a>Hadoop HDFS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#主节点：NameNode"><span class="nav-number">6.1.</span> <span class="nav-text"><a href="#&#x4E3B;&#x8282;&#x70B9;&#xFF1A;NameNode" class="headerlink" title="&#x4E3B;&#x8282;&#x70B9;&#xFF1A;NameNode"></a>&#x4E3B;&#x8282;&#x70B9;&#xFF1A;NameNode</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#介绍"><span class="nav-number">6.1.1.</span> <span class="nav-text"><a href="#&#x4ECB;&#x7ECD;" class="headerlink" title="&#x4ECB;&#x7ECD;"></a>&#x4ECB;&#x7ECD;</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安全模式"><span class="nav-number">6.1.2.</span> <span class="nav-text"><a href="#&#x5B89;&#x5168;&#x6A21;&#x5F0F;" class="headerlink" title="&#x5B89;&#x5168;&#x6A21;&#x5F0F;"></a>&#x5B89;&#x5168;&#x6A21;&#x5F0F;</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从节点：DataNode"><span class="nav-number">6.2.</span> <span class="nav-text"><a href="#&#x4ECE;&#x8282;&#x70B9;&#xFF1A;DataNode" class="headerlink" title="&#x4ECE;&#x8282;&#x70B9;&#xFF1A;DataNode"></a>&#x4ECE;&#x8282;&#x70B9;&#xFF1A;DataNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Secondary-NameNode"><span class="nav-number">6.3.</span> <span class="nav-text"><a href="#Secondary-NameNode" class="headerlink" title="Secondary NameNode"></a>Secondary NameNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HDFS的启动过程"><span class="nav-number">6.4.</span> <span class="nav-text"><a href="#HDFS&#x7684;&#x542F;&#x52A8;&#x8FC7;&#x7A0B;" class="headerlink" title="HDFS&#x7684;&#x542F;&#x52A8;&#x8FC7;&#x7A0B;"></a>HDFS&#x7684;&#x542F;&#x52A8;&#x8FC7;&#x7A0B;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HDFS-HA"><span class="nav-number">6.5.</span> <span class="nav-text"><a href="#HDFS-HA" class="headerlink" title="HDFS HA"></a>HDFS HA</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#YARN"><span class="nav-number">7.</span> <span class="nav-text"><a href="#YARN" class="headerlink" title="YARN"></a>YARN</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#主要组件"><span class="nav-number">7.1.</span> <span class="nav-text"><a href="#&#x4E3B;&#x8981;&#x7EC4;&#x4EF6;" class="headerlink" title="&#x4E3B;&#x8981;&#x7EC4;&#x4EF6;"></a>&#x4E3B;&#x8981;&#x7EC4;&#x4EF6;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YARN上运行应用"><span class="nav-number">7.2.</span> <span class="nav-text"><a href="#YARN&#x4E0A;&#x8FD0;&#x884C;&#x5E94;&#x7528;" class="headerlink" title="YARN&#x4E0A;&#x8FD0;&#x884C;&#x5E94;&#x7528;"></a>YARN&#x4E0A;&#x8FD0;&#x884C;&#x5E94;&#x7528;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MapReduce"><span class="nav-number">8.</span> <span class="nav-text"><a href="#MapReduce" class="headerlink" title="MapReduce"></a>MapReduce</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MapReduce任务八股文"><span class="nav-number">8.1.</span> <span class="nav-text"><a href="#MapReduce&#x4EFB;&#x52A1;&#x516B;&#x80A1;&#x6587;" class="headerlink" title="MapReduce&#x4EFB;&#x52A1;&#x516B;&#x80A1;&#x6587;"></a>MapReduce&#x4EFB;&#x52A1;&#x516B;&#x80A1;&#x6587;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MapReduce的执行过程"><span class="nav-number">8.2.</span> <span class="nav-text"><a href="#MapReduce&#x7684;&#x6267;&#x884C;&#x8FC7;&#x7A0B;" class="headerlink" title="MapReduce&#x7684;&#x6267;&#x884C;&#x8FC7;&#x7A0B;"></a>MapReduce&#x7684;&#x6267;&#x884C;&#x8FC7;&#x7A0B;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MapReduce调优"><span class="nav-number">8.3.</span> <span class="nav-text"><a href="#MapReduce&#x8C03;&#x4F18;" class="headerlink" title="MapReduce&#x8C03;&#x4F18;"></a>MapReduce&#x8C03;&#x4F18;</span></a></li></ol></li></ol></div>
             
 
           </div>
