@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hive,大数据," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Hive介绍 由Facebook开源用于解决海量结构化日志的数据统计； 基于Hadoop的一个数据仓库工具，可以将结构化的数据文件映射成一张表，并提供类SQL查询功能。  使用HQL作为查询接口 使用HDFS存储 使用MapReduce计算  本质是：将HQL转化为MapReduce程序； 灵活性和扩展性比较好：支持UDF，自定义存储格式等； 适合离线数据处理；  metastore保存hive表">
+<meta name="keywords" content="Hive,大数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive学习">
+<meta property="og:url" content="http://yoursite.com/2017/12/18/Hive学习/index.html">
+<meta property="og:site_name" content="TomKK&#39;s blogs">
+<meta property="og:description" content="Hive介绍 由Facebook开源用于解决海量结构化日志的数据统计； 基于Hadoop的一个数据仓库工具，可以将结构化的数据文件映射成一张表，并提供类SQL查询功能。  使用HQL作为查询接口 使用HDFS存储 使用MapReduce计算  本质是：将HQL转化为MapReduce程序； 灵活性和扩展性比较好：支持UDF，自定义存储格式等； 适合离线数据处理；  metastore保存hive表">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-19T09:53:11.220Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hive学习">
+<meta name="twitter:description" content="Hive介绍 由Facebook开源用于解决海量结构化日志的数据统计； 基于Hadoop的一个数据仓库工具，可以将结构化的数据文件映射成一张表，并提供类SQL查询功能。  使用HQL作为查询接口 使用HDFS存储 使用MapReduce计算  本质是：将HQL转化为MapReduce程序； 灵活性和扩展性比较好：支持UDF，自定义存储格式等； 适合离线数据处理；  metastore保存hive表">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'FBQ33HXA0Q',
+      apiKey: '5a256d1a0d5075a6a17b29fbae8cdbdc',
+      indexName: 'blog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"搜索文章","hits_empty":"没有找到关于: ${query}","hits_stats":"共 ${hits} 条结果耗时 ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/12/18/Hive学习/"/>
+
+
+
+
+
+  <title>Hive学习 | TomKK's blogs</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">TomKK's blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/18/Hive学习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TomKK">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TomKK's blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Hive学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-18T14:12:33+08:00">
+                2017-12-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/12/18/Hive学习/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/12/18/Hive学习/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/12/18/Hive学习/" class="leancloud_visitors" data-flag-title="Hive学习">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Hive介绍"><a href="#Hive介绍" class="headerlink" title="Hive介绍"></a>Hive介绍</h1><blockquote>
+<p>由Facebook开源用于解决海量结构化日志的数据统计；</p>
+<p>基于Hadoop的一个数据仓库工具，可以将结构化的数据文件映射成一张表，并提供类SQL查询功能。</p>
+<ul>
+<li>使用HQL作为查询接口</li>
+<li>使用HDFS存储</li>
+<li>使用MapReduce计算</li>
+</ul>
+<p>本质是：将HQL转化为MapReduce程序；</p>
+<p>灵活性和扩展性比较好：支持UDF，自定义存储格式等；</p>
+<p>适合离线数据处理；</p>
+</blockquote>
+<p>metastore保存hive表的元信息，如文件与表的映射，一般metastore放在关系型数据库中，默认放在内存derby中，此时只运行一个终端打开。</p>
+<p>在启动hive时设置配置属性信息</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bin/hive --hiveconf hive.root.logger=INFO,console</span><br></pre></td></tr></table></figure>
+<h2 id="Hive数据仓库在HDFS上位置"><a href="#Hive数据仓库在HDFS上位置" class="headerlink" title="Hive数据仓库在HDFS上位置"></a>Hive数据仓库在HDFS上位置</h2><p>default数据库地址即<code>user/hive/warehouse</code></p>
+<p>其他数据库在<code>user/hive/warehouse/DATABASE_NAME.db</code>中 </p>
+<p>默认的存储路径为<code>user/hive/warehouse/DATABASE_NAME.db/TABLE_NAME/data.txt</code></p>
+<p>一般情况下，将数据文件直接拷贝到指定表的目录下，数据会自动加载到表中。但如果是分区表，而且分区文件夹是由我们自己手动创建的，再把文件上传到分区目录，数据是无法自动加载的，这是因为在metastore的partition表中没有存储这个分区的信息。这时可以通过以下两种方式进行修复</p>
+<ol>
+<li><code>msck repair table table_name;</code></li>
+<li><code>alter table table_name add partition(key=vlaue);</code></li>
+</ol>
+<p>#一般的脚本过程</p>
+<ol>
+<li>创建目录</li>
+<li>将数据文件上传到目录</li>
+<li>添加分区信息到元信息中</li>
+</ol>
+<p>#常用配置</p>
+<p>##配置仓库位置</p>
+<pre><code>&lt;property&gt;
+    &lt;name&gt;hive.metastore.warehouse.dir&lt;/name&gt;
+    &lt;value&gt;/user/hive/warehouse&lt;/value&gt;
+&lt;/property&gt;
+
+$ $HADOOP_HOME/bin/hadoop fs -chmod g+w   /tmp
+$ $HADOOP_HOME/bin/hadoop fs -chmod g+w   /user/hive/warehouse
+</code></pre><p>##Hive运行日志配置</p>
+<p>$HIVE_HOME/conf/hive-log4j.properties下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hive.log.dir=/opt/modules/hive-0.13.1/logs</span><br><span class="line">hive.log.file=hive.log</span><br></pre></td></tr></table></figure>
+<p>##在cli命令行上显示当前数据库，以及查询表的行头信息</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$HIVE_HOME/conf/hive-site.xml</span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.cli.print.header<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.cli.print.current.db<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>##查看当前所有的配置信息</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive &gt; set ;</span><br></pre></td></tr></table></figure>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hive (db_hive)&gt; set system:user.name ;</span><br><span class="line">	system:user.name=tomkk</span><br><span class="line">hive (db_hive)&gt; set system:user.name=tomkk ;</span><br></pre></td></tr></table></figure>
+<p>此种方式，设置属性的值，仅仅在当前会话session生效</p>
+<h1 id="Hive常用命令"><a href="#Hive常用命令" class="headerlink" title="Hive常用命令"></a>Hive常用命令</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/hive -e &lt;quoted-query-string&gt; <span class="comment">#不会进入交互式界面，而是直接运行hql</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>eg : bin/hive -e “select * from db_hive.student ;” </p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/hive -f &lt;filename&gt; [ &gt; &lt;filename&gt; ]<span class="comment">#直接从脚本读取hql运行</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dfs ... <span class="comment">#直接操作HDFS文件系统</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; !linux_cmd <span class="comment">#在hive交互界面使用linux命令</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$HOME</span>/.hivehistory <span class="comment">#hive历史操作命令</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; desc formatted table_name <span class="comment">#查看表详细信息</span></span><br></pre></td></tr></table></figure>
+<h1 id="HQL"><a href="#HQL" class="headerlink" title="HQL"></a>HQL</h1><h2 id="DDL【官方文档】"><a href="#DDL【官方文档】" class="headerlink" title="DDL【官方文档】"></a>DDL【<a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DDL" target="_blank" rel="noopener">官方文档</a>】</h2><h3 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> (<span class="keyword">DATABASE</span>|<span class="keyword">SCHEMA</span>) [<span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span>] database_name</span><br><span class="line">  [<span class="keyword">COMMENT</span> database_comment]</span><br><span class="line">  [LOCATION hdfs_path]</span><br><span class="line">  [<span class="keyword">WITH</span> DBPROPERTIES (property_name=property_value, ...)];</span><br></pre></td></tr></table></figure>
+<h3 id="删除数据库"><a href="#删除数据库" class="headerlink" title="删除数据库"></a>删除数据库</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> (<span class="keyword">DATABASE</span>|<span class="keyword">SCHEMA</span>) [<span class="keyword">IF</span> <span class="keyword">EXISTS</span>] database_name [RESTRICT|<span class="keyword">CASCADE</span>]; <span class="comment">-- (<span class="doctag">Note:</span> CASCADE用于级联删除一个数据库，即使下面有表存在)</span></span><br></pre></td></tr></table></figure>
+<h3 id="修改数据库"><a href="#修改数据库" class="headerlink" title="修改数据库"></a>修改数据库</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> (<span class="keyword">DATABASE</span>|<span class="keyword">SCHEMA</span>) database_name <span class="keyword">SET</span> DBPROPERTIES (property_name=property_value, ...);   <span class="comment">-- (<span class="doctag">Note:</span> SCHEMA added in Hive 0.14.0)</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">ALTER</span> (<span class="keyword">DATABASE</span>|<span class="keyword">SCHEMA</span>) database_name <span class="keyword">SET</span> OWNER [<span class="keyword">USER</span>|<span class="keyword">ROLE</span>] user_or_role;   <span class="comment">-- (<span class="doctag">Note:</span> Hive 0.13.0 and later; SCHEMA added in Hive 0.14.0)</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">ALTER</span> (<span class="keyword">DATABASE</span>|<span class="keyword">SCHEMA</span>) database_name <span class="keyword">SET</span> LOCATION hdfs_path; <span class="comment">-- (<span class="doctag">Note:</span> Hive 2.2.1, 2.4.0 and later)</span></span><br></pre></td></tr></table></figure>
+<h2 id="创建表"><a href="#创建表" class="headerlink" title="创建表"></a>创建表</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> [<span class="keyword">TEMPORARY</span>] [<span class="keyword">EXTERNAL</span>] <span class="keyword">TABLE</span> [<span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span>] [db_name.]table_name    <span class="comment">-- (<span class="doctag">Note:</span> TEMPORARY available in Hive 0.14.0 and later)</span></span><br><span class="line">    <span class="comment">-- Hive表的类型有管理表和托管表【外部表】两种</span></span><br><span class="line">      <span class="comment">-- 管理表：删除表的时候，会删除表数据以及元数据</span></span><br><span class="line">      <span class="comment">-- 外部表：删除表的时候，会删除元数据不会删除表数据。可以使用location导入非默认目录下的数据，适合多部门对同一份数据合作的时候使用</span></span><br><span class="line">  [(col_name data_type [<span class="keyword">COMMENT</span> col_comment], ... [constraint_specification])]</span><br><span class="line">  [<span class="keyword">COMMENT</span> table_comment]</span><br><span class="line">  [PARTITIONED <span class="keyword">BY</span> (col_name data_type [<span class="keyword">COMMENT</span> col_comment], ...)]</span><br><span class="line">  [CLUSTERED <span class="keyword">BY</span> (col_name, col_name, ...) [SORTED <span class="keyword">BY</span> (col_name [<span class="keyword">ASC</span>|<span class="keyword">DESC</span>], ...)] <span class="keyword">INTO</span> num_buckets BUCKETS]</span><br><span class="line">  <span class="comment">-- 分区</span></span><br><span class="line">  	<span class="comment">-- 就是在表存储目录下再根据分区关键字创建子目录</span></span><br><span class="line">  	<span class="comment">-- 对某个表中的数据再进行分区，将数据的数量减少</span></span><br><span class="line">  	<span class="comment">-- 可以多级分区</span></span><br><span class="line">  	<span class="comment">-- show partitions table_name;查看某个表的所有分区</span></span><br><span class="line">  [SKEWED <span class="keyword">BY</span> (col_name, col_name, ...)                  <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.10.0 and later)]</span></span><br><span class="line">     <span class="keyword">ON</span> ((col_value, col_value, ...), (col_value, col_value, ...), ...)</span><br><span class="line">     [<span class="keyword">STORED</span> <span class="keyword">AS</span> DIRECTORIES]</span><br><span class="line">  [</span><br><span class="line">   [<span class="keyword">ROW</span> <span class="keyword">FORMAT</span> row_format] <span class="comment">-- (<span class="doctag">Note:</span> 设置fileds之间分隔符和每行之间的分隔符collection)]</span></span><br><span class="line">   [<span class="keyword">STORED</span> <span class="keyword">AS</span> file_format] <span class="comment">-- (<span class="doctag">Note:</span> 表对应的文件的格式)]</span></span><br><span class="line">     | <span class="keyword">STORED</span> <span class="keyword">BY</span> <span class="string">'storage.handler.class.name'</span> [<span class="keyword">WITH</span> SERDEPROPERTIES (...)]  <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.6.0 and later)</span></span><br><span class="line">  ]</span><br><span class="line">  [LOCATION hdfs_path]<span class="comment">-- (<span class="doctag">Note:</span> 指定表对应的文件在hdfs上的位置)]</span></span><br><span class="line">  [TBLPROPERTIES (property_name=property_value, ...)]   <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.6.0 and later)</span></span><br><span class="line">  [<span class="keyword">AS</span> select_statement];   <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.5.0 and later; not supported for external tables，根据select语句的结果来创建表)</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">CREATE</span> [<span class="keyword">TEMPORARY</span>] [<span class="keyword">EXTERNAL</span>] <span class="keyword">TABLE</span> [<span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span>] [db_name.]table_name</span><br><span class="line">  <span class="keyword">LIKE</span> existing_table_or_view_name <span class="comment">-- (<span class="doctag">Note:</span> 以一个已经存在的表的结构来创建表)</span></span><br><span class="line">  [LOCATION hdfs_path];</span><br><span class="line"> </span><br><span class="line">data_type <span class="comment">-- (<span class="doctag">Note:</span> 支持的数据类型)</span></span><br><span class="line">  : primitive_type <span class="comment">-- (常用INT,BIGINT,FLOAT,DOUBLE,DECIMAL,TIMESTAMP,DATE,STRING,BOOLEAN,BINARY)</span></span><br><span class="line">  | array_type</span><br><span class="line">  | map_type</span><br><span class="line">  | struct_type</span><br><span class="line">  | union_type  <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.7.0 and later)</span></span><br><span class="line"> </span><br><span class="line">primitive_type</span><br><span class="line">  : TINYINT</span><br><span class="line">  | SMALLINT</span><br><span class="line">  | INT</span><br><span class="line">  | BIGINT</span><br><span class="line">  | BOOLEAN</span><br><span class="line">  | FLOAT</span><br><span class="line">  | DOUBLE</span><br><span class="line">  | DOUBLE PRECISION <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 2.2.0 and later)</span></span><br><span class="line">  | STRING</span><br><span class="line">  | BINARY      <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.8.0 and later)</span></span><br><span class="line">  | TIMESTAMP   <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.8.0 and later)</span></span><br><span class="line">  | DECIMAL     <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.11.0 and later)</span></span><br><span class="line">  | DECIMAL(precision, scale)  <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.13.0 and later)</span></span><br><span class="line">  | DATE        <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.12.0 and later)</span></span><br><span class="line">  | VARCHAR     <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.12.0 and later)</span></span><br><span class="line">  | CHAR        <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.13.0 and later)</span></span><br><span class="line"> </span><br><span class="line">array_type</span><br><span class="line">  : ARRAY &lt; data_type &gt;</span><br><span class="line"> </span><br><span class="line">map_type</span><br><span class="line">  : MAP &lt; primitive_type, data_type &gt;</span><br><span class="line"> </span><br><span class="line">struct_type</span><br><span class="line">  : STRUCT &lt; col_name : data_type [COMMENT col_comment], ...&gt;</span><br><span class="line"> </span><br><span class="line">union_type</span><br><span class="line">   : UNIONTYPE &lt; data_type, data_type, ... &gt;  -- (Note: Available in Hive 0.7.0 and later)</span><br><span class="line"> </span><br><span class="line">row_format</span><br><span class="line">  : DELIMITED [FIELDS TERMINATED BY char [ESCAPED BY char]] [COLLECTION ITEMS TERMINATED BY char]</span><br><span class="line">        [MAP KEYS TERMINATED BY char] [LINES TERMINATED BY char]</span><br><span class="line">        [NULL DEFINED AS char]   <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.13 and later)</span></span><br><span class="line">  | SERDE serde_name [WITH SERDEPROPERTIES (property_name=property_value, property_name=property_value, ...)]</span><br><span class="line"> </span><br><span class="line">file_format:</span><br><span class="line">  : SEQUENCEFILE</span><br><span class="line">  | TEXTFILE    <span class="comment">-- (Default, depending on hive.default.fileformat configuration)</span></span><br><span class="line">  | RCFILE      <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.6.0 and later)</span></span><br><span class="line">  | ORC         <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.11.0 and later)</span></span><br><span class="line">  | PARQUET     <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.13.0 and later)</span></span><br><span class="line">  | AVRO        <span class="comment">-- (<span class="doctag">Note:</span> Available in Hive 0.14.0 and later)</span></span><br><span class="line">  | INPUTFORMAT input_format_classname OUTPUTFORMAT output_format_classname</span><br><span class="line"> </span><br><span class="line">constraint_specification:</span><br><span class="line">  : [, PRIMARY KEY (col_name, ...) DISABLE NOVALIDATE ]</span><br><span class="line">    [, CONSTRAINT constraint_name FOREIGN KEY (col_name, ...) REFERENCES table_name(col_name, ...) DISABLE NOVALIDATE</span><br></pre></td></tr></table></figure>
+<h2 id="DML【官方文档】"><a href="#DML【官方文档】" class="headerlink" title="DML【官方文档】"></a>DML【<a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DML" target="_blank" rel="noopener">官方文档</a>】</h2><h3 id="从文件导入数据"><a href="#从文件导入数据" class="headerlink" title="从文件导入数据"></a>从文件导入数据</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">LOAD</span> <span class="keyword">DATA</span> [<span class="keyword">LOCAL</span>] INPATH <span class="string">'filepath'</span> [OVERWRITE] <span class="keyword">INTO</span> <span class="keyword">TABLE</span> tablename [<span class="keyword">PARTITION</span> (partcol1=val1, partcol2=val2 ...)]</span><br><span class="line"><span class="comment">-- 原始文件存储的位置</span></span><br><span class="line">	<span class="comment">-- 本地 local</span></span><br><span class="line">	<span class="comment">-- hdfs上 什么都不用加</span></span><br></pre></td></tr></table></figure>
+<h2 id="导入数据的几种方式"><a href="#导入数据的几种方式" class="headerlink" title="导入数据的几种方式"></a>导入数据的几种方式</h2><p>通过insert插入数据</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">table</span> table_name <span class="keyword">select</span> * <span class="keyword">from</span> table_name;</span><br></pre></td></tr></table></figure>
+<p>创建的时候通过查询导入<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> table_name <span class="keyword">as</span> <span class="keyword">select</span> * <span class="keyword">from</span> table_name;</span><br></pre></td></tr></table></figure></p>
+<p>创建的时候通过location导入</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> table_name() LOCATION hdfs_path;</span><br></pre></td></tr></table></figure>
+<p>加载本地文件或hdfs文件到hive表文件夹</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">LOAD</span> <span class="keyword">DATA</span> [<span class="keyword">LOCAL</span>] INPATH <span class="string">'filepath'</span> [OVERWRITE] <span class="keyword">INTO</span> <span class="keyword">TABLE</span> tablename [<span class="keyword">PARTITION</span> (partcol1=val1, partcol2=val2 ...)]</span><br></pre></td></tr></table></figure>
+<p>通过import导入</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">IMPORT [[EXTERNAL] TABLE new_or_original_tablename [PARTITION (part_column="value"[, ...])]]</span><br><span class="line">  FROM 'source_path'</span><br><span class="line">  [LOCATION 'import_target_path']</span><br></pre></td></tr></table></figure>
+<h2 id="导出数据的几种方式"><a href="#导出数据的几种方式" class="headerlink" title="导出数据的几种方式"></a>导出数据的几种方式</h2><p>通过insert</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> overwrite [<span class="keyword">local</span>] <span class="keyword">directory</span> <span class="string">'dir_path'</span> </span><br><span class="line"> [<span class="keyword">ROW</span> <span class="keyword">FORMAT</span> row_format] <span class="comment">-- (<span class="doctag">Note:</span> 设置fileds之间分隔符和每行之间的分隔符collection)]</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> database_name;</span><br></pre></td></tr></table></figure>
+<p>通过管道</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/hive -e <span class="string">"select statement"</span> &gt; file_path;</span><br></pre></td></tr></table></figure>
+<p>通过sqoop</p>
+<ul>
+<li>hdfs/hive    -&gt; rdbms</li>
+<li>drbms -&gt; hdfs/hive/hbase</li>
+</ul>
+<p>通过export导出到hdfs上的其他目录</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">EXPORT TABLE tablename [PARTITION (part_column="value"[, ...])]</span><br><span class="line">  TO 'export_target_path' [ FOR replication('eventid') ]</span><br></pre></td></tr></table></figure>
+<h2 id="常用查询【官方文档】"><a href="#常用查询【官方文档】" class="headerlink" title="常用查询【官方文档】"></a>常用查询【<a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Select" target="_blank" rel="noopener">官方文档</a>】</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[WITH CommonTableExpression (, CommonTableExpression)*]    (Note: Only available starting with Hive 0.13.0)</span><br><span class="line"><span class="keyword">SELECT</span> [ALL | <span class="keyword">DISTINCT</span>] select_expr, select_expr, ...</span><br><span class="line">  <span class="keyword">FROM</span> table_reference</span><br><span class="line">  [<span class="keyword">WHERE</span> where_condition]</span><br><span class="line">  [<span class="keyword">GROUP</span> <span class="keyword">BY</span> col_list]</span><br><span class="line">  [<span class="keyword">ORDER</span> <span class="keyword">BY</span> col_list]</span><br><span class="line">  [CLUSTER <span class="keyword">BY</span> col_list</span><br><span class="line">    | [<span class="keyword">DISTRIBUTE</span> <span class="keyword">BY</span> col_list] [<span class="keyword">SORT</span> <span class="keyword">BY</span> col_list]</span><br><span class="line">  ]</span><br><span class="line"> [<span class="keyword">LIMIT</span> [<span class="keyword">offset</span>,] <span class="keyword">rows</span>]</span><br></pre></td></tr></table></figure>
+<ol>
+<li>limit</li>
+<li>between</li>
+<li>is null / is not nul</li>
+<li>in / not in</li>
+<li>max / min / count / avg</li>
+<li>group by <ol>
+<li>求每个部门的平均工资：group by deptno</li>
+<li>求每个部门中每个岗位的最高薪水：group by deptno, job</li>
+</ol>
+</li>
+<li>having<ol>
+<li>where针对单条记录进行筛选</li>
+<li>having针对分组结果进行筛选</li>
+<li>如；求部门的平均薪水大于2000的的部门</li>
+</ol>
+</li>
+<li>join<ol>
+<li>a表中的一条记录和b表中的一条记录组成一条记录</li>
+<li>等值join：join … on</li>
+<li>左连接 left join：以左表为准，结果集中左表字段都会存在</li>
+<li>右连接 right join：以右表为准，结果集中右表字段都会存在</li>
+<li>全连接 full join</li>
+</ol>
+</li>
+<li>Order by<ol>
+<li>全局排序，一个reduce，慎用</li>
+</ol>
+</li>
+<li>sort by<ol>
+<li>对每个reduce内部数据进行排序，但是全局结果集没有排序</li>
+<li>每个reduce输出一个文件</li>
+</ol>
+</li>
+<li>distribute by<ol>
+<li>类似于map reduce中partition的作用，对数据进行分区，同一个区的由同一个reduce处理</li>
+<li>通常结合sort by使用</li>
+</ol>
+</li>
+<li>cluster by<ol>
+<li>distribute by和sort by的字段相同时可以用来代替</li>
+</ol>
+</li>
+</ol>
+<h1 id="Hive-UDF编程【官方文档】"><a href="#Hive-UDF编程【官方文档】" class="headerlink" title="Hive UDF编程【官方文档】"></a>Hive UDF编程【<a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF" target="_blank" rel="noopener">官方文档</a>】</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><blockquote>
+<p>UDF（User Defined Funtion）： 一进一出</p>
+<p>UDAF(User Defined Aggregation Function)：聚集函数，多进一出，类似count</p>
+<p>UDTF（User Defined Table Generating Functions）：一进多出，如lateral view explore</p>
+</blockquote>
+<h2 id="编程步骤"><a href="#编程步骤" class="headerlink" title="编程步骤"></a>编程步骤</h2><ol>
+<li>pom添加hadoop-client，hive-jdbc，hive-exec三个依赖</li>
+<li>继承org.apache.hadoop.hive.ql.UDF</li>
+<li>实现evaluete函数，其支持重载</li>
+</ol>
+<blockquote>
+<p>注意：</p>
+<ol>
+<li>UDF必须要有返回类型，可以返回null，但是返回类型不能为void</li>
+<li>UDF中常用Text/LongWritable等，不推荐使用java类型</li>
+</ol>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Hive/" rel="tag"># Hive</a>
+          
+            <a href="/tags/大数据/" rel="tag"># 大数据</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/16/Java设计模式——责任链模式/" rel="next" title="Java设计模式——责任链模式">
+                <i class="fa fa-chevron-left"></i> Java设计模式——责任链模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/20/Java设计模式——动态代理/" rel="prev" title="Java设计模式——动态代理">
+                Java设计模式——动态代理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="TomKK" />
+            
+              <p class="site-author-name" itemprop="name">TomKK</p>
+              <p class="site-description motion-element" itemprop="description">学而后知不足</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Hive介绍"><span class="nav-number">1.</span> <span class="nav-text"><a href="#Hive&#x4ECB;&#x7ECD;" class="headerlink" title="Hive&#x4ECB;&#x7ECD;"></a>Hive&#x4ECB;&#x7ECD;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hive数据仓库在HDFS上位置"><span class="nav-number">1.1.</span> <span class="nav-text"><a href="#Hive&#x6570;&#x636E;&#x4ED3;&#x5E93;&#x5728;HDFS&#x4E0A;&#x4F4D;&#x7F6E;" class="headerlink" title="Hive&#x6570;&#x636E;&#x4ED3;&#x5E93;&#x5728;HDFS&#x4E0A;&#x4F4D;&#x7F6E;"></a>Hive&#x6570;&#x636E;&#x4ED3;&#x5E93;&#x5728;HDFS&#x4E0A;&#x4F4D;&#x7F6E;</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hive常用命令"><span class="nav-number">2.</span> <span class="nav-text"><a href="#Hive&#x5E38;&#x7528;&#x547D;&#x4EE4;" class="headerlink" title="Hive&#x5E38;&#x7528;&#x547D;&#x4EE4;"></a>Hive&#x5E38;&#x7528;&#x547D;&#x4EE4;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HQL"><span class="nav-number">3.</span> <span class="nav-text"><a href="#HQL" class="headerlink" title="HQL"></a>HQL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DDL【官方文档】"><span class="nav-number">3.1.</span> <span class="nav-text"><a href="#DDL&#x3010;&#x5B98;&#x65B9;&#x6587;&#x6863;&#x3011;" class="headerlink" title="DDL&#x3010;&#x5B98;&#x65B9;&#x6587;&#x6863;&#x3011;"></a>DDL&#x3010;<a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DDL" target="_blank" rel="noopener">&#x5B98;&#x65B9;&#x6587;&#x6863;</a>&#x3011;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建数据库"><span class="nav-number">3.1.1.</span> <span class="nav-text"><a href="#&#x521B;&#x5EFA;&#x6570;&#x636E;&#x5E93;" class="headerlink" title="&#x521B;&#x5EFA;&#x6570;&#x636E;&#x5E93;"></a>&#x521B;&#x5EFA;&#x6570;&#x636E;&#x5E93;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除数据库"><span class="nav-number">3.1.2.</span> <span class="nav-text"><a href="#&#x5220;&#x9664;&#x6570;&#x636E;&#x5E93;" class="headerlink" title="&#x5220;&#x9664;&#x6570;&#x636E;&#x5E93;"></a>&#x5220;&#x9664;&#x6570;&#x636E;&#x5E93;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改数据库"><span class="nav-number">3.1.3.</span> <span class="nav-text"><a href="#&#x4FEE;&#x6539;&#x6570;&#x636E;&#x5E93;" class="headerlink" title="&#x4FEE;&#x6539;&#x6570;&#x636E;&#x5E93;"></a>&#x4FEE;&#x6539;&#x6570;&#x636E;&#x5E93;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建表"><span class="nav-number">3.2.</span> <span class="nav-text"><a href="#&#x521B;&#x5EFA;&#x8868;" class="headerlink" title="&#x521B;&#x5EFA;&#x8868;"></a>&#x521B;&#x5EFA;&#x8868;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DML【官方文档】"><span class="nav-number">3.3.</span> <span class="nav-text"><a href="#DML&#x3010;&#x5B98;&#x65B9;&#x6587;&#x6863;&#x3011;" class="headerlink" title="DML&#x3010;&#x5B98;&#x65B9;&#x6587;&#x6863;&#x3011;"></a>DML&#x3010;<a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DML" target="_blank" rel="noopener">&#x5B98;&#x65B9;&#x6587;&#x6863;</a>&#x3011;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#从文件导入数据"><span class="nav-number">3.3.1.</span> <span class="nav-text"><a href="#&#x4ECE;&#x6587;&#x4EF6;&#x5BFC;&#x5165;&#x6570;&#x636E;" class="headerlink" title="&#x4ECE;&#x6587;&#x4EF6;&#x5BFC;&#x5165;&#x6570;&#x636E;"></a>&#x4ECE;&#x6587;&#x4EF6;&#x5BFC;&#x5165;&#x6570;&#x636E;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#导入数据的几种方式"><span class="nav-number">3.4.</span> <span class="nav-text"><a href="#&#x5BFC;&#x5165;&#x6570;&#x636E;&#x7684;&#x51E0;&#x79CD;&#x65B9;&#x5F0F;" class="headerlink" title="&#x5BFC;&#x5165;&#x6570;&#x636E;&#x7684;&#x51E0;&#x79CD;&#x65B9;&#x5F0F;"></a>&#x5BFC;&#x5165;&#x6570;&#x636E;&#x7684;&#x51E0;&#x79CD;&#x65B9;&#x5F0F;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#导出数据的几种方式"><span class="nav-number">3.5.</span> <span class="nav-text"><a href="#&#x5BFC;&#x51FA;&#x6570;&#x636E;&#x7684;&#x51E0;&#x79CD;&#x65B9;&#x5F0F;" class="headerlink" title="&#x5BFC;&#x51FA;&#x6570;&#x636E;&#x7684;&#x51E0;&#x79CD;&#x65B9;&#x5F0F;"></a>&#x5BFC;&#x51FA;&#x6570;&#x636E;&#x7684;&#x51E0;&#x79CD;&#x65B9;&#x5F0F;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用查询【官方文档】"><span class="nav-number">3.6.</span> <span class="nav-text"><a href="#&#x5E38;&#x7528;&#x67E5;&#x8BE2;&#x3010;&#x5B98;&#x65B9;&#x6587;&#x6863;&#x3011;" class="headerlink" title="&#x5E38;&#x7528;&#x67E5;&#x8BE2;&#x3010;&#x5B98;&#x65B9;&#x6587;&#x6863;&#x3011;"></a>&#x5E38;&#x7528;&#x67E5;&#x8BE2;&#x3010;<a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Select" target="_blank" rel="noopener">&#x5B98;&#x65B9;&#x6587;&#x6863;</a>&#x3011;</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hive-UDF编程【官方文档】"><span class="nav-number">4.</span> <span class="nav-text"><a href="#Hive-UDF&#x7F16;&#x7A0B;&#x3010;&#x5B98;&#x65B9;&#x6587;&#x6863;&#x3011;" class="headerlink" title="Hive UDF&#x7F16;&#x7A0B;&#x3010;&#x5B98;&#x65B9;&#x6587;&#x6863;&#x3011;"></a>Hive UDF&#x7F16;&#x7A0B;&#x3010;<a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF" target="_blank" rel="noopener">&#x5B98;&#x65B9;&#x6587;&#x6863;</a>&#x3011;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">4.1.</span> <span class="nav-text"><a href="#&#x4ECB;&#x7ECD;" class="headerlink" title="&#x4ECB;&#x7ECD;"></a>&#x4ECB;&#x7ECD;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编程步骤"><span class="nav-number">4.2.</span> <span class="nav-text"><a href="#&#x7F16;&#x7A0B;&#x6B65;&#x9AA4;" class="headerlink" title="&#x7F16;&#x7A0B;&#x6B65;&#x9AA4;"></a>&#x7F16;&#x7A0B;&#x6B65;&#x9AA4;</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TomKK</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://http-tomkklalala-github-io.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/12/18/Hive学习/';
+          this.page.identifier = '2017/12/18/Hive学习/';
+          this.page.title = 'Hive学习';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://http-tomkklalala-github-io.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.3"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1uk3Vw0sydAghlwOnBUGYRMn-gzGzoHsz", "op4ebrtGIe4wP41x2oJjqocF");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
