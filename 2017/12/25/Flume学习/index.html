@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="读书笔记," />
+  <meta name="keywords" content="flume,大数据," />
 
 
 
@@ -79,18 +79,20 @@
 
 
 
-<meta name="description" content="Session问题描述由于Http协议是无状态的协议，为了保存当前会话的信息需要基于Session来实现保存状态，具体实现方式为：  在会话开始时，分配一个唯一的会话标识（SessionId），通过Cookie把这个标识告诉浏览器，以后每次请求的时候，浏览器都会带上这个会话标识来告诉web服务器请求是属于哪个会话的。如果浏览器禁用Cookie的话一般通过把这个会话id放到URL参数中。  这种单机">
-<meta name="keywords" content="读书笔记">
+<meta name="description" content="Flume介绍 Flume is a distributed, reliable, and available service for efficiently collecting, aggregating, and moving large amounts of log data. It has a simple and flexible architecture based on stream">
+<meta name="keywords" content="flume,大数据">
 <meta property="og:type" content="article">
-<meta property="og:title" content="《大型网站系统与Java中间件实践》与《大型网站技术架构核心原理与案例分析》读书笔记">
-<meta property="og:url" content="http://yoursite.com/2017/12/14/《大型网站系统与Java中间件实践》读书笔记/index.html">
+<meta property="og:title" content="Flume学习">
+<meta property="og:url" content="http://yoursite.com/2017/12/25/Flume学习/index.html">
 <meta property="og:site_name" content="TomKK&#39;s blogs">
-<meta property="og:description" content="Session问题描述由于Http协议是无状态的协议，为了保存当前会话的信息需要基于Session来实现保存状态，具体实现方式为：  在会话开始时，分配一个唯一的会话标识（SessionId），通过Cookie把这个标识告诉浏览器，以后每次请求的时候，浏览器都会带上这个会话标识来告诉web服务器请求是属于哪个会话的。如果浏览器禁用Cookie的话一般通过把这个会话id放到URL参数中。  这种单机">
+<meta property="og:description" content="Flume介绍 Flume is a distributed, reliable, and available service for efficiently collecting, aggregating, and moving large amounts of log data. It has a simple and flexible architecture based on stream">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-15T01:27:20.949Z">
+<meta property="og:image" content="http://flume.apache.org/_images/DevGuide_image00.png">
+<meta property="og:updated_time" content="2017-12-26T02:21:28.485Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="《大型网站系统与Java中间件实践》与《大型网站技术架构核心原理与案例分析》读书笔记">
-<meta name="twitter:description" content="Session问题描述由于Http协议是无状态的协议，为了保存当前会话的信息需要基于Session来实现保存状态，具体实现方式为：  在会话开始时，分配一个唯一的会话标识（SessionId），通过Cookie把这个标识告诉浏览器，以后每次请求的时候，浏览器都会带上这个会话标识来告诉web服务器请求是属于哪个会话的。如果浏览器禁用Cookie的话一般通过把这个会话id放到URL参数中。  这种单机">
+<meta name="twitter:title" content="Flume学习">
+<meta name="twitter:description" content="Flume介绍 Flume is a distributed, reliable, and available service for efficiently collecting, aggregating, and moving large amounts of log data. It has a simple and flexible architecture based on stream">
+<meta name="twitter:image" content="http://flume.apache.org/_images/DevGuide_image00.png">
 
 
 
@@ -120,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/12/14/《大型网站系统与Java中间件实践》读书笔记/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/12/25/Flume学习/"/>
 
 
 
 
 
-  <title>《大型网站系统与Java中间件实践》与《大型网站技术架构核心原理与案例分析》读书笔记 | TomKK's blogs</title>
+  <title>Flume学习 | TomKK's blogs</title>
   
 
 
@@ -291,7 +293,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/14/《大型网站系统与Java中间件实践》读书笔记/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/25/Flume学习/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="TomKK">
@@ -308,7 +310,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">《大型网站系统与Java中间件实践》与《大型网站技术架构核心原理与案例分析》读书笔记</h1>
+          <h1 class="post-title" itemprop="name headline">Flume学习</h1>
         
 
         <div class="post-meta">
@@ -320,8 +322,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-14T20:02:19+08:00">
-                2017-12-14
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-25T13:33:20+08:00">
+                2017-12-25
               </time>
             
 
@@ -339,9 +341,9 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/12/14/《大型网站系统与Java中间件实践》读书笔记/#comments" itemprop="discussionUrl">
+                <a href="/2017/12/25/Flume学习/#comments" itemprop="discussionUrl">
                   <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2017/12/14/《大型网站系统与Java中间件实践》读书笔记/" itemprop="commentCount"></span>
+                        data-disqus-identifier="2017/12/25/Flume学习/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -349,7 +351,7 @@
 
           
           
-             <span id="/2017/12/14/《大型网站系统与Java中间件实践》读书笔记/" class="leancloud_visitors" data-flag-title="《大型网站系统与Java中间件实践》与《大型网站技术架构核心原理与案例分析》读书笔记">
+             <span id="/2017/12/25/Flume学习/" class="leancloud_visitors" data-flag-title="Flume学习">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -380,43 +382,65 @@
       
 
       
-        <h1 id="Session问题"><a href="#Session问题" class="headerlink" title="Session问题"></a>Session问题</h1><h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>由于Http协议是无状态的协议，为了保存当前会话的信息需要基于Session来实现保存状态，具体实现方式为：</p>
-<blockquote>
-<p>在会话开始时，分配一个唯一的会话标识（SessionId），通过<strong>Cookie</strong>把这个标识告诉浏览器，以后每次请求的时候，浏览器都会带上这个会话标识来告诉web服务器请求是属于哪个会话的。如果浏览器禁用Cookie的话一般通过把这个会话id放到URL参数中。</p>
+        <h1 id="Flume介绍"><a href="#Flume介绍" class="headerlink" title="Flume介绍"></a>Flume介绍</h1><blockquote>
+<p>Flume is a distributed, reliable, and available service for efficiently <strong>collecting, aggregating, and moving large amounts of log data.</strong> It has a simple and flexible architecture based on streaming data flows. It is robust and fault tolerant with tunable reliability mechanisms and many failover and recovery mechanisms. It uses a simple extensible data model that allows for online analytic application.</p>
 </blockquote>
-<p>这种单机的实现方式将所有的Session都存放在了一台服务器上，在当应用服务器从单机变成集群的时候，由于负载均衡服务器的存在，并不能保证每次都能将请求路由到同一台服务器上，所以session的存放就会是一个问题。</p>
-<h2 id="解决方案1：Session-Sticky"><a href="#解决方案1：Session-Sticky" class="headerlink" title="解决方案1：Session Sticky"></a>解决方案1：Session Sticky</h2><p>让负载均衡服务器将同样Session的请求每次都发送到同一个服务器处理。</p>
-<h3 id="存在的问题"><a href="#存在的问题" class="headerlink" title="存在的问题"></a>存在的问题</h3><ul>
-<li>Session信息仅仅存放在一台机器上，可用性不强，存在宕机丢失信息的风险</li>
-<li>协议解析开销更大</li>
-<li>负载均衡服务器为了实现这种策略内存消耗会更大</li>
-</ul>
-<h2 id="解决方案2：Session-Replication"><a href="#解决方案2：Session-Replication" class="headerlink" title="解决方案2：Session Replication"></a>解决方案2：Session Replication</h2><p>在所有应用服务器上都存放一致的Session信息，一般容器都支持。</p>
-<h3 id="存在的问题-1"><a href="#存在的问题-1" class="headerlink" title="存在的问题"></a>存在的问题</h3><ul>
-<li>同步Session带来的网络带宽开销</li>
-<li>在访问量巨大的时候，用于保存Session的内存消耗大</li>
-</ul>
-<h2 id="解决方案3：Session数据集中处理"><a href="#解决方案3：Session数据集中处理" class="headerlink" title="解决方案3：Session数据集中处理"></a>解决方案3：Session数据集中处理</h2><p>将所有的Session集中存放在一个集群上</p>
-<h3 id="存在的问题-2"><a href="#存在的问题-2" class="headerlink" title="存在的问题"></a>存在的问题</h3><ul>
-<li>读写Session编程网络操作存在时延和不稳定性</li>
-<li>如果Session集群出现问题，将会影响整个应用</li>
-</ul>
-<h2 id="解决方案4：Cookie-Based"><a href="#解决方案4：Cookie-Based" class="headerlink" title="解决方案4：Cookie Based"></a>解决方案4：Cookie Based</h2><p>将所有Session数据“随身带”</p>
-<h3 id="存在的问题-3"><a href="#存在的问题-3" class="headerlink" title="存在的问题"></a>存在的问题</h3><ul>
-<li>Cookie长度的限制</li>
-<li>将Session数据暴露到浏览器而造成的安全性问题。一般通过加密来解决。</li>
-<li>贷款消耗</li>
-<li>性能影响</li>
-</ul>
-<h1 id="分布式缓存集群的伸缩性设计"><a href="#分布式缓存集群的伸缩性设计" class="headerlink" title="分布式缓存集群的伸缩性设计"></a>分布式缓存集群的伸缩性设计</h1><p>缓存访问请求不可以在缓存服务器集群中的任意一台处理，必须先找到缓存有数据的服务器，然后才能访问，不然就会导致命中率较低对数据库造成较大压力。在缓存集群中加入一台新的机器的时候，很可能会导致到这台机器上的请求大量无法命中，只有一段时间后高频数据才能慢慢存储进来。</p>
-<h2 id="算法一：余数Hash算法"><a href="#算法一：余数Hash算法" class="headerlink" title="算法一：余数Hash算法"></a>算法一：余数Hash算法</h2><p>当集群数列N变为M的时候，由余数Hash算法得到的结果可能会改变，则导致路由策略错误部分请求落空，尤其是集群规模很大的时候，增加一台服务器导致的不能命中的概率为<code>N/(N+1)</code>，接近100%</p>
-<h2 id="算法二：一致性Hash算法"><a href="#算法二：一致性Hash算法" class="headerlink" title="算法二：一致性Hash算法"></a>算法二：一致性Hash算法</h2><p>通过一致性Hash环的数据结构。使得每次添加新节点影响范围减少。</p>
-<blockquote>
-<p>具体算法过程：先构造一个长度为$2^{32}$的整数环（即一致性Hash环），根据节点名称的Hash值在，将缓存服务器放这个环上。然后根据需要缓存的数据的key值计算得到其Hash值（[0~$2^{32}-1$]），然后再Hash环上顺时针查找距离这个key的hash值最近的缓存服务器节点。</p>
+<h2 id="Flume架构"><a href="#Flume架构" class="headerlink" title="Flume架构"></a>Flume架构</h2><p><img src="http://flume.apache.org/_images/DevGuide_image00.png" alt="Flume架构"></p>
+<p>Flume-ng只有一个角色的节点：agent 的角色，agent有source、channel、sink组成。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">角色</th>
+<th style="text-align:center">简介</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Source</td>
+<td style="text-align:center">用于采集数据，是产生数据流的地方，同时Source会将产生的数据流传输到Channel，数据以Event形式封装</td>
+</tr>
+<tr>
+<td style="text-align:center">Channel</td>
+<td style="text-align:center">连接source和sinks，类似一个队列</td>
+</tr>
+<tr>
+<td style="text-align:center">Sink</td>
+<td style="text-align:center">从Channel收集数据，将数据写到数据源，可以是下一个Source也可以是HDFS或者HBase</td>
+</tr>
+</tbody>
+</table>
+<h1 id="配置文件基本格式"><a href="#配置文件基本格式" class="headerlink" title="配置文件基本格式"></a>配置文件基本格式</h1><blockquote>
+<ol>
+<li>Name the components on this agent</li>
+<li>Describe/configure the source</li>
+<li>Describe/configure the channel</li>
+<li>Describe/configure the sink</li>
+<li>Bind the source and sink to the channel</li>
+</ol>
 </blockquote>
-<p>即路由算法不再是点对点的进行匹配，而是在一个范围内有效。这个算法在新加入一个节点的时候，能够影响的只有那些hash落在它到它逆时针第一个元素线段上的那些节点，范围将大大减少。</p>
-<h3 id="存在的问题-4"><a href="#存在的问题-4" class="headerlink" title="存在的问题"></a>存在的问题</h3><p>当节点在环上分布不均匀的时候，可能会导致部分节点的附在压力和缓存数据量过高，而部分节点又过少。</p>
-<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>通过虚拟，将大量虚拟节点加入环中，然后通过将虚拟节点再和实际物理节点映射。而当一个节点加入的时候，也是同时加入一组虚拟节点，这组虚拟节点将会影响同样多数目的已经在环上存在的虚拟节点，这些已经存在的虚拟节点又对应不同的物理节点。这将导致加入一台服务器所造成的影响会较为均匀的地影响原来集群中已经存在的所有服务器。一般一个节点会被虚拟为150个虚拟节点。</p>
+<h1 id="Spooling-Directory-Source"><a href="#Spooling-Directory-Source" class="headerlink" title="Spooling Directory Source"></a>Spooling Directory Source</h1><blockquote>
+<p>This source lets you ingest data by placing files to be ingested into a “spooling” directory on disk. This source will watch the specified directory for new files, and will parse events out of new files as they appear. The event parsing logic is pluggable. After a given file has been fully read into the channel, it is renamed to indicate completion (or optionally deleted).</p>
+<p>Unlike the Exec source, this source is reliable and will not miss data, even if Flume is restarted or killed. In exchange for this reliability, only immutable, uniquely-named files must be dropped into the spooling directory. Flume tries to detect these problem conditions and will fail loudly if they are violated:</p>
+<ol>
+<li>If a file is written to after being placed into the spooling directory, Flume will print an error to its log file and stop processing.</li>
+<li>If a file name is reused at a later time, Flume will print an error to its log file and stop processing.</li>
+</ol>
+<p>To avoid the above issues, it may be useful to add a unique identifier (such as a timestamp) to log file names when they are moved into the spooling directory.</p>
+</blockquote>
+<p>这种source可以将数据放到一个“假脱机”目录中【这里觉得是类似操作系统IO中的假脱机技术，采用双缓冲】，并监控着特定的目录，每当有文件加入就会生成Event，其中生成event的逻辑是可以自定义的，可以指定符合特定规则的文件。而且当被解析的文件被完全读取到Channel中后，会对其文件名进行修改，作为标志。</p>
+<p>这种方式相比于Exec有更高的可靠性，不会遗漏数据，即使Flume重启或者被终止。作为高可靠性的代价，假脱机目录中只能放入不可变的、命名唯一的文件。如果上述两种前提被打破，那么Flume将会检测到并且明显报错。</p>
+<h1 id="HDFS-Sink"><a href="#HDFS-Sink" class="headerlink" title="HDFS Sink"></a>HDFS Sink</h1><p>使用需要在Flume中添加以下jar包，添加的目录为<code>%FLUME_HOME%/plugins.d/hdfs_sink/libext</code></p>
+<blockquote>
+<ul>
+<li><code>%HADOOP_HOME%/share/hadoop/common/hadoop-common-2.6.0-cdh5.13.1.jar</code></li>
+<li><code>%HADOOP_HOME%/share/hadoop/common/lib/hadoop-auth-2.6.0-cdh5.13.1.jar</code></li>
+<li><code>%HADOOP_HOME%/share/hadoop/hdfs/hadoop-hdfs-2.6.0-cdh5.13.1.jar</code></li>
+<li><code>%HADOOP_HOME%/share/hadoop/common/lib/commons-configuration-1.6.jar</code></li>
+<li><code>%HADOOP_HOME%/share/hadoop/common/lib/htrace-core4-4.0.1-incubating.jar</code></li>
+</ul>
+</blockquote>
+<h1 id="操作实例"><a href="#操作实例" class="headerlink" title="操作实例"></a>操作实例</h1><h2 id="flume-app-properties"><a href="#flume-app-properties" class="headerlink" title="flume-app.properties"></a>flume-app.properties</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">#1. Name the components on this agent</span><br><span class="line">a1.sources = r1</span><br><span class="line">a1.sinks = k1</span><br><span class="line">a1.channels = c1</span><br><span class="line"></span><br><span class="line">#2. Describe/configure the source</span><br><span class="line">a1.sources.r1.type = spooldir</span><br><span class="line">a1.sources.r1.spoolDir = /home/tomkk/software/cdh/hive-1.1.0-cdh5.13.1/logs</span><br><span class="line">a1.sources.r1.fileSuffix = .completed</span><br><span class="line">a1.sources.r1.includePattern = ^(.)*\\.log$</span><br><span class="line"></span><br><span class="line">#3. Describe/configure the channel</span><br><span class="line">a1.channels.c1.type = file</span><br><span class="line">a1.channels.c1.checkpointDir = /home/tomkk/software/cdh/flume-1.6.0-cdh5.13.1/filechannel/checkpoint</span><br><span class="line">a1.channels.c1.dataDirs = /home/tomkk/software/cdh/flume-1.6.0-cdh5.13.1/filechannel/data</span><br><span class="line"></span><br><span class="line">#4. Describe/configure the sink</span><br><span class="line">a1.sinks.k1.type = hdfs</span><br><span class="line">a1.sinks.k1.hdfs.path = hdfs://master:8020/user/flume/logs/%Y-%m-%d/</span><br><span class="line">a1.sinks.k1.hdfs.useLocalTimeStamp = true</span><br><span class="line">a1.sinks.k1.hdfs.fileType = DataStream</span><br><span class="line">a1.sinks.k1.hdfs.writeFormat = Text</span><br><span class="line">a1.sinks.k1.hdfs.filePrefix = tomkk-</span><br><span class="line">a1.sinks.k1.hdfs.batchSize = 10</span><br><span class="line"></span><br><span class="line">#5. Bind the source and sink to the channel</span><br><span class="line">#这里channel没有s</span><br><span class="line">a1.sinks.k1.channel = c1</span><br><span class="line">#这里channels复数</span><br><span class="line">a1.sources.r1.channels = c1</span><br></pre></td></tr></table></figure>
+<h2 id="Shell脚本"><a href="#Shell脚本" class="headerlink" title="Shell脚本"></a>Shell脚本</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">bin/flume-ng agent\</span><br><span class="line">  --conf conf \</span><br><span class="line">  -Dflume.root.logger=DEBUG,console \</span><br><span class="line">  --name a1 \</span><br><span class="line">  --conf-file app-configs/flume-app.properties</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -434,7 +458,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
+            <a href="/tags/flume/" rel="tag"># flume</a>
+          
+            <a href="/tags/大数据/" rel="tag"># 大数据</a>
           
         </div>
       
@@ -447,8 +473,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/12/13/整合spring-boot、spring-mvc、mybatis实践/" rel="next" title="整合spring boot、spring mvc、mybatis实践">
-                <i class="fa fa-chevron-left"></i> 整合spring boot、spring mvc、mybatis实践
+              <a href="/2017/12/23/Sqoop遇到的问题/" rel="next" title="Sqoop遇到的问题">
+                <i class="fa fa-chevron-left"></i> Sqoop遇到的问题
               </a>
             
           </div>
@@ -457,8 +483,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/12/14/Java设计模式——观察者模式/" rel="prev" title="Java设计模式——观察者模式">
-                Java设计模式——观察者模式 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/12/26/Java设计模式——工厂模式/" rel="prev" title="Java设计模式——工厂、单例、多例模式">
+                Java设计模式——工厂、单例、多例模式 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -624,7 +650,7 @@ var jiathis_config={
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Session问题"><span class="nav-number">1.</span> <span class="nav-text"><a href="#Session&#x95EE;&#x9898;" class="headerlink" title="Session&#x95EE;&#x9898;"></a>Session&#x95EE;&#x9898;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#描述"><span class="nav-number">1.1.</span> <span class="nav-text"><a href="#&#x63CF;&#x8FF0;" class="headerlink" title="&#x63CF;&#x8FF0;"></a>&#x63CF;&#x8FF0;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案1：Session-Sticky"><span class="nav-number">1.2.</span> <span class="nav-text"><a href="#&#x89E3;&#x51B3;&#x65B9;&#x6848;1&#xFF1A;Session-Sticky" class="headerlink" title="&#x89E3;&#x51B3;&#x65B9;&#x6848;1&#xFF1A;Session Sticky"></a>&#x89E3;&#x51B3;&#x65B9;&#x6848;1&#xFF1A;Session Sticky</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#存在的问题"><span class="nav-number">1.2.1.</span> <span class="nav-text"><a href="#&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;" class="headerlink" title="&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;"></a>&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案2：Session-Replication"><span class="nav-number">1.3.</span> <span class="nav-text"><a href="#&#x89E3;&#x51B3;&#x65B9;&#x6848;2&#xFF1A;Session-Replication" class="headerlink" title="&#x89E3;&#x51B3;&#x65B9;&#x6848;2&#xFF1A;Session Replication"></a>&#x89E3;&#x51B3;&#x65B9;&#x6848;2&#xFF1A;Session Replication</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#存在的问题-1"><span class="nav-number">1.3.1.</span> <span class="nav-text"><a href="#&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;-1" class="headerlink" title="&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;"></a>&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案3：Session数据集中处理"><span class="nav-number">1.4.</span> <span class="nav-text"><a href="#&#x89E3;&#x51B3;&#x65B9;&#x6848;3&#xFF1A;Session&#x6570;&#x636E;&#x96C6;&#x4E2D;&#x5904;&#x7406;" class="headerlink" title="&#x89E3;&#x51B3;&#x65B9;&#x6848;3&#xFF1A;Session&#x6570;&#x636E;&#x96C6;&#x4E2D;&#x5904;&#x7406;"></a>&#x89E3;&#x51B3;&#x65B9;&#x6848;3&#xFF1A;Session&#x6570;&#x636E;&#x96C6;&#x4E2D;&#x5904;&#x7406;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#存在的问题-2"><span class="nav-number">1.4.1.</span> <span class="nav-text"><a href="#&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;-2" class="headerlink" title="&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;"></a>&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案4：Cookie-Based"><span class="nav-number">1.5.</span> <span class="nav-text"><a href="#&#x89E3;&#x51B3;&#x65B9;&#x6848;4&#xFF1A;Cookie-Based" class="headerlink" title="&#x89E3;&#x51B3;&#x65B9;&#x6848;4&#xFF1A;Cookie Based"></a>&#x89E3;&#x51B3;&#x65B9;&#x6848;4&#xFF1A;Cookie Based</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#存在的问题-3"><span class="nav-number">1.5.1.</span> <span class="nav-text"><a href="#&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;-3" class="headerlink" title="&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;"></a>&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式缓存集群的伸缩性设计"><span class="nav-number">2.</span> <span class="nav-text"><a href="#&#x5206;&#x5E03;&#x5F0F;&#x7F13;&#x5B58;&#x96C6;&#x7FA4;&#x7684;&#x4F38;&#x7F29;&#x6027;&#x8BBE;&#x8BA1;" class="headerlink" title="&#x5206;&#x5E03;&#x5F0F;&#x7F13;&#x5B58;&#x96C6;&#x7FA4;&#x7684;&#x4F38;&#x7F29;&#x6027;&#x8BBE;&#x8BA1;"></a>&#x5206;&#x5E03;&#x5F0F;&#x7F13;&#x5B58;&#x96C6;&#x7FA4;&#x7684;&#x4F38;&#x7F29;&#x6027;&#x8BBE;&#x8BA1;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#算法一：余数Hash算法"><span class="nav-number">2.1.</span> <span class="nav-text"><a href="#&#x7B97;&#x6CD5;&#x4E00;&#xFF1A;&#x4F59;&#x6570;Hash&#x7B97;&#x6CD5;" class="headerlink" title="&#x7B97;&#x6CD5;&#x4E00;&#xFF1A;&#x4F59;&#x6570;Hash&#x7B97;&#x6CD5;"></a>&#x7B97;&#x6CD5;&#x4E00;&#xFF1A;&#x4F59;&#x6570;Hash&#x7B97;&#x6CD5;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#算法二：一致性Hash算法"><span class="nav-number">2.2.</span> <span class="nav-text"><a href="#&#x7B97;&#x6CD5;&#x4E8C;&#xFF1A;&#x4E00;&#x81F4;&#x6027;Hash&#x7B97;&#x6CD5;" class="headerlink" title="&#x7B97;&#x6CD5;&#x4E8C;&#xFF1A;&#x4E00;&#x81F4;&#x6027;Hash&#x7B97;&#x6CD5;"></a>&#x7B97;&#x6CD5;&#x4E8C;&#xFF1A;&#x4E00;&#x81F4;&#x6027;Hash&#x7B97;&#x6CD5;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#存在的问题-4"><span class="nav-number">2.2.1.</span> <span class="nav-text"><a href="#&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;-4" class="headerlink" title="&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;"></a>&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决方案"><span class="nav-number">2.2.2.</span> <span class="nav-text"><a href="#&#x89E3;&#x51B3;&#x65B9;&#x6848;" class="headerlink" title="&#x89E3;&#x51B3;&#x65B9;&#x6848;"></a>&#x89E3;&#x51B3;&#x65B9;&#x6848;</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Flume介绍"><span class="nav-number">1.</span> <span class="nav-text"><a href="#Flume&#x4ECB;&#x7ECD;" class="headerlink" title="Flume&#x4ECB;&#x7ECD;"></a>Flume&#x4ECB;&#x7ECD;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Flume架构"><span class="nav-number">1.1.</span> <span class="nav-text"><a href="#Flume&#x67B6;&#x6784;" class="headerlink" title="Flume&#x67B6;&#x6784;"></a>Flume&#x67B6;&#x6784;</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置文件基本格式"><span class="nav-number">2.</span> <span class="nav-text"><a href="#&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x57FA;&#x672C;&#x683C;&#x5F0F;" class="headerlink" title="&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x57FA;&#x672C;&#x683C;&#x5F0F;"></a>&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x57FA;&#x672C;&#x683C;&#x5F0F;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spooling-Directory-Source"><span class="nav-number">3.</span> <span class="nav-text"><a href="#Spooling-Directory-Source" class="headerlink" title="Spooling Directory Source"></a>Spooling Directory Source</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HDFS-Sink"><span class="nav-number">4.</span> <span class="nav-text"><a href="#HDFS-Sink" class="headerlink" title="HDFS Sink"></a>HDFS Sink</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#操作实例"><span class="nav-number">5.</span> <span class="nav-text"><a href="#&#x64CD;&#x4F5C;&#x5B9E;&#x4F8B;" class="headerlink" title="&#x64CD;&#x4F5C;&#x5B9E;&#x4F8B;"></a>&#x64CD;&#x4F5C;&#x5B9E;&#x4F8B;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#flume-app-properties"><span class="nav-number">5.1.</span> <span class="nav-text"><a href="#flume-app-properties" class="headerlink" title="flume-app.properties"></a>flume-app.properties</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Shell脚本"><span class="nav-number">5.2.</span> <span class="nav-text"><a href="#Shell&#x811A;&#x672C;" class="headerlink" title="Shell&#x811A;&#x672C;"></a>Shell&#x811A;&#x672C;</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -794,9 +820,9 @@ var jiathis_config={
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'http://yoursite.com/2017/12/14/《大型网站系统与Java中间件实践》读书笔记/';
-          this.page.identifier = '2017/12/14/《大型网站系统与Java中间件实践》读书笔记/';
-          this.page.title = '《大型网站系统与Java中间件实践》与《大型网站技术架构核心原理与案例分析》读书笔记';
+          this.page.url = 'http://yoursite.com/2017/12/25/Flume学习/';
+          this.page.identifier = '2017/12/25/Flume学习/';
+          this.page.title = 'Flume学习';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://http-tomkklalala-github-io.disqus.com/embed.js';

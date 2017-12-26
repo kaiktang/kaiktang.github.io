@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hadoop,大数据," />
+  <meta name="keywords" content="大数据,Hadoop," />
 
 
 
@@ -80,19 +80,22 @@
 
 
 <meta name="description" content="Hadoop的介绍 Hadoop是一个使用java编写的Apache开放源代码框架，它允许使用简单的编程模型跨大型计算机的大型数据集进行分布式处理。Hadoop框架工作的应用程序可以在跨计算机群集提供分布式存储和计算的环境中工作。Hadoop旨在从单一服务器扩展到数千台机器，每台机器都提供本地计算和存储。  Hadoop的架构 MapReduce：这是基于YARN的大型数据集并行处理系统。 YAR">
-<meta name="keywords" content="Hadoop,大数据">
+<meta name="keywords" content="大数据,Hadoop">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hadoop学习（待续）">
 <meta property="og:url" content="http://yoursite.com/2017/12/11/Hadoop学习（待续）/index.html">
 <meta property="og:site_name" content="TomKK&#39;s blogs">
 <meta property="og:description" content="Hadoop的介绍 Hadoop是一个使用java编写的Apache开放源代码框架，它允许使用简单的编程模型跨大型计算机的大型数据集进行分布式处理。Hadoop框架工作的应用程序可以在跨计算机群集提供分布式存储和计算的环境中工作。Hadoop旨在从单一服务器扩展到数千台机器，每台机器都提供本地计算和存储。  Hadoop的架构 MapReduce：这是基于YARN的大型数据集并行处理系统。 YAR">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://p0tsgngca.bkt.clouddn.com/2017-12-15_11-09-39.png">
+<meta property="og:image" content="http://p0tsgngca.bkt.clouddn.com/2017-12-17_15-59-23.png">
 <meta property="og:image" content="http://p0tsgngca.bkt.clouddn.com/yarn-structure.png">
-<meta property="og:updated_time" content="2017-12-20T11:57:56.930Z">
+<meta property="og:image" content="http://p0tsgngca.bkt.clouddn.com/2017-12-20_21-35-01.png">
+<meta property="og:updated_time" content="2017-12-20T13:55:16.245Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hadoop学习（待续）">
 <meta name="twitter:description" content="Hadoop的介绍 Hadoop是一个使用java编写的Apache开放源代码框架，它允许使用简单的编程模型跨大型计算机的大型数据集进行分布式处理。Hadoop框架工作的应用程序可以在跨计算机群集提供分布式存储和计算的环境中工作。Hadoop旨在从单一服务器扩展到数千台机器，每台机器都提供本地计算和存储。  Hadoop的架构 MapReduce：这是基于YARN的大型数据集并行处理系统。 YAR">
-<meta name="twitter:image" content="http://p0tsgngca.bkt.clouddn.com/yarn-structure.png">
+<meta name="twitter:image" content="http://p0tsgngca.bkt.clouddn.com/2017-12-15_11-09-39.png">
 
 
 
@@ -575,6 +578,8 @@
 </ul>
 </li>
 </ul>
+<p><img src="http://p0tsgngca.bkt.clouddn.com/2017-12-15_11-09-39.png" alt="Hadoop HA"></p>
+<p><img src="http://p0tsgngca.bkt.clouddn.com/2017-12-17_15-59-23.png" alt="自动故障转移"></p>
 <h3 id="HDFS-Federation"><a href="#HDFS-Federation" class="headerlink" title="HDFS Federation"></a>HDFS Federation</h3><p>让不同的NameNode去保存不同应用的元数据，但是共用DataNodes</p>
 <h3 id="Distributed-copy"><a href="#Distributed-copy" class="headerlink" title="Distributed copy"></a>Distributed copy</h3><p>集群数据迁移</p>
 <h2 id="YARN"><a href="#YARN" class="headerlink" title="YARN"></a>YARN</h2><p>每个从节点有一个NodeManager来管理该节点的资源，集群资源通过ResourceManager来管理。</p>
@@ -644,6 +649,18 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//java代码中针对某个任务配置</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setNumReduceTasks</span><span class="params">(<span class="keyword">int</span> tasks)</span></span>; <span class="comment">//默认为1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//配置文件中</span></span><br><span class="line">mapreduce.job.reduces=<span class="number">1</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Map Task输出压缩</p>
+<ol>
+<li>bzip2：最节省存储空间</li>
+<li>gzip</li>
+<li>lzo：解压速度最快</li>
+<li>snappy<br>压缩比：bzip2 &gt; gzip &gt; lzo<br>解压速度：lzo &gt; gzip &gt; bzip2</li>
+</ol>
+<p>效果：</p>
+<ol>
+<li>map阶段写到磁盘IO减少</li>
+<li>reduce阶段，读取磁盘信息的网络IO减少</li>
+</ol>
+<p><img src="http://p0tsgngca.bkt.clouddn.com/2017-12-20_21-35-01.png" alt="数据压缩"></p>
 </li>
 <li><p>Shuffle Phase参数</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#The number of streams to merge at once while sorting files. This determines the number of open file handles.</span><br><span class="line">mapreduce.task.io.sort.factor=10</span><br><span class="line"></span><br><span class="line">#The total amount of buffer memory to use while sorting files, in megabytes. By default, gives each merge stream 1MB, which should minimize seeks.</span><br><span class="line">mapreduce.task.io.sort.mb=100</span><br><span class="line"></span><br><span class="line">#The soft limit in the serialization buffer. Once reached, a thread will begin to spill the contents to disk in the background. Note that collection will not block if this threshold is exceeded while a spill is already in progress, so spills may be larger than this threshold when it is set to less than .5</span><br><span class="line">mapreduce.map.sort.spill.percent=0.80</span><br><span class="line"></span><br><span class="line">#The number of virtual cores to request from the scheduler for each map task.</span><br><span class="line">mapreduce.map.cpu.vcores=1</span><br><span class="line"></span><br><span class="line">#The amount of memory to request from the scheduler for each reduce task.</span><br><span class="line">mapreduce.reduce.cpu.vcores=1</span><br></pre></td></tr></table></figure>
@@ -672,9 +689,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
-          
             <a href="/tags/大数据/" rel="tag"># 大数据</a>
+          
+            <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
           
         </div>
       
@@ -816,7 +833,7 @@ var jiathis_config={
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -829,7 +846,7 @@ var jiathis_config={
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
