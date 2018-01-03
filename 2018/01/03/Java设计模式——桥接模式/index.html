@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="大数据,flume," />
+  <meta name="keywords" content="java,设计模式," />
 
 
 
@@ -79,20 +79,18 @@
 
 
 
-<meta name="description" content="Flume介绍 Flume is a distributed, reliable, and available service for efficiently collecting, aggregating, and moving large amounts of log data. It has a simple and flexible architecture based on stream">
-<meta name="keywords" content="大数据,flume">
+<meta name="description" content="提出问题 设计汽车的类的继承结构，要求类向两个维度扩展  维度一：具体的品牌，如BMW、Benz 维度二：类型，如跑车sports car、轿车saloon car  这两个维度应该都是继承于父类Car，但是问题在于BWM和Benz中既存在跑车系列也存在轿车系列，所以将BWM直接继承跑车或者轿车都不合理。 要求能够实现品牌和类型之间的任意排列组合。  解决方案1234567891011121314">
+<meta name="keywords" content="java,设计模式">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Flume学习">
-<meta property="og:url" content="http://yoursite.com/2017/12/25/Flume学习/index.html">
+<meta property="og:title" content="Java设计模式——桥接模式">
+<meta property="og:url" content="http://yoursite.com/2018/01/03/Java设计模式——桥接模式/index.html">
 <meta property="og:site_name" content="TomKK&#39;s blogs">
-<meta property="og:description" content="Flume介绍 Flume is a distributed, reliable, and available service for efficiently collecting, aggregating, and moving large amounts of log data. It has a simple and flexible architecture based on stream">
+<meta property="og:description" content="提出问题 设计汽车的类的继承结构，要求类向两个维度扩展  维度一：具体的品牌，如BMW、Benz 维度二：类型，如跑车sports car、轿车saloon car  这两个维度应该都是继承于父类Car，但是问题在于BWM和Benz中既存在跑车系列也存在轿车系列，所以将BWM直接继承跑车或者轿车都不合理。 要求能够实现品牌和类型之间的任意排列组合。  解决方案1234567891011121314">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://flume.apache.org/_images/DevGuide_image00.png">
-<meta property="og:updated_time" content="2017-12-26T02:21:28.485Z">
+<meta property="og:updated_time" content="2018-01-03T12:47:00.523Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Flume学习">
-<meta name="twitter:description" content="Flume介绍 Flume is a distributed, reliable, and available service for efficiently collecting, aggregating, and moving large amounts of log data. It has a simple and flexible architecture based on stream">
-<meta name="twitter:image" content="http://flume.apache.org/_images/DevGuide_image00.png">
+<meta name="twitter:title" content="Java设计模式——桥接模式">
+<meta name="twitter:description" content="提出问题 设计汽车的类的继承结构，要求类向两个维度扩展  维度一：具体的品牌，如BMW、Benz 维度二：类型，如跑车sports car、轿车saloon car  这两个维度应该都是继承于父类Car，但是问题在于BWM和Benz中既存在跑车系列也存在轿车系列，所以将BWM直接继承跑车或者轿车都不合理。 要求能够实现品牌和类型之间的任意排列组合。  解决方案1234567891011121314">
 
 
 
@@ -122,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/12/25/Flume学习/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/01/03/Java设计模式——桥接模式/"/>
 
 
 
 
 
-  <title>Flume学习 | TomKK's blogs</title>
+  <title>Java设计模式——桥接模式 | TomKK's blogs</title>
   
 
 
@@ -293,7 +291,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/25/Flume学习/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/03/Java设计模式——桥接模式/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="TomKK">
@@ -310,7 +308,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Flume学习</h1>
+          <h1 class="post-title" itemprop="name headline">Java设计模式——桥接模式</h1>
         
 
         <div class="post-meta">
@@ -322,8 +320,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-25T13:33:20+08:00">
-                2017-12-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-03T17:12:51+08:00">
+                2018-01-03
               </time>
             
 
@@ -341,9 +339,9 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/12/25/Flume学习/#comments" itemprop="discussionUrl">
+                <a href="/2018/01/03/Java设计模式——桥接模式/#comments" itemprop="discussionUrl">
                   <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2017/12/25/Flume学习/" itemprop="commentCount"></span>
+                        data-disqus-identifier="2018/01/03/Java设计模式——桥接模式/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -351,7 +349,7 @@
 
           
           
-             <span id="/2017/12/25/Flume学习/" class="leancloud_visitors" data-flag-title="Flume学习">
+             <span id="/2018/01/03/Java设计模式——桥接模式/" class="leancloud_visitors" data-flag-title="Java设计模式——桥接模式">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -382,65 +380,16 @@
       
 
       
-        <h1 id="Flume介绍"><a href="#Flume介绍" class="headerlink" title="Flume介绍"></a>Flume介绍</h1><blockquote>
-<p>Flume is a distributed, reliable, and available service for efficiently <strong>collecting, aggregating, and moving large amounts of log data.</strong> It has a simple and flexible architecture based on streaming data flows. It is robust and fault tolerant with tunable reliability mechanisms and many failover and recovery mechanisms. It uses a simple extensible data model that allows for online analytic application.</p>
-</blockquote>
-<h2 id="Flume架构"><a href="#Flume架构" class="headerlink" title="Flume架构"></a>Flume架构</h2><p><img src="http://flume.apache.org/_images/DevGuide_image00.png" alt="Flume架构"></p>
-<p>Flume-ng只有一个角色的节点：agent 的角色，agent有source、channel、sink组成。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">角色</th>
-<th style="text-align:center">简介</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">Source</td>
-<td style="text-align:center">用于采集数据，是产生数据流的地方，同时Source会将产生的数据流传输到Channel，数据以Event形式封装</td>
-</tr>
-<tr>
-<td style="text-align:center">Channel</td>
-<td style="text-align:center">连接source和sinks，类似一个队列</td>
-</tr>
-<tr>
-<td style="text-align:center">Sink</td>
-<td style="text-align:center">从Channel收集数据，将数据写到数据源，可以是下一个Source也可以是HDFS或者HBase</td>
-</tr>
-</tbody>
-</table>
-<h1 id="配置文件基本格式"><a href="#配置文件基本格式" class="headerlink" title="配置文件基本格式"></a>配置文件基本格式</h1><blockquote>
+        <h1 id="提出问题"><a href="#提出问题" class="headerlink" title="提出问题"></a>提出问题</h1><blockquote>
+<p>设计汽车的类的继承结构，要求类向两个维度扩展</p>
 <ol>
-<li>Name the components on this agent</li>
-<li>Describe/configure the source</li>
-<li>Describe/configure the channel</li>
-<li>Describe/configure the sink</li>
-<li>Bind the source and sink to the channel</li>
+<li>维度一：具体的品牌，如BMW、Benz</li>
+<li>维度二：类型，如跑车sports car、轿车saloon car</li>
 </ol>
+<p>这两个维度应该都是继承于父类Car，但是问题在于BWM和Benz中既存在跑车系列也存在轿车系列，所以将BWM直接继承跑车或者轿车都不合理。</p>
+<p>要求能够实现品牌和类型之间的任意排列组合。</p>
 </blockquote>
-<h1 id="Spooling-Directory-Source"><a href="#Spooling-Directory-Source" class="headerlink" title="Spooling Directory Source"></a>Spooling Directory Source</h1><blockquote>
-<p>This source lets you ingest data by placing files to be ingested into a “spooling” directory on disk. This source will watch the specified directory for new files, and will parse events out of new files as they appear. The event parsing logic is pluggable. After a given file has been fully read into the channel, it is renamed to indicate completion (or optionally deleted).</p>
-<p>Unlike the Exec source, this source is reliable and will not miss data, even if Flume is restarted or killed. In exchange for this reliability, only immutable, uniquely-named files must be dropped into the spooling directory. Flume tries to detect these problem conditions and will fail loudly if they are violated:</p>
-<ol>
-<li>If a file is written to after being placed into the spooling directory, Flume will print an error to its log file and stop processing.</li>
-<li>If a file name is reused at a later time, Flume will print an error to its log file and stop processing.</li>
-</ol>
-<p>To avoid the above issues, it may be useful to add a unique identifier (such as a timestamp) to log file names when they are moved into the spooling directory.</p>
-</blockquote>
-<p>这种source可以将数据放到一个“假脱机”目录中【这里觉得是类似操作系统IO中的假脱机技术，采用双缓冲】，并监控着特定的目录，每当有文件加入就会生成Event，其中生成event的逻辑是可以自定义的，可以指定符合特定规则的文件。而且当被解析的文件被完全读取到Channel中后，会对其文件名进行修改，作为标志。</p>
-<p>这种方式相比于Exec有更高的可靠性，不会遗漏数据，即使Flume重启或者被终止。作为高可靠性的代价，假脱机目录中只能放入不可变的、命名唯一的文件。如果上述两种前提被打破，那么Flume将会检测到并且明显报错。</p>
-<h1 id="HDFS-Sink"><a href="#HDFS-Sink" class="headerlink" title="HDFS Sink"></a>HDFS Sink</h1><p>使用需要在Flume中添加以下jar包，添加的目录为<code>%FLUME_HOME%/plugins.d/hdfs_sink/libext</code></p>
-<blockquote>
-<ul>
-<li><code>%HADOOP_HOME%/share/hadoop/common/hadoop-common-2.6.0-cdh5.13.1.jar</code></li>
-<li><code>%HADOOP_HOME%/share/hadoop/common/lib/hadoop-auth-2.6.0-cdh5.13.1.jar</code></li>
-<li><code>%HADOOP_HOME%/share/hadoop/hdfs/hadoop-hdfs-2.6.0-cdh5.13.1.jar</code></li>
-<li><code>%HADOOP_HOME%/share/hadoop/common/lib/commons-configuration-1.6.jar</code></li>
-<li><code>%HADOOP_HOME%/share/hadoop/common/lib/htrace-core4-4.0.1-incubating.jar</code></li>
-</ul>
-</blockquote>
-<h1 id="操作实例"><a href="#操作实例" class="headerlink" title="操作实例"></a>操作实例</h1><h2 id="flume-app-properties"><a href="#flume-app-properties" class="headerlink" title="flume-app.properties"></a>flume-app.properties</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">#1. Name the components on this agent</span><br><span class="line">a1.sources = r1</span><br><span class="line">a1.sinks = k1</span><br><span class="line">a1.channels = c1</span><br><span class="line"></span><br><span class="line">#2. Describe/configure the source</span><br><span class="line">a1.sources.r1.type = spooldir</span><br><span class="line">a1.sources.r1.spoolDir = /home/tomkk/software/cdh/hive-1.1.0-cdh5.13.1/logs</span><br><span class="line">a1.sources.r1.fileSuffix = .completed</span><br><span class="line">a1.sources.r1.includePattern = ^(.)*\\.log$</span><br><span class="line"></span><br><span class="line">#3. Describe/configure the channel</span><br><span class="line">a1.channels.c1.type = file</span><br><span class="line">a1.channels.c1.checkpointDir = /home/tomkk/software/cdh/flume-1.6.0-cdh5.13.1/filechannel/checkpoint</span><br><span class="line">a1.channels.c1.dataDirs = /home/tomkk/software/cdh/flume-1.6.0-cdh5.13.1/filechannel/data</span><br><span class="line"></span><br><span class="line">#4. Describe/configure the sink</span><br><span class="line">a1.sinks.k1.type = hdfs</span><br><span class="line">a1.sinks.k1.hdfs.path = hdfs://master:8020/user/flume/logs/%Y-%m-%d/</span><br><span class="line">a1.sinks.k1.hdfs.useLocalTimeStamp = true</span><br><span class="line">a1.sinks.k1.hdfs.fileType = DataStream</span><br><span class="line">a1.sinks.k1.hdfs.writeFormat = Text</span><br><span class="line">a1.sinks.k1.hdfs.filePrefix = tomkk-</span><br><span class="line">a1.sinks.k1.hdfs.batchSize = 10</span><br><span class="line"></span><br><span class="line">#5. Bind the source and sink to the channel</span><br><span class="line">#这里channel没有s</span><br><span class="line">a1.sinks.k1.channel = c1</span><br><span class="line">#这里channels复数</span><br><span class="line">a1.sources.r1.channels = c1</span><br></pre></td></tr></table></figure>
-<h2 id="Shell脚本"><a href="#Shell脚本" class="headerlink" title="Shell脚本"></a>Shell脚本</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">bin/flume-ng agent\</span><br><span class="line">  --conf conf \</span><br><span class="line">  -Dflume.root.logger=DEBUG,console \</span><br><span class="line">  --name a1 \</span><br><span class="line">  --conf-file app-configs/flume-app.properties</span><br></pre></td></tr></table></figure>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.tomkk.dp;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> CarImpl impl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CarImpl</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BMW</span> <span class="keyword">extends</span> <span class="title">CarImpl</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Benz</span> <span class="keyword">extends</span> <span class="title">CarImpl</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SportsCar</span> <span class="keyword">extends</span> <span class="title">Car</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SportsCar</span><span class="params">(CarImpl impl)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.impl = impl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SaloonCar</span> <span class="keyword">extends</span> <span class="title">Car</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SaloonCar</span><span class="params">(CarImpl impl)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.impl = impl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> SportsCar(<span class="keyword">new</span> BMW());</span><br><span class="line">        <span class="keyword">new</span> SportsCar(<span class="keyword">new</span> Benz());</span><br><span class="line">        <span class="keyword">new</span> SaloonCar(<span class="keyword">new</span> BMW());</span><br><span class="line">        <span class="keyword">new</span> SaloonCar(<span class="keyword">new</span> Benz());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -458,9 +407,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/大数据/" rel="tag"># 大数据</a>
+            <a href="/tags/java/" rel="tag"># java</a>
           
-            <a href="/tags/flume/" rel="tag"># flume</a>
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
           
         </div>
       
@@ -473,8 +422,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/12/23/Sqoop遇到的问题/" rel="next" title="Sqoop遇到的问题">
-                <i class="fa fa-chevron-left"></i> Sqoop遇到的问题
+              <a href="/2018/01/02/Oozie学习/" rel="next" title="Oozie学习">
+                <i class="fa fa-chevron-left"></i> Oozie学习
               </a>
             
           </div>
@@ -482,10 +431,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/12/26/Java设计模式——工厂模式/" rel="prev" title="Java设计模式——工厂、单例、多例模式">
-                Java设计模式——工厂、单例、多例模式 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -650,7 +595,7 @@ var jiathis_config={
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Flume介绍"><span class="nav-number">1.</span> <span class="nav-text"><a href="#Flume&#x4ECB;&#x7ECD;" class="headerlink" title="Flume&#x4ECB;&#x7ECD;"></a>Flume&#x4ECB;&#x7ECD;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Flume架构"><span class="nav-number">1.1.</span> <span class="nav-text"><a href="#Flume&#x67B6;&#x6784;" class="headerlink" title="Flume&#x67B6;&#x6784;"></a>Flume&#x67B6;&#x6784;</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置文件基本格式"><span class="nav-number">2.</span> <span class="nav-text"><a href="#&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x57FA;&#x672C;&#x683C;&#x5F0F;" class="headerlink" title="&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x57FA;&#x672C;&#x683C;&#x5F0F;"></a>&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x57FA;&#x672C;&#x683C;&#x5F0F;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spooling-Directory-Source"><span class="nav-number">3.</span> <span class="nav-text"><a href="#Spooling-Directory-Source" class="headerlink" title="Spooling Directory Source"></a>Spooling Directory Source</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HDFS-Sink"><span class="nav-number">4.</span> <span class="nav-text"><a href="#HDFS-Sink" class="headerlink" title="HDFS Sink"></a>HDFS Sink</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#操作实例"><span class="nav-number">5.</span> <span class="nav-text"><a href="#&#x64CD;&#x4F5C;&#x5B9E;&#x4F8B;" class="headerlink" title="&#x64CD;&#x4F5C;&#x5B9E;&#x4F8B;"></a>&#x64CD;&#x4F5C;&#x5B9E;&#x4F8B;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#flume-app-properties"><span class="nav-number">5.1.</span> <span class="nav-text"><a href="#flume-app-properties" class="headerlink" title="flume-app.properties"></a>flume-app.properties</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Shell脚本"><span class="nav-number">5.2.</span> <span class="nav-text"><a href="#Shell&#x811A;&#x672C;" class="headerlink" title="Shell&#x811A;&#x672C;"></a>Shell&#x811A;&#x672C;</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#提出问题"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x63D0;&#x51FA;&#x95EE;&#x9898;" class="headerlink" title="&#x63D0;&#x51FA;&#x95EE;&#x9898;"></a>&#x63D0;&#x51FA;&#x95EE;&#x9898;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决方案"><span class="nav-number">2.</span> <span class="nav-text"><a href="#&#x89E3;&#x51B3;&#x65B9;&#x6848;" class="headerlink" title="&#x89E3;&#x51B3;&#x65B9;&#x6848;"></a>&#x89E3;&#x51B3;&#x65B9;&#x6848;</span></a></li></ol></div>
             
 
           </div>
@@ -820,9 +765,9 @@ var jiathis_config={
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'http://yoursite.com/2017/12/25/Flume学习/';
-          this.page.identifier = '2017/12/25/Flume学习/';
-          this.page.title = 'Flume学习';
+          this.page.url = 'http://yoursite.com/2018/01/03/Java设计模式——桥接模式/';
+          this.page.identifier = '2018/01/03/Java设计模式——桥接模式/';
+          this.page.title = 'Java设计模式——桥接模式';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://http-tomkklalala-github-io.disqus.com/embed.js';
