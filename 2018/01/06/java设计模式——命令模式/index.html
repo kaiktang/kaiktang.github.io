@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="读书笔记," />
+  <meta name="keywords" content="java,设计模式," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="Session问题描述由于Http协议是无状态的协议，为了保存当前会话的信息需要基于Session来实现保存状态，具体实现方式为：  在会话开始时，分配一个唯一的会话标识（SessionId），通过Cookie把这个标识告诉浏览器，以后每次请求的时候，浏览器都会带上这个会话标识来告诉web服务器请求是属于哪个会话的。如果浏览器禁用Cookie的话一般通过把这个会话id放到URL参数中。  这种单机">
-<meta name="keywords" content="读书笔记">
+<meta name="description" content="提出问题 女朋友命令男友，并且能够反悔。  解决方案123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475package com.tomkk.dp;import java.">
+<meta name="keywords" content="java,设计模式">
 <meta property="og:type" content="article">
-<meta property="og:title" content="《大型网站系统与Java中间件实践》与《大型网站技术架构核心原理与案例分析》读书笔记">
-<meta property="og:url" content="http://yoursite.com/2017/12/14/《大型网站系统与Java中间件实践》读书笔记/index.html">
+<meta property="og:title" content="java设计模式——命令模式">
+<meta property="og:url" content="http://yoursite.com/2018/01/06/java设计模式——命令模式/index.html">
 <meta property="og:site_name" content="TomKK&#39;s blogs">
-<meta property="og:description" content="Session问题描述由于Http协议是无状态的协议，为了保存当前会话的信息需要基于Session来实现保存状态，具体实现方式为：  在会话开始时，分配一个唯一的会话标识（SessionId），通过Cookie把这个标识告诉浏览器，以后每次请求的时候，浏览器都会带上这个会话标识来告诉web服务器请求是属于哪个会话的。如果浏览器禁用Cookie的话一般通过把这个会话id放到URL参数中。  这种单机">
+<meta property="og:description" content="提出问题 女朋友命令男友，并且能够反悔。  解决方案123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475package com.tomkk.dp;import java.">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-15T01:27:20.949Z">
+<meta property="og:updated_time" content="2018-01-06T13:43:56.589Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="《大型网站系统与Java中间件实践》与《大型网站技术架构核心原理与案例分析》读书笔记">
-<meta name="twitter:description" content="Session问题描述由于Http协议是无状态的协议，为了保存当前会话的信息需要基于Session来实现保存状态，具体实现方式为：  在会话开始时，分配一个唯一的会话标识（SessionId），通过Cookie把这个标识告诉浏览器，以后每次请求的时候，浏览器都会带上这个会话标识来告诉web服务器请求是属于哪个会话的。如果浏览器禁用Cookie的话一般通过把这个会话id放到URL参数中。  这种单机">
+<meta name="twitter:title" content="java设计模式——命令模式">
+<meta name="twitter:description" content="提出问题 女朋友命令男友，并且能够反悔。  解决方案123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475package com.tomkk.dp;import java.">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/12/14/《大型网站系统与Java中间件实践》读书笔记/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/01/06/java设计模式——命令模式/"/>
 
 
 
 
 
-  <title>《大型网站系统与Java中间件实践》与《大型网站技术架构核心原理与案例分析》读书笔记 | TomKK's blogs</title>
+  <title>java设计模式——命令模式 | TomKK's blogs</title>
   
 
 
@@ -291,7 +291,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/14/《大型网站系统与Java中间件实践》读书笔记/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/06/java设计模式——命令模式/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="TomKK">
@@ -308,7 +308,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">《大型网站系统与Java中间件实践》与《大型网站技术架构核心原理与案例分析》读书笔记</h1>
+          <h1 class="post-title" itemprop="name headline">java设计模式——命令模式</h1>
         
 
         <div class="post-meta">
@@ -320,8 +320,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-14T20:02:19+08:00">
-                2017-12-14
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-06T21:30:40+08:00">
+                2018-01-06
               </time>
             
 
@@ -339,9 +339,9 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/12/14/《大型网站系统与Java中间件实践》读书笔记/#comments" itemprop="discussionUrl">
+                <a href="/2018/01/06/java设计模式——命令模式/#comments" itemprop="discussionUrl">
                   <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2017/12/14/《大型网站系统与Java中间件实践》读书笔记/" itemprop="commentCount"></span>
+                        data-disqus-identifier="2018/01/06/java设计模式——命令模式/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -349,7 +349,7 @@
 
           
           
-             <span id="/2017/12/14/《大型网站系统与Java中间件实践》读书笔记/" class="leancloud_visitors" data-flag-title="《大型网站系统与Java中间件实践》与《大型网站技术架构核心原理与案例分析》读书笔记">
+             <span id="/2018/01/06/java设计模式——命令模式/" class="leancloud_visitors" data-flag-title="java设计模式——命令模式">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -380,43 +380,10 @@
       
 
       
-        <h1 id="Session问题"><a href="#Session问题" class="headerlink" title="Session问题"></a>Session问题</h1><h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>由于Http协议是无状态的协议，为了保存当前会话的信息需要基于Session来实现保存状态，具体实现方式为：</p>
-<blockquote>
-<p>在会话开始时，分配一个唯一的会话标识（SessionId），通过<strong>Cookie</strong>把这个标识告诉浏览器，以后每次请求的时候，浏览器都会带上这个会话标识来告诉web服务器请求是属于哪个会话的。如果浏览器禁用Cookie的话一般通过把这个会话id放到URL参数中。</p>
+        <h1 id="提出问题"><a href="#提出问题" class="headerlink" title="提出问题"></a>提出问题</h1><blockquote>
+<p>女朋友命令男友，并且能够反悔。</p>
 </blockquote>
-<p>这种单机的实现方式将所有的Session都存放在了一台服务器上，在当应用服务器从单机变成集群的时候，由于负载均衡服务器的存在，并不能保证每次都能将请求路由到同一台服务器上，所以session的存放就会是一个问题。</p>
-<h2 id="解决方案1：Session-Sticky"><a href="#解决方案1：Session-Sticky" class="headerlink" title="解决方案1：Session Sticky"></a>解决方案1：Session Sticky</h2><p>让负载均衡服务器将同样Session的请求每次都发送到同一个服务器处理。</p>
-<h3 id="存在的问题"><a href="#存在的问题" class="headerlink" title="存在的问题"></a>存在的问题</h3><ul>
-<li>Session信息仅仅存放在一台机器上，可用性不强，存在宕机丢失信息的风险</li>
-<li>协议解析开销更大</li>
-<li>负载均衡服务器为了实现这种策略内存消耗会更大</li>
-</ul>
-<h2 id="解决方案2：Session-Replication"><a href="#解决方案2：Session-Replication" class="headerlink" title="解决方案2：Session Replication"></a>解决方案2：Session Replication</h2><p>在所有应用服务器上都存放一致的Session信息，一般容器都支持。</p>
-<h3 id="存在的问题-1"><a href="#存在的问题-1" class="headerlink" title="存在的问题"></a>存在的问题</h3><ul>
-<li>同步Session带来的网络带宽开销</li>
-<li>在访问量巨大的时候，用于保存Session的内存消耗大</li>
-</ul>
-<h2 id="解决方案3：Session数据集中处理"><a href="#解决方案3：Session数据集中处理" class="headerlink" title="解决方案3：Session数据集中处理"></a>解决方案3：Session数据集中处理</h2><p>将所有的Session集中存放在一个集群上</p>
-<h3 id="存在的问题-2"><a href="#存在的问题-2" class="headerlink" title="存在的问题"></a>存在的问题</h3><ul>
-<li>读写Session编程网络操作存在时延和不稳定性</li>
-<li>如果Session集群出现问题，将会影响整个应用</li>
-</ul>
-<h2 id="解决方案4：Cookie-Based"><a href="#解决方案4：Cookie-Based" class="headerlink" title="解决方案4：Cookie Based"></a>解决方案4：Cookie Based</h2><p>将所有Session数据“随身带”</p>
-<h3 id="存在的问题-3"><a href="#存在的问题-3" class="headerlink" title="存在的问题"></a>存在的问题</h3><ul>
-<li>Cookie长度的限制</li>
-<li>将Session数据暴露到浏览器而造成的安全性问题。一般通过加密来解决。</li>
-<li>贷款消耗</li>
-<li>性能影响</li>
-</ul>
-<h1 id="分布式缓存集群的伸缩性设计"><a href="#分布式缓存集群的伸缩性设计" class="headerlink" title="分布式缓存集群的伸缩性设计"></a>分布式缓存集群的伸缩性设计</h1><p>缓存访问请求不可以在缓存服务器集群中的任意一台处理，必须先找到缓存有数据的服务器，然后才能访问，不然就会导致命中率较低对数据库造成较大压力。在缓存集群中加入一台新的机器的时候，很可能会导致到这台机器上的请求大量无法命中，只有一段时间后高频数据才能慢慢存储进来。</p>
-<h2 id="算法一：余数Hash算法"><a href="#算法一：余数Hash算法" class="headerlink" title="算法一：余数Hash算法"></a>算法一：余数Hash算法</h2><p>当集群数列N变为M的时候，由余数Hash算法得到的结果可能会改变，则导致路由策略错误部分请求落空，尤其是集群规模很大的时候，增加一台服务器导致的不能命中的概率为<code>N/(N+1)</code>，接近100%</p>
-<h2 id="算法二：一致性Hash算法"><a href="#算法二：一致性Hash算法" class="headerlink" title="算法二：一致性Hash算法"></a>算法二：一致性Hash算法</h2><p>通过一致性Hash环的数据结构。使得每次添加新节点影响范围减少。</p>
-<blockquote>
-<p>具体算法过程：先构造一个长度为$2^{32}$的整数环（即一致性Hash环），根据节点名称的Hash值在，将缓存服务器放这个环上。然后根据需要缓存的数据的key值计算得到其Hash值（[0~$2^{32}-1$]），然后再Hash环上顺时针查找距离这个key的hash值最近的缓存服务器节点。</p>
-</blockquote>
-<p>即路由算法不再是点对点的进行匹配，而是在一个范围内有效。这个算法在新加入一个节点的时候，能够影响的只有那些hash落在它到它逆时针第一个元素线段上的那些节点，范围将大大减少。</p>
-<h3 id="存在的问题-4"><a href="#存在的问题-4" class="headerlink" title="存在的问题"></a>存在的问题</h3><p>当节点在环上分布不均匀的时候，可能会导致部分节点的附在压力和缓存数据量过高，而部分节点又过少。</p>
-<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>通过虚拟，将大量虚拟节点加入环中，然后通过将虚拟节点再和实际物理节点映射。而当一个节点加入的时候，也是同时加入一组虚拟节点，这组虚拟节点将会影响同样多数目的已经在环上存在的虚拟节点，这些已经存在的虚拟节点又对应不同的物理节点。这将导致加入一台服务器所造成的影响会较为均匀的地影响原来集群中已经存在的所有服务器。一般一个节点会被虚拟为150个虚拟节点。</p>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.tomkk.dp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Stack;</span><br><span class="line"></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Command</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">excecute</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">unDo</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ShoppingCmd</span> <span class="keyword">extends</span> <span class="title">Command</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">excecute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"陪着逛商场。。。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">unDo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"回家啦~~"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Boy</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> List&lt;Command&gt; commondList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">private</span> Stack&lt;Command&gt; commandHistory = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addCommand</span><span class="params">(Command command)</span> </span>&#123;</span><br><span class="line">        commondList.add(command);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doCommands</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (Command c : commondList) &#123;</span><br><span class="line">            c.excecute();</span><br><span class="line">          </span><br><span class="line">            commandHistory.push(c);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unDo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!commandHistory.empty()) &#123;</span><br><span class="line">            commandHistory.peek().unDo();</span><br><span class="line">            commandHistory.pop();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MM</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">order</span><span class="params">(Boy boy)</span> </span>&#123;</span><br><span class="line">        Command cmd = <span class="keyword">new</span> ShoppingCmd();</span><br><span class="line">        boy.addCommand(cmd);</span><br><span class="line">      </span><br><span class="line">        boy.doCommands();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">regret</span><span class="params">(Boy boy)</span> </span>&#123;</span><br><span class="line">        boy.unDo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        MM mm = <span class="keyword">new</span> MM();</span><br><span class="line">        Boy boy = <span class="keyword">new</span> Boy();</span><br><span class="line"></span><br><span class="line">        mm.order(boy);</span><br><span class="line">        mm.regret(boy);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -434,7 +401,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
           
         </div>
       
@@ -447,8 +416,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/12/13/整合spring-boot、spring-mvc、mybatis实践/" rel="next" title="整合spring boot、spring mvc、mybatis实践">
-                <i class="fa fa-chevron-left"></i> 整合spring boot、spring mvc、mybatis实践
+              <a href="/2018/01/03/Java设计模式——桥接模式/" rel="next" title="Java设计模式——桥接模式">
+                <i class="fa fa-chevron-left"></i> Java设计模式——桥接模式
               </a>
             
           </div>
@@ -456,10 +425,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/12/14/Java设计模式——观察者模式/" rel="prev" title="Java设计模式——观察者模式">
-                Java设计模式——观察者模式 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -624,7 +589,7 @@ var jiathis_config={
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Session问题"><span class="nav-number">1.</span> <span class="nav-text"><a href="#Session&#x95EE;&#x9898;" class="headerlink" title="Session&#x95EE;&#x9898;"></a>Session&#x95EE;&#x9898;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#描述"><span class="nav-number">1.1.</span> <span class="nav-text"><a href="#&#x63CF;&#x8FF0;" class="headerlink" title="&#x63CF;&#x8FF0;"></a>&#x63CF;&#x8FF0;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案1：Session-Sticky"><span class="nav-number">1.2.</span> <span class="nav-text"><a href="#&#x89E3;&#x51B3;&#x65B9;&#x6848;1&#xFF1A;Session-Sticky" class="headerlink" title="&#x89E3;&#x51B3;&#x65B9;&#x6848;1&#xFF1A;Session Sticky"></a>&#x89E3;&#x51B3;&#x65B9;&#x6848;1&#xFF1A;Session Sticky</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#存在的问题"><span class="nav-number">1.2.1.</span> <span class="nav-text"><a href="#&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;" class="headerlink" title="&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;"></a>&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案2：Session-Replication"><span class="nav-number">1.3.</span> <span class="nav-text"><a href="#&#x89E3;&#x51B3;&#x65B9;&#x6848;2&#xFF1A;Session-Replication" class="headerlink" title="&#x89E3;&#x51B3;&#x65B9;&#x6848;2&#xFF1A;Session Replication"></a>&#x89E3;&#x51B3;&#x65B9;&#x6848;2&#xFF1A;Session Replication</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#存在的问题-1"><span class="nav-number">1.3.1.</span> <span class="nav-text"><a href="#&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;-1" class="headerlink" title="&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;"></a>&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案3：Session数据集中处理"><span class="nav-number">1.4.</span> <span class="nav-text"><a href="#&#x89E3;&#x51B3;&#x65B9;&#x6848;3&#xFF1A;Session&#x6570;&#x636E;&#x96C6;&#x4E2D;&#x5904;&#x7406;" class="headerlink" title="&#x89E3;&#x51B3;&#x65B9;&#x6848;3&#xFF1A;Session&#x6570;&#x636E;&#x96C6;&#x4E2D;&#x5904;&#x7406;"></a>&#x89E3;&#x51B3;&#x65B9;&#x6848;3&#xFF1A;Session&#x6570;&#x636E;&#x96C6;&#x4E2D;&#x5904;&#x7406;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#存在的问题-2"><span class="nav-number">1.4.1.</span> <span class="nav-text"><a href="#&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;-2" class="headerlink" title="&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;"></a>&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案4：Cookie-Based"><span class="nav-number">1.5.</span> <span class="nav-text"><a href="#&#x89E3;&#x51B3;&#x65B9;&#x6848;4&#xFF1A;Cookie-Based" class="headerlink" title="&#x89E3;&#x51B3;&#x65B9;&#x6848;4&#xFF1A;Cookie Based"></a>&#x89E3;&#x51B3;&#x65B9;&#x6848;4&#xFF1A;Cookie Based</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#存在的问题-3"><span class="nav-number">1.5.1.</span> <span class="nav-text"><a href="#&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;-3" class="headerlink" title="&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;"></a>&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式缓存集群的伸缩性设计"><span class="nav-number">2.</span> <span class="nav-text"><a href="#&#x5206;&#x5E03;&#x5F0F;&#x7F13;&#x5B58;&#x96C6;&#x7FA4;&#x7684;&#x4F38;&#x7F29;&#x6027;&#x8BBE;&#x8BA1;" class="headerlink" title="&#x5206;&#x5E03;&#x5F0F;&#x7F13;&#x5B58;&#x96C6;&#x7FA4;&#x7684;&#x4F38;&#x7F29;&#x6027;&#x8BBE;&#x8BA1;"></a>&#x5206;&#x5E03;&#x5F0F;&#x7F13;&#x5B58;&#x96C6;&#x7FA4;&#x7684;&#x4F38;&#x7F29;&#x6027;&#x8BBE;&#x8BA1;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#算法一：余数Hash算法"><span class="nav-number">2.1.</span> <span class="nav-text"><a href="#&#x7B97;&#x6CD5;&#x4E00;&#xFF1A;&#x4F59;&#x6570;Hash&#x7B97;&#x6CD5;" class="headerlink" title="&#x7B97;&#x6CD5;&#x4E00;&#xFF1A;&#x4F59;&#x6570;Hash&#x7B97;&#x6CD5;"></a>&#x7B97;&#x6CD5;&#x4E00;&#xFF1A;&#x4F59;&#x6570;Hash&#x7B97;&#x6CD5;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#算法二：一致性Hash算法"><span class="nav-number">2.2.</span> <span class="nav-text"><a href="#&#x7B97;&#x6CD5;&#x4E8C;&#xFF1A;&#x4E00;&#x81F4;&#x6027;Hash&#x7B97;&#x6CD5;" class="headerlink" title="&#x7B97;&#x6CD5;&#x4E8C;&#xFF1A;&#x4E00;&#x81F4;&#x6027;Hash&#x7B97;&#x6CD5;"></a>&#x7B97;&#x6CD5;&#x4E8C;&#xFF1A;&#x4E00;&#x81F4;&#x6027;Hash&#x7B97;&#x6CD5;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#存在的问题-4"><span class="nav-number">2.2.1.</span> <span class="nav-text"><a href="#&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;-4" class="headerlink" title="&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;"></a>&#x5B58;&#x5728;&#x7684;&#x95EE;&#x9898;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决方案"><span class="nav-number">2.2.2.</span> <span class="nav-text"><a href="#&#x89E3;&#x51B3;&#x65B9;&#x6848;" class="headerlink" title="&#x89E3;&#x51B3;&#x65B9;&#x6848;"></a>&#x89E3;&#x51B3;&#x65B9;&#x6848;</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#提出问题"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x63D0;&#x51FA;&#x95EE;&#x9898;" class="headerlink" title="&#x63D0;&#x51FA;&#x95EE;&#x9898;"></a>&#x63D0;&#x51FA;&#x95EE;&#x9898;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决方案"><span class="nav-number">2.</span> <span class="nav-text"><a href="#&#x89E3;&#x51B3;&#x65B9;&#x6848;" class="headerlink" title="&#x89E3;&#x51B3;&#x65B9;&#x6848;"></a>&#x89E3;&#x51B3;&#x65B9;&#x6848;</span></a></li></ol></div>
             
 
           </div>
@@ -794,9 +759,9 @@ var jiathis_config={
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'http://yoursite.com/2017/12/14/《大型网站系统与Java中间件实践》读书笔记/';
-          this.page.identifier = '2017/12/14/《大型网站系统与Java中间件实践》读书笔记/';
-          this.page.title = '《大型网站系统与Java中间件实践》与《大型网站技术架构核心原理与案例分析》读书笔记';
+          this.page.url = 'http://yoursite.com/2018/01/06/java设计模式——命令模式/';
+          this.page.identifier = '2018/01/06/java设计模式——命令模式/';
+          this.page.title = 'java设计模式——命令模式';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://http-tomkklalala-github-io.disqus.com/embed.js';
