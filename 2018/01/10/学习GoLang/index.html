@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://p0tsgngca.bkt.clouddn.com/2018-01-11_10-13-16.png">
 <meta property="og:image" content="https://github.com/astaxie/build-web-application-with-golang/raw/master/zh/images/2.3.init.png?raw=true">
-<meta property="og:updated_time" content="2018-01-20T14:01:01.334Z">
+<meta property="og:updated_time" content="2018-02-01T08:00:43.165Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="学习GoLang">
 <meta name="twitter:description" content="基础知识文件代码的一般顺序12345678910111213141516171819202122232425//当前程序的包名package main//导入其他的包import &quot;fmt&quot;//常量的定义const pi = 3.1//全局变量的声明与赋值var name = &quot;TomKK&quot;//一般类型变量的声明type num int//结构的声明type gopher struct&amp;#123;">
@@ -385,7 +385,7 @@
       
         <h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><h2 id="文件代码的一般顺序"><a href="#文件代码的一般顺序" class="headerlink" title="文件代码的一般顺序"></a>文件代码的一般顺序</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//当前程序的包名</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="comment">//导入其他的包</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//常量的定义</span></span><br><span class="line"><span class="keyword">const</span> pi = <span class="number">3.1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//全局变量的声明与赋值</span></span><br><span class="line"><span class="keyword">var</span> name = <span class="string">"TomKK"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//一般类型变量的声明</span></span><br><span class="line"><span class="keyword">type</span> num <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//结构的声明</span></span><br><span class="line"><span class="keyword">type</span> gopher <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//接口的声明</span></span><br><span class="line"><span class="keyword">type</span> golang <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//函数</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">   fmt.Println(pi)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这样可读性更强</p>
-<h2 id="类型别名"><a href="#类型别名" class="headerlink" title="类型别名"></a>类型别名</h2><p><code>alias</code> typename</p>
+<h2 id="类型别名"><a href="#类型别名" class="headerlink" title="类型别名"></a>类型别名</h2><p>type <code>alias</code> typename</p>
 <blockquote>
 <p>这里严格来说不能称为别名，而是底层数据结构相同的自定义类型，在进行类型转化的时候还是需要进行显示装换。</p>
 </blockquote>
@@ -474,7 +474,7 @@
 </blockquote>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> a := <span class="number">1</span>; a &lt; <span class="number">5</span>; a++ &#123;</span><br><span class="line">	fmt.Println(a)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="选择语句switch"><a href="#选择语句switch" class="headerlink" title="选择语句switch"></a>选择语句switch</h2><p>可以使用<strong>任何类型或表达式</strong>作为<strong>条件语句</strong></p>
-<p>不需要写<code>break</code>，默认不会继续执接下来的<code>case</code></p>
+<p>不需要写<code>break</code>，默认不会继续执行接下来的<code>case</code></p>
 <p>如果希望执行下一个<code>case</code>，需要使用<code>fallthrough</code>语句</p>
 <p>支持一个初始化表达式（可以是并行方式）。<strong>右侧需要跟上分号</strong></p>
 <p>左大括号必须和条件语句在同一行</p>
@@ -639,7 +639,7 @@
 <p><code>Type Assertion（Comma-ok断言）</code>语法：value, ok := element.(T)。element必须是接口类型的变量，T是普通类型。如果断言失败，ok为false，否则ok为true并且value为变量的值。</p>
 <p><code>Type switch</code>：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">switch</span> value := element.(<span class="keyword">type</span>) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="keyword">string</span>:</span><br><span class="line">            <span class="comment">// do something</span></span><br><span class="line">        <span class="keyword">case</span> []<span class="keyword">byte</span>:</span><br><span class="line">            <span class="comment">// do something</span></span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            fmt.Printf(<span class="string">"unknown type\n"</span>)</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="反射reflection"><a href="#反射reflection" class="headerlink" title="反射reflection"></a>反射reflection</h2><p>反射可以大大提高程序的灵活性，是的<code>interface{}</code>有更大的发挥余地</p>
+<h2 id="反射reflection"><a href="#反射reflection" class="headerlink" title="反射reflection"></a>反射reflection</h2><p>反射可以大大提高程序的灵活性，使得<code>interface{}</code>有更大的发挥余地</p>
 <p>反射使用<code>TypeOf</code>和<code>ValueOf</code>函数从接口中获取目标对象信息</p>
 <p>反射会将匿名字段作为独立字段（匿名字段本质）</p>
 <p>想要利用反射修改对象状态，前提是<code>interface.data</code>是<code>settable</code>，即<code>pointer-interface</code></p>
@@ -697,6 +697,7 @@
 <h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><ol>
 <li>创建的时候就估计容量，避免在函数内发生扩容</li>
 <li>需要向<code>slice</code>中添加元素的函数每次调用返回切片的引用更新外部切片变量</li>
+<li>传入切片的指针</li>
 </ol>
 <h3 id="使用部分slice导致内部使用的数组一直无法释放"><a href="#使用部分slice导致内部使用的数组一直无法释放" class="headerlink" title="使用部分slice导致内部使用的数组一直无法释放"></a>使用部分slice导致内部使用的数组一直无法释放</h3><p>整个数组将被保存在内存中，直到它不再被引用。 有时候可能会因为一个小的内存引用导致保存所有的数据。</p>
 <p>例如， <code>FindDigits</code> 函数加载整个文件到内存，然后搜索第一个连续的数字，最后结果以切片方式返回。</p>
@@ -924,7 +925,7 @@ var jiathis_config={
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
