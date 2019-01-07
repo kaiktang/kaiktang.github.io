@@ -87,12 +87,12 @@
 <meta property="og:site_name" content="TomKK&#39;s blogs">
 <meta property="og:description" content="Hive介绍 由Facebook开源用于解决海量结构化日志的数据统计； 基于Hadoop的一个数据仓库工具，可以将结构化的数据文件映射成一张表，并提供类SQL查询功能。  使用HQL作为查询接口 使用HDFS存储 使用MapReduce计算  本质是：将HQL转化为MapReduce程序； 灵活性和扩展性比较好：支持UDF，自定义存储格式等； 适合离线数据处理；   metastore保存hive">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://p0tsgngca.bkt.clouddn.com/2017-12-18_14-28-27.png">
-<meta property="og:updated_time" content="2017-12-21T01:54:24.087Z">
+<meta property="og:image" content="http://yoursite.com/2017/12/18/Hive学习/2017-12-18_14-28-27.png">
+<meta property="og:updated_time" content="2019-01-07T09:33:45.242Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hive学习">
 <meta name="twitter:description" content="Hive介绍 由Facebook开源用于解决海量结构化日志的数据统计； 基于Hadoop的一个数据仓库工具，可以将结构化的数据文件映射成一张表，并提供类SQL查询功能。  使用HQL作为查询接口 使用HDFS存储 使用MapReduce计算  本质是：将HQL转化为MapReduce程序； 灵活性和扩展性比较好：支持UDF，自定义存储格式等； 适合离线数据处理；   metastore保存hive">
-<meta name="twitter:image" content="http://p0tsgngca.bkt.clouddn.com/2017-12-18_14-28-27.png">
+<meta name="twitter:image" content="http://yoursite.com/2017/12/18/Hive学习/2017-12-18_14-28-27.png">
 
 
 
@@ -394,7 +394,7 @@
 <p>灵活性和扩展性比较好：支持UDF，自定义存储格式等；</p>
 <p>适合离线数据处理；</p>
 </blockquote>
-<p><img src="http://p0tsgngca.bkt.clouddn.com/2017-12-18_14-28-27.png" alt="Hive架构"></p>
+<p><img src="2017-12-18_14-28-27.png" alt="Hive架构"></p>
 <p>metastore保存hive表的元信息，如文件与表的映射，一般metastore放在关系型数据库中，默认放在内存derby中，此时只运行一个终端打开。</p>
 <p>在启动hive时设置配置属性信息</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bin/hive --hiveconf hive.root.logger=INFO,console</span><br></pre></td></tr></table></figure>
