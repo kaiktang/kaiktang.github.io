@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="git," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="学习progit提交修改提交操作 git commit —amend有时我们提交完了之后才发现了漏掉了几个文件没有添加，或者提交信息写错了。此时可以使用该命令进行修正。这个命令会将暂存区中的文件提交（合并提交）。如果从上次提交以来你还未做任何修改，那么仅仅只会修改提交信息。 取消暂存的文件 git reset HEAD &amp;lt;file&amp;gt;有时，你已经修改了两个文件并且想要将它们作为分别两次独">
+<meta name="keywords" content="git">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习progit">
+<meta property="og:url" content="http://tomkklalala.github.io/2018/05/26/学习progit/index.html">
+<meta property="og:site_name" content="TomKK&#39;s blogs">
+<meta property="og:description" content="学习progit提交修改提交操作 git commit —amend有时我们提交完了之后才发现了漏掉了几个文件没有添加，或者提交信息写错了。此时可以使用该命令进行修正。这个命令会将暂存区中的文件提交（合并提交）。如果从上次提交以来你还未做任何修改，那么仅仅只会修改提交信息。 取消暂存的文件 git reset HEAD &amp;lt;file&amp;gt;有时，你已经修改了两个文件并且想要将它们作为分别两次独">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-01-13T13:58:13.635Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="学习progit">
+<meta name="twitter:description" content="学习progit提交修改提交操作 git commit —amend有时我们提交完了之后才发现了漏掉了几个文件没有添加，或者提交信息写错了。此时可以使用该命令进行修正。这个命令会将暂存区中的文件提交（合并提交）。如果从上次提交以来你还未做任何修改，那么仅仅只会修改提交信息。 取消暂存的文件 git reset HEAD &amp;lt;file&amp;gt;有时，你已经修改了两个文件并且想要将它们作为分别两次独">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'FBQ33HXA0Q',
+      apiKey: '5a256d1a0d5075a6a17b29fbae8cdbdc',
+      indexName: 'blog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"搜索文章","hits_empty":"没有找到关于: ${query}","hits_stats":"共 ${hits} 条结果耗时 ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://tomkklalala.github.io/2018/05/26/学习progit/"/>
+
+
+
+
+
+  <title>学习progit | TomKK's blogs</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">TomKK's blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tomkklalala.github.io/2018/05/26/学习progit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TomKK">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TomKK's blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">学习progit</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-26T17:23:15+08:00">
+                2018-05-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/05/26/学习progit/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/05/26/学习progit/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/05/26/学习progit/" class="leancloud_visitors" data-flag-title="学习progit">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="学习progit"><a href="#学习progit" class="headerlink" title="学习progit"></a>学习progit</h1><h2 id="提交"><a href="#提交" class="headerlink" title="提交"></a>提交</h2><h3 id="修改提交操作-git-commit-—amend"><a href="#修改提交操作-git-commit-—amend" class="headerlink" title="修改提交操作 git commit —amend"></a>修改提交操作 <code>git commit —amend</code></h3><p>有时我们提交完了之后才发现了漏掉了几个文件没有添加，或者提交信息写错了。此时可以使用该命令进行修正。这个命令会将暂存区中的文件提交（合并提交）。如果从上次提交以来你还未做任何修改，那么仅仅只会修改提交信息。</p>
+<h3 id="取消暂存的文件-git-reset-HEAD-lt-file-gt"><a href="#取消暂存的文件-git-reset-HEAD-lt-file-gt" class="headerlink" title="取消暂存的文件 git reset HEAD &lt;file&gt;"></a>取消暂存的文件 <code>git reset HEAD &lt;file&gt;</code></h3><p>有时，你已经修改了两个文件并且想要将它们作为分别两次独立的修改提交，但是却意外的输入了<code>git add *</code>暂存了他们两个。可以通过该命令来取消暂存。</p>
+<blockquote>
+<p><strong>注意：</strong>该命令加上—hard会让git reset变得非常危险，可能导致工作目录中所有的当前进度丢失。</p>
+</blockquote>
+<h3 id="撤销对文件的修改-git-checkout-file"><a href="#撤销对文件的修改-git-checkout-file" class="headerlink" title="撤销对文件的修改 git checkout -- [file]"></a>撤销对文件的修改 <code>git checkout -- [file]</code></h3><p>当你不想保留对某个文件的修改的时候使用。</p>
+<blockquote>
+<p><strong>注意：</strong>该命令非常危险，会丢失所有修改，你只是拷贝了另一个文件来覆盖它。</p>
+</blockquote>
+<h2 id="远程仓库的使用"><a href="#远程仓库的使用" class="headerlink" title="远程仓库的使用"></a>远程仓库的使用</h2><h3 id="查看远程仓库-git-remote-v"><a href="#查看远程仓库-git-remote-v" class="headerlink" title="查看远程仓库 git remote [-v]"></a>查看远程仓库 <code>git remote [-v]</code></h3><p>它会列出你指定的每一个远程服务器的简写。<code>origin</code>是Git给你克隆的仓库服务器的默认名称。加上<code>-v</code>会显示需要读写的远程仓库名称以及对应的URL。</p>
+<h3 id="添加远程仓库-git-remote-add-lt-shortname-gt-lt-url-gt"><a href="#添加远程仓库-git-remote-add-lt-shortname-gt-lt-url-gt" class="headerlink" title="添加远程仓库 git remote add &lt;shortname&gt; &lt;url&gt;"></a>添加远程仓库 <code>git remote add &lt;shortname&gt; &lt;url&gt;</code></h3><p>用来添加远程仓库</p>
+<h3 id="从远程仓库拉取git-fetch-remote-name"><a href="#从远程仓库拉取git-fetch-remote-name" class="headerlink" title="从远程仓库拉取git fetch [remote-name]"></a>从远程仓库拉取<code>git fetch [remote-name]</code></h3><p>这个命令将会访问远程仓库，从中拉取所有你还没有的数据。执行完毕后，你将会拥有该远程仓库上的分支的所有引用，可以随时查看和合并。（注意该操作并不会自动合并或者修改你的工作）。</p>
+<p>而<code>git pull</code>命令将会自动抓取远程分支并合并到本地当前分支。</p>
+<h3 id="推送到远程分支git-push-remote-name-branch-name"><a href="#推送到远程分支git-push-remote-name-branch-name" class="headerlink" title="推送到远程分支git push [remote-name] [branch-name]"></a>推送到远程分支<code>git push [remote-name] [branch-name]</code></h3><p>只有你对于该分支有写入权限，并且之前没有人推送过的时候该命令才能生效。如果其他人先提交了，那么你应该先拉取他人的工作并合并进你的工作后才能提交。</p>
+<h2 id="标签"><a href="#标签" class="headerlink" title="标签"></a>标签</h2><h3 id="列出所有标签git-tag"><a href="#列出所有标签git-tag" class="headerlink" title="列出所有标签git tag"></a>列出所有标签<code>git tag</code></h3><p>该命令将会按照字母序号列出所有的标签，加上<code>-l</code>后支持正则。</p>
+<h3 id="创建标签"><a href="#创建标签" class="headerlink" title="创建标签"></a>创建标签</h3><p>通过<code>git tag -a [tag-name] -m [message]</code>来创建一个附注标签。</p>
+<p>通过<code>git show [tag-name]</code>命令可以看到标签信息和对应的提交信息。</p>
+<p>通过<code>git tag [tag-name]</code>即不添加<code>-a</code>，<code>-s</code>，或者<code>-m</code>选项，只需要提供标签名字。</p>
+<p>后期打标签<code>git tag -a [tag-name] checksum</code>。</p>
+<h3 id="共享标签"><a href="#共享标签" class="headerlink" title="共享标签"></a>共享标签</h3><p>默认情况下，<code>git push</code>不会传送标签到远程仓库服务器上，必须显示的手动推送标签到远端。可以使用<code>git push origin [tagname]</code>，想要一次推送很多标签，可以使用选项的<code>git push origin --tags</code>命令，这样会把所有不在远程仓库服务器上的标签全部传送到那里。</p>
+<h2 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h2><h3 id="创建分支git-branch"><a href="#创建分支git-branch" class="headerlink" title="创建分支git branch"></a>创建分支<code>git branch</code></h3><p>是指上就是创建一个指针指向当前的提交对象。</p>
+<h3 id="切换分支git-checkout-BRACH-NAME"><a href="#切换分支git-checkout-BRACH-NAME" class="headerlink" title="切换分支git checkout BRACH_NAME"></a>切换分支<code>git checkout BRACH_NAME</code></h3><p>切换分支的本质就是<code>HEAD</code>指针移动到指定的分支指针指向的那个提交对象。</p>
+<h3 id="分支合并git-merge"><a href="#分支合并git-merge" class="headerlink" title="分支合并git merge"></a>分支合并<code>git merge</code></h3><p><code>fast-forward</code>模式：即如果能够顺着target分支一直走到source分支，那么只需要简单的移动分支就好了（将target分支的指针移动到source分支的头上）。</p>
+<p>如果合并分支的时候出现了冲突，即两个分支都对同一个文件的同一个块地方做了修改，那么git将不能干净的进行合并，所以这时git将会停下，等待你进行合并，那些有冲突待解决的文件可以通过<code>git status</code>来进行查看。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> git status On branch master You have unmerged paths.</span><br><span class="line"></span><br><span class="line">(fix conflicts and run "git commit")</span><br><span class="line"></span><br><span class="line">Unmerged paths:</span><br><span class="line"></span><br><span class="line">(use "git add &lt;file&gt;..." to mark resolution)</span><br><span class="line"></span><br><span class="line">both modified:</span><br><span class="line"></span><br><span class="line">index.html</span><br><span class="line"></span><br><span class="line">no changes added to commit (use "git add" and/or "git commit -a")</span><br></pre></td></tr></table></figure>
+<p>打开该文件有冲突的地方大概格式如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD:index.html </span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"footer"</span>&gt;</span>contact : email.support@github.com<span class="tag">&lt;/<span class="name">div</span>&gt;</span> </span><br><span class="line">======= </span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"footer"</span>&gt;</span> please contact us at support@github.com <span class="tag">&lt;/<span class="name">div</span>&gt;</span> </span><br><span class="line">&gt;&gt;&gt;&gt;&gt;&gt;&gt; iss53:index.html</span><br></pre></td></tr></table></figure>
+<p><code>=======</code>上面的代表的是当前分支的修改，下面的代表的是待并入分支的修改，用户可以根据需要进行合并，然后将<code>=====</code>，<code>&lt;&lt;&lt;&lt;&lt;</code>，<code>&gt;&gt;&gt;&gt;&gt;</code>这些标记删除。然后将解决完冲突后的文件，使用<code>git add</code>来暂存这些文件，git会将这些文件标记为冲突已解决。</p>
+<p>这时<code>git status</code>将会输入如下信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> git status On branch master All conflicts fixed but you are still merging.</span><br><span class="line"></span><br><span class="line">(use "git commit" to conclude merge)</span><br><span class="line"></span><br><span class="line">Changes to be committed:</span><br><span class="line"></span><br><span class="line">modified:</span><br><span class="line"></span><br><span class="line">index.html</span><br></pre></td></tr></table></figure>
+<p>然后使用<code>git commit</code>来完成合并提交。</p>
+<h3 id="删除分支git-brach-d-BRANCH-NAME"><a href="#删除分支git-brach-d-BRANCH-NAME" class="headerlink" title="删除分支git brach -d BRANCH_NAME"></a>删除分支<code>git brach -d BRANCH_NAME</code></h3><h3 id="查看分支git-branch"><a href="#查看分支git-branch" class="headerlink" title="查看分支git branch"></a>查看分支<code>git branch</code></h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> git branch</span><br><span class="line">iss53 </span><br><span class="line">* master</span><br><span class="line">testing</span><br></pre></td></tr></table></figure>
+<h3 id="修改一个分支的远程分支"><a href="#修改一个分支的远程分支" class="headerlink" title="修改一个分支的远程分支"></a>修改一个分支的远程分支</h3><ul>
+<li>如果想要创建一个新分支并且设置和它关联的远程分支，那么可以通过快捷操作<code>git checkout --track [remotename]/[brach]</code>做到或者通过<code>git checkout -b [branch] [remotename]/[branch]</code>来较为麻烦的实现。</li>
+<li>对于一个已经存在的分支，如果想要修改它所指向的远程分支可以通过<code>git branch -u [remotename]/[branch]</code>或者<code>git branch --set-upstream-to [remotename]/[branch]</code></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>交个朋友吧~</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="TomKK 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="TomKK 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/git/" rel="tag"># git</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/23/学习protobuf/" rel="next" title="学习protobuf">
+                <i class="fa fa-chevron-left"></i> 学习protobuf
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/13/为什么需要关注channel的关闭方式/" rel="prev" title="为什么需要关注channel的关闭方式">
+                为什么需要关注channel的关闭方式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="TomKK" />
+            
+              <p class="site-author-name" itemprop="name">TomKK</p>
+              <p class="site-description motion-element" itemprop="description">学而后知不足</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#学习progit"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x5B66;&#x4E60;progit" class="headerlink" title="&#x5B66;&#x4E60;progit"></a>&#x5B66;&#x4E60;progit</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#提交"><span class="nav-number">1.1.</span> <span class="nav-text"><a href="#&#x63D0;&#x4EA4;" class="headerlink" title="&#x63D0;&#x4EA4;"></a>&#x63D0;&#x4EA4;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#修改提交操作-git-commit-—amend"><span class="nav-number">1.1.1.</span> <span class="nav-text"><a href="#&#x4FEE;&#x6539;&#x63D0;&#x4EA4;&#x64CD;&#x4F5C;-git-commit-&#x2014;amend" class="headerlink" title="&#x4FEE;&#x6539;&#x63D0;&#x4EA4;&#x64CD;&#x4F5C; git commit &#x2014;amend"></a>&#x4FEE;&#x6539;&#x63D0;&#x4EA4;&#x64CD;&#x4F5C; <code>git commit &#x2014;amend</code></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#取消暂存的文件-git-reset-HEAD-lt-file-gt"><span class="nav-number">1.1.2.</span> <span class="nav-text"><a href="#&#x53D6;&#x6D88;&#x6682;&#x5B58;&#x7684;&#x6587;&#x4EF6;-git-reset-HEAD-lt-file-gt" class="headerlink" title="&#x53D6;&#x6D88;&#x6682;&#x5B58;&#x7684;&#x6587;&#x4EF6; git reset HEAD &lt;file&gt;"></a>&#x53D6;&#x6D88;&#x6682;&#x5B58;&#x7684;&#x6587;&#x4EF6; <code>git reset HEAD &lt;file&gt;</code></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#撤销对文件的修改-git-checkout-file"><span class="nav-number">1.1.3.</span> <span class="nav-text"><a href="#&#x64A4;&#x9500;&#x5BF9;&#x6587;&#x4EF6;&#x7684;&#x4FEE;&#x6539;-git-checkout-file" class="headerlink" title="&#x64A4;&#x9500;&#x5BF9;&#x6587;&#x4EF6;&#x7684;&#x4FEE;&#x6539; git checkout -- [file]"></a>&#x64A4;&#x9500;&#x5BF9;&#x6587;&#x4EF6;&#x7684;&#x4FEE;&#x6539; <code>git checkout -- [file]</code></span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#远程仓库的使用"><span class="nav-number">1.2.</span> <span class="nav-text"><a href="#&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;&#x7684;&#x4F7F;&#x7528;" class="headerlink" title="&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;&#x7684;&#x4F7F;&#x7528;"></a>&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;&#x7684;&#x4F7F;&#x7528;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查看远程仓库-git-remote-v"><span class="nav-number">1.2.1.</span> <span class="nav-text"><a href="#&#x67E5;&#x770B;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;-git-remote-v" class="headerlink" title="&#x67E5;&#x770B;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93; git remote [-v]"></a>&#x67E5;&#x770B;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93; <code>git remote [-v]</code></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加远程仓库-git-remote-add-lt-shortname-gt-lt-url-gt"><span class="nav-number">1.2.2.</span> <span class="nav-text"><a href="#&#x6DFB;&#x52A0;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;-git-remote-add-lt-shortname-gt-lt-url-gt" class="headerlink" title="&#x6DFB;&#x52A0;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93; git remote add &lt;shortname&gt; &lt;url&gt;"></a>&#x6DFB;&#x52A0;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93; <code>git remote add &lt;shortname&gt; &lt;url&gt;</code></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从远程仓库拉取git-fetch-remote-name"><span class="nav-number">1.2.3.</span> <span class="nav-text"><a href="#&#x4ECE;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;&#x62C9;&#x53D6;git-fetch-remote-name" class="headerlink" title="&#x4ECE;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;&#x62C9;&#x53D6;git fetch [remote-name]"></a>&#x4ECE;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;&#x62C9;&#x53D6;<code>git fetch [remote-name]</code></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#推送到远程分支git-push-remote-name-branch-name"><span class="nav-number">1.2.4.</span> <span class="nav-text"><a href="#&#x63A8;&#x9001;&#x5230;&#x8FDC;&#x7A0B;&#x5206;&#x652F;git-push-remote-name-branch-name" class="headerlink" title="&#x63A8;&#x9001;&#x5230;&#x8FDC;&#x7A0B;&#x5206;&#x652F;git push [remote-name] [branch-name]"></a>&#x63A8;&#x9001;&#x5230;&#x8FDC;&#x7A0B;&#x5206;&#x652F;<code>git push [remote-name] [branch-name]</code></span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标签"><span class="nav-number">1.3.</span> <span class="nav-text"><a href="#&#x6807;&#x7B7E;" class="headerlink" title="&#x6807;&#x7B7E;"></a>&#x6807;&#x7B7E;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#列出所有标签git-tag"><span class="nav-number">1.3.1.</span> <span class="nav-text"><a href="#&#x5217;&#x51FA;&#x6240;&#x6709;&#x6807;&#x7B7E;git-tag" class="headerlink" title="&#x5217;&#x51FA;&#x6240;&#x6709;&#x6807;&#x7B7E;git tag"></a>&#x5217;&#x51FA;&#x6240;&#x6709;&#x6807;&#x7B7E;<code>git tag</code></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建标签"><span class="nav-number">1.3.2.</span> <span class="nav-text"><a href="#&#x521B;&#x5EFA;&#x6807;&#x7B7E;" class="headerlink" title="&#x521B;&#x5EFA;&#x6807;&#x7B7E;"></a>&#x521B;&#x5EFA;&#x6807;&#x7B7E;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#共享标签"><span class="nav-number">1.3.3.</span> <span class="nav-text"><a href="#&#x5171;&#x4EAB;&#x6807;&#x7B7E;" class="headerlink" title="&#x5171;&#x4EAB;&#x6807;&#x7B7E;"></a>&#x5171;&#x4EAB;&#x6807;&#x7B7E;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分支"><span class="nav-number">1.4.</span> <span class="nav-text"><a href="#&#x5206;&#x652F;" class="headerlink" title="&#x5206;&#x652F;"></a>&#x5206;&#x652F;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建分支git-branch"><span class="nav-number">1.4.1.</span> <span class="nav-text"><a href="#&#x521B;&#x5EFA;&#x5206;&#x652F;git-branch" class="headerlink" title="&#x521B;&#x5EFA;&#x5206;&#x652F;git branch"></a>&#x521B;&#x5EFA;&#x5206;&#x652F;<code>git branch</code></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#切换分支git-checkout-BRACH-NAME"><span class="nav-number">1.4.2.</span> <span class="nav-text"><a href="#&#x5207;&#x6362;&#x5206;&#x652F;git-checkout-BRACH-NAME" class="headerlink" title="&#x5207;&#x6362;&#x5206;&#x652F;git checkout BRACH_NAME"></a>&#x5207;&#x6362;&#x5206;&#x652F;<code>git checkout BRACH_NAME</code></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分支合并git-merge"><span class="nav-number">1.4.3.</span> <span class="nav-text"><a href="#&#x5206;&#x652F;&#x5408;&#x5E76;git-merge" class="headerlink" title="&#x5206;&#x652F;&#x5408;&#x5E76;git merge"></a>&#x5206;&#x652F;&#x5408;&#x5E76;<code>git merge</code></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除分支git-brach-d-BRANCH-NAME"><span class="nav-number">1.4.4.</span> <span class="nav-text"><a href="#&#x5220;&#x9664;&#x5206;&#x652F;git-brach-d-BRANCH-NAME" class="headerlink" title="&#x5220;&#x9664;&#x5206;&#x652F;git brach -d BRANCH_NAME"></a>&#x5220;&#x9664;&#x5206;&#x652F;<code>git brach -d BRANCH_NAME</code></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看分支git-branch"><span class="nav-number">1.4.5.</span> <span class="nav-text"><a href="#&#x67E5;&#x770B;&#x5206;&#x652F;git-branch" class="headerlink" title="&#x67E5;&#x770B;&#x5206;&#x652F;git branch"></a>&#x67E5;&#x770B;&#x5206;&#x652F;<code>git branch</code></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改一个分支的远程分支"><span class="nav-number">1.4.6.</span> <span class="nav-text"><a href="#&#x4FEE;&#x6539;&#x4E00;&#x4E2A;&#x5206;&#x652F;&#x7684;&#x8FDC;&#x7A0B;&#x5206;&#x652F;" class="headerlink" title="&#x4FEE;&#x6539;&#x4E00;&#x4E2A;&#x5206;&#x652F;&#x7684;&#x8FDC;&#x7A0B;&#x5206;&#x652F;"></a>&#x4FEE;&#x6539;&#x4E00;&#x4E2A;&#x5206;&#x652F;&#x7684;&#x8FDC;&#x7A0B;&#x5206;&#x652F;</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TomKK</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://http-tomkklalala-github-io.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://tomkklalala.github.io/2018/05/26/学习progit/';
+          this.page.identifier = '2018/05/26/学习progit/';
+          this.page.title = '学习progit';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://http-tomkklalala-github-io.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1uk3Vw0sydAghlwOnBUGYRMn-gzGzoHsz", "op4ebrtGIe4wP41x2oJjqocF");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
