@@ -323,7 +323,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-09T23:19:56+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-09T23:19:56-08:00">
                 2018-02-09
               </time>
             
@@ -445,7 +445,7 @@
 <li>让<code>S_FINAL</code>等于<code>S[n]</code>，但是加入了向矿工支付的回报的状态</li>
 <li>检查<code>S_FINAL</code>的<code>merkle tree</code>的根是否等于最终被检验区块头部提供的<code>state root</code>。如果相等，那么当前区块验证有效，反之无效</li>
 </ol>
-<p>这种方法看起来很低效，因为每个区块都需要存储所有的状态，但是实际上与比特币相比还是相当高效的。这是因为状态是存储在树结构中的，并且相邻区块之间树上只有少部分需要被修改。因此数据可以一次存储而多次引用（通过子树的hash）一种特殊的被称作<code>Patricia tree</code>（关于MPT树，我的<a href="http://tomkklalala.github.io/2018/02/06/%E7%90%86%E8%A7%A3%E4%BB%A5%E5%A4%AA%E5%9D%8AMerkle%20Patricia%20Trie/" target="_blank" rel="noopener">另一篇文章</a>）被用来完成这个，<code>Patricia tree</code>在<code>merkle tree</code>的基础上除了修改外，还允许进行高效地插入和删除操作。另外因为当前块的状态链是在上一个块基础上的延续，所以用户并不需要存储所有的区块链历史。如果比特币采用这种策略的话，将会节省大概5-20倍的空间。</p>
+<p>这种方法看起来很低效，因为每个区块都需要存储所有的状态，但是实际上与比特币相比还是相当高效的。这是因为状态是存储在树结构中的，并且相邻区块之间树上只有少部分需要被修改。因此数据可以一次存储而多次引用（通过子树的hash）一种特殊的被称作<code>Patricia tree</code>（关于MPT树，我的<a href="http://tomkklalala.github.io/2018/02/06/%E7%90%86%E8%A7%A3%E4%BB%A5%E5%A4%AA%E5%9D%8AMerkle%20Patricia%20Trie/">另一篇文章</a>）被用来完成这个，<code>Patricia tree</code>在<code>merkle tree</code>的基础上除了修改外，还允许进行高效地插入和删除操作。另外因为当前块的状态链是在上一个块基础上的延续，所以用户并不需要存储所有的区块链历史。如果比特币采用这种策略的话，将会节省大概5-20倍的空间。</p>
 <blockquote>
 <p>注：相当于整个状态链s[i]存放的是MPT树的树根，然后底层的数据都共享的levelDB中存储的节点。曾经有疑问关于levelDB中如果删除或者修改某个节点MPT树的实现是向数据库中插入新的节点然后修改父节点的引用，那么那些老节点不就变成幽灵节点浪费了空间么？现在看来因为整个链条上保存了状态的变化历史，所以如果如果通过过去的state root还是可以访问到那些所谓的幽灵节点的。</p>
 </blockquote>
@@ -700,7 +700,7 @@ var jiathis_config={
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-count">39</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -713,7 +713,7 @@ var jiathis_config={
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
