@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="读书笔记," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文是我在阅读这篇论文过程中的笔记，以及一些自己的思考。 概述本文主要介绍了一个如何构建一个具有容错能力的虚拟机主从集群。 这个论题具有极高的价值，因为这里试图容错备份的不是应用，而是整个虚拟机，理论上来说只要能实现虚拟机级别的高效容错性，那么就能让所有在虚拟机上运行的所有应用都有了同级别的容错性，并且这种容错性是对应用透明的。 一般对于一个虚拟机的同步备份有两种方式：  同步状态转移：即同步的内">
+<meta name="keywords" content="读书笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VMWare FT">
+<meta property="og:url" content="http://tomkklalala.github.io/2020/04/01/VMWare-FT/index.html">
+<meta property="og:site_name" content="TomKK&#39;s blogs">
+<meta property="og:description" content="本文是我在阅读这篇论文过程中的笔记，以及一些自己的思考。 概述本文主要介绍了一个如何构建一个具有容错能力的虚拟机主从集群。 这个论题具有极高的价值，因为这里试图容错备份的不是应用，而是整个虚拟机，理论上来说只要能实现虚拟机级别的高效容错性，那么就能让所有在虚拟机上运行的所有应用都有了同级别的容错性，并且这种容错性是对应用透明的。 一般对于一个虚拟机的同步备份有两种方式：  同步状态转移：即同步的内">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/04/01/VMWare-FT/Untitled.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/04/01/VMWare-FT/Untitled%201.png">
+<meta property="og:updated_time" content="2020-04-01T23:59:05.336Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="VMWare FT">
+<meta name="twitter:description" content="本文是我在阅读这篇论文过程中的笔记，以及一些自己的思考。 概述本文主要介绍了一个如何构建一个具有容错能力的虚拟机主从集群。 这个论题具有极高的价值，因为这里试图容错备份的不是应用，而是整个虚拟机，理论上来说只要能实现虚拟机级别的高效容错性，那么就能让所有在虚拟机上运行的所有应用都有了同级别的容错性，并且这种容错性是对应用透明的。 一般对于一个虚拟机的同步备份有两种方式：  同步状态转移：即同步的内">
+<meta name="twitter:image" content="http://tomkklalala.github.io/2020/04/01/VMWare-FT/Untitled.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'FBQ33HXA0Q',
+      apiKey: '5a256d1a0d5075a6a17b29fbae8cdbdc',
+      indexName: 'blog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"搜索文章","hits_empty":"没有找到关于: ${query}","hits_stats":"共 ${hits} 条结果耗时 ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://tomkklalala.github.io/2020/04/01/VMWare-FT/"/>
+
+
+
+
+
+  <title>VMWare FT | TomKK's blogs</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">TomKK's blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tomkklalala.github.io/2020/04/01/VMWare-FT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TomKK">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TomKK's blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">VMWare FT</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-01T16:57:46-07:00">
+                2020-04-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/04/01/VMWare-FT/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2020/04/01/VMWare-FT/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/04/01/VMWare-FT/" class="leancloud_visitors" data-flag-title="VMWare FT">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文是我在阅读这篇<a href="https://pdos.csail.mit.edu/6.824/papers/vm-ft.pdf" target="_blank" rel="noopener">论文</a>过程中的笔记，以及一些自己的思考。</p>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文主要介绍了一个如何构建一个具有容错能力的虚拟机主从集群。</p>
+<p>这个论题具有极高的价值，因为这里试图容错备份的不是应用，而是整个虚拟机，理论上来说只要能实现虚拟机级别的高效容错性，那么就能让所有在虚拟机上运行的所有应用都有了同级别的容错性，并且这种容错性是对应用透明的。</p>
+<p>一般对于一个虚拟机的同步备份有两种方式：</p>
+<ul>
+<li>同步状态转移：即同步的内容为整个内存的全部内容，以及各种寄存器的值等等。可以想象这种方式就是当primary有改变发生时，可能就是将变更的那块内容发给副本，然后副本直接修改对应的内存等状态。可以想象该种方式可能会占用大量带宽，因为他同步的是数据。</li>
+<li>同步状态机：该方式认为只要两个机器有一个相同的初始状态，那么只要此后能够接受相同的输入，得到的机器状态应该是一样的。相对于前一种同步方式，该方式同步的是操作，所以能让带宽使用减少，基本上能保证机器间的通信速率和客户端与primary通信的速率相当。</li>
+</ul>
+<p>本文采用的是方式二。</p>
+<p>该论文只解决fail-stop类型的错误，即一旦发生错误就立即停止执行的错误，比如断电，断网之类。像软件层面的bug这种会产生错误数据的错误是无法防护的。</p>
+<h2 id="环境假设"><a href="#环境假设" class="headerlink" title="环境假设"></a>环境假设</h2><p>本文的实现环境有以下特点：</p>
+<ul>
+<li>客户端只和primary交互。</li>
+<li>客户端和primary VM的交互是通过网络。</li>
+<li>primary VM和副本VM之间的交互也是通过网络。</li>
+<li>primary和副本VM往往不在同一台物理机器上，但是他们共享一个外部的可靠的网络存储系统。</li>
+<li>虽然VM下的物理机器是多核的，但是VMM(virtual machine monitor, hypervisor)对上层的VM只暴露为单核。目前该容错系统仅支持备份在单核下执行的VM。（因为多核的调度问题不可预测性太大，对于多核机器一般会考虑用方式一进行备份，而非方式二）。</li>
+</ul>
+<p><img src="Untitled.png" alt="VMWare%20FT/Untitled.png"></p>
+<h2 id="实现难点"><a href="#实现难点" class="headerlink" title="实现难点"></a>实现难点</h2><p>实现的难点主要有：</p>
+<ul>
+<li>部分指令（比如获取时间、生成随机数等）即使指令被同步了，主从上执行的结果也很可能不同。</li>
+<li>像一些系统调用（比如I/O等）结束的时机，即中断发生的时机有很大的随机性。而中断在不同时机发生，可能会导致不同的执行结果。</li>
+<li>如何检测VM的失效。</li>
+<li>如果进行故障转移。</li>
+<li>主从执行速率匹配问题。</li>
+<li>如何让故障转移对客户端透明。</li>
+</ul>
+<h1 id="基本容错设计"><a href="#基本容错设计" class="headerlink" title="基本容错设计"></a>基本容错设计</h1><p>对任何想要进行容错性备份时，会同时在另一个物理机器上启动一个backup VM，然后让这两台虚拟机进行同步。可以想象因为有转发过程的存在，所以主从之间执行会有一定的延迟。</p>
+<p>这两台虚拟机都可以访问一个共享的网络存储服务。</p>
+<p>只有primary会拥有网络身份，即backup VM是不被客户端感知的。所以primary负责接收所有的输入。输入就是一些网络包。</p>
+<p>所有primary VM收到的输入都会通过一个叫做logging channel，以log entries的形式被发送给backup VM。</p>
+<p>为了让backup和primary能够在执行那些具有不确定性的指令后能产生一样的结果，一些额外的信息需要被发送给backup VM。</p>
+<p>因为primary和backup都是执行相同的指令，所以他们都会向客户端产生相同输出（一些网络包回复），为了不重复回复，VMM会将backup的输出拦截，故只有primary能够正常产生回复。</p>
+<h2 id="如何保证主从同步"><a href="#如何保证主从同步" class="headerlink" title="如何保证主从同步"></a>如何保证主从同步</h2><p>为了能够实现在主从之间完全一致的复制执行，需要解决以下问题：</p>
+<ol>
+<li>正确的捕获所有的输入和一些其他必要的信息。</li>
+<li>正确的重放输入数据以及指令。</li>
+<li>尽可能的高效重放。</li>
+<li>保证执行后虚拟机状态一致。</li>
+</ol>
+<p>对于问题1，2，VMM可以很好的做到记录输入以及和模拟在指定时间发出中断。</p>
+<p>对于记录输入：</p>
+<ul>
+<li>对于那些执行结果确定的指令只需要传输指令+数据即可完全复制执行。</li>
+<li>对于那些执行结果不确定的事件，比如时钟中断，IO完成中断等等，还需要记录这些事件是在哪个指令时发生的，在backup重放的时候，需要在同一个指令处触发相同的事件。</li>
+</ul>
+<p>所以我猜想log entries的可能包含的数据条目有：</p>
+<ul>
+<li>指令类型</li>
+<li>数据</li>
+<li>发生时的指令编号（从VM启动开始执行的第几个指令）</li>
+</ul>
+<p>为了配合该实现，VMware和Intel还有AMD达成合作，开发定制的CPU。</p>
+<h2 id="如何在Primary失效的情况下保证数据不丢失"><a href="#如何在Primary失效的情况下保证数据不丢失" class="headerlink" title="如何在Primary失效的情况下保证数据不丢失"></a>如何在Primary失效的情况下保证数据不丢失</h2><p>和一般的容错系统同步，这里并不将log entries写入磁盘，而是通过logging channel，也就是网络发送给backup VM。为了能够实现容错性，我们必须在logging channel上使用严格的FT协议。</p>
+<p>一个最基本的要求是：</p>
+<blockquote>
+<p>对输出的要求：如果backup VM替换成为了新的primary，开始运行时必须和之前的primary最后一次成功输出产生时的状态一致。即能够让客户端对故障切换无感。</p>
+</blockquote>
+<p>所以其实只要没有数据或者状态的丢失，就能满足这个需求。</p>
+<p>举个例子：</p>
+<blockquote>
+<p>比如当前VM提供了一个计数器的服务，目前主从计数器的值都是10，然后当客户端发送请求给primary去增加该计数器，如果当前系统的实现机制仅仅是简单的转发该请求给backup VM的话，那么可能会存在如下的情况：如果primary在执行完该请求，回复客户端primary的计数器为11后，直接意外退出了，与此同时转发给backup VM的请求在网络中丢失了，此时如果backup直接接替上位，客户端会发现计数器的值竟然还是10，这就对外产生了数据不一致性。</p>
+</blockquote>
+<p>为了解决这个问题，需要实行以下规则：</p>
+<blockquote>
+<p>输出规则：primary VM只有在backup VM收到并且确认了这条会产生输出的操作后，才能向外界发出输出。</p>
+</blockquote>
+<p>需要注意的是，这里虽然说primary VM不会进行输出，会等待backup VM的确认消息，但是这里的等待指的不是不再执行任何指令，相反，因为操作系统对网络和磁盘进行非阻塞式的输出，所以primary可以继续执行指令。</p>
+<p><img src="Untitled%201.png" alt="VMWare%20FT/Untitled%201.png"></p>
+<p>但是该实现在这种故障切换的请求下并不能保证输出只会产生一次。考虑如下情况：</p>
+<blockquote>
+<p>和上一个例子不同，如果primary VM已经收到了来自backup的确认消息，然后可以顺利进行输出返回11。在输出之后，primary宕机了，与此同时，这个会产生输出的操作还存在于backup的缓存中，这样在backup转正后VMM会不再拦截它的输出，于是当backup执行该指令后，客户端将会收到相同的回复11。</p>
+</blockquote>
+<p>如果没有两阶段提交的事务的实现，backup是没有可能凭借已有信息分辨出primary是在发出output之前还是之后宕机的。</p>
+<p>但是所幸，当前的网络基础设施能够处理丢包以及重复包的问题。比如，最常用的TCP协议，因为这里backup在执行时是和之前primary的机器状态完全一致的，所以执行会产生完全一致的回复数据包，即会包含一样的TCP sequnce number，这种重复会被客户端的网络层检测到，然后丢弃。</p>
+<p>所以基于这些网络基础设施、操作系统，该设计能够正确使用。</p>
+<h2 id="如果检测错误并且以正确的方式响应"><a href="#如果检测错误并且以正确的方式响应" class="headerlink" title="如果检测错误并且以正确的方式响应"></a>如果检测错误并且以正确的方式响应</h2><p>Primary和backup中任意一个失效了，剩下的那个都需要快速的做出反应，以减少对服务的影响。</p>
+<ul>
+<li>如果backup VM失效了，primary VM会退出recording模式（停止向logging channel发送log enties），以正常的方式继续执行。</li>
+<li>如果primary VM失效了，那么backup VM会先将缓冲区中的log全部消费光后，转正成为新的primary。</li>
+</ul>
+<p>这里之所以缓冲区中可能会堆积log，原因可能有：</p>
+<ul>
+<li>转发，网络带来的延迟。</li>
+<li>机器性能差异，执行带来的延迟。</li>
+<li>机器即使空闲，但是需要等待log中标注的时机才能执行。</li>
+</ul>
+<p>为了让客户端无感的将请求自动切换到新的primary上，VMware FT会自动将新的primary的MAC地址发送到网络上，这样交换机会自动将用户请求转到新的primary上。</p>
+<p>对于检测故障，VMware FT提供了几种方式：</p>
+<ul>
+<li>使用UDP和运行容错虚拟机的服务器们进行心跳检测。</li>
+<li>监控primary和backup之间的logging数据以及相应的确认消息。</li>
+</ul>
+<p>因为在VM中定制的CPU会以固定的频率产生定时器中断，所以logging channel内正常来说一直会有log在进行传输。当数据在某个时间段内都没有进行传输或者不再返回心跳，VMware FT就认为primary发生了故障。</p>
+<p>但是另一大挑战就是网络分区：有可能因为网络原因primary和backup之间无法进行通信，但是他们却能和一些客户端进行交互。这种情况下，primary和backup会互相觉得对方下线了，那么根据上面讨论的故障处理机制，最终网络中会同时出现两个primary处理用户的请求，这是灾难性的故障。</p>
+<p>为了避免这个问题，就要利用到那个共享的第三方存储服务。每个试图进行故障处理的VM，无论primary还是backup，在进行真正的实施之前，需要在共享存储中进行一个test-and-set操作：</p>
+<ul>
+<li>如果操作成功，则开始故障处理程序。</li>
+<li>如果操作失败，则说明有一个VM已经进行了故障处理程序了，那么当前VM立即自我停机。</li>
+</ul>
+<p>如果虚拟机无法访问共享的存储服务的话，会一直等待在那里，直到服务可用。</p>
+<p>对于这种存储服务失效而无法访问的情况，其实primary也无法进行一些有用的工作，所以也不会造成进一步的不一致。</p>
+<p>所以这种利用共享存储作为第三方权威的方式能够解决网络分区问题。</p>
+<h1 id="容错性的实际实现"><a href="#容错性的实际实现" class="headerlink" title="容错性的实际实现"></a>容错性的实际实现</h1><h2 id="启动和重启FT-VM"><a href="#启动和重启FT-VM" class="headerlink" title="启动和重启FT VM"></a>启动和重启FT VM</h2><p>当要创建一个全新的备份的时候，需要将目前的primary的状态高效的复制过去。</p>
+<p>文章中使用的是FT VMotion来进行拷贝。FT VMotion会设置一个logging channel并且让源VM以primary身份进入logging模式，让目标VM以副本身份进入重放模式。整个过程会让primary停止的时间少于1秒钟。</p>
+<p>可以选择任何一个能够访问共享存储服务的集群中的服务器来运行新的副本。</p>
+<p>当副本VM失效后，恢复备份的过程：</p>
+<ul>
+<li>primary VM通知集群服务说需要一个新的backup。</li>
+<li>集群服务根据资源使用和其他因素来选择一个最佳的服务器来运行新的backup VM。</li>
+<li>调用FT VMotion来创建一个新的backup VM。</li>
+</ul>
+<p>通常在几分钟内就能重新建立一个backup VM。</p>
+<h2 id="管理logging-channel"><a href="#管理logging-channel" class="headerlink" title="管理logging channel"></a>管理logging channel</h2><p>在文章描述的实现中，VMM（hypervisor）中维护了一个很大的logging entries缓冲区。</p>
+<p>对于primary：</p>
+<ul>
+<li>当primary执行时，会向他的缓冲区中生产log entries。</li>
+<li>primary会尽可能快的将缓冲区内的发送到logging channel中</li>
+<li>如果试图向缓冲区写入的时候缓冲区满了，那么必须停止执行直到log enties被成功的发出。</li>
+</ul>
+<p>对于backup</p>
+<ul>
+<li>backup会从他的缓冲区消费log entries。</li>
+<li>backup会尽可能快的将缓冲区内从logging channel中收到的log entries读取。</li>
+<li>每次backup从网络中读取到一些log enties后，都会向primary返回确认消息。</li>
+<li>如果试图从缓冲区读取的时候，发现缓冲区是空的，那么会停止执行直到收到新的log entries。</li>
+</ul>
+<p>primary缓冲区满溢不仅会让primary停止执行而影响对用户的服务，而且会让backup进行故障转移时要花费大量时间来消耗积压的log才能转正。所以我们要避免发现缓冲区满溢的情况。</p>
+<p>primary缓冲区变满的可能为：因为backup VM所在的服务器上任务繁重，导致backup VM能使用的硬件资源太少，导致执行太慢。</p>
+<p>为了平衡主从虚拟机之间的执行速度，文章在发送和确认的消息中加入了额外的信息来确定主从之间实时的执行延迟。</p>
+<ul>
+<li>如果backup VM开始有显著的执行延迟了，VMware会注意到并且通知调用器稍微减少一点primary能使用CPU使用时间。</li>
+<li>整个回馈调整的过程是缓慢进行的，会一点一点降低primary的速度。</li>
+<li>当backup成功追上来了之后，又会逐渐增加primary的执行时间，直到主从之间有一个合适的延迟。</li>
+</ul>
+<h2 id="对虚拟机的控制操作"><a href="#对虚拟机的控制操作" class="headerlink" title="对虚拟机的控制操作"></a>对虚拟机的控制操作</h2><p>对primary VM的控制操作，比如关机等，也会被传输到副本。</p>
+<p>通常来说操作输入都是先到primary上，除了只有VMotion是可以在主从上独立执行的，并且FT会保证主从不会被迁移到同一台机器上。</p>
+<p>对primary进行迁移的时候要求主从先断开连接再重连。另外不论主从要迁移又要必须让I/O操作停下，对于primary来说，只需要停下等待现有的I/O操作全部结束即可，对于backup则需要通知primary停下。</p>
+<h2 id="关于磁盘IO的实现问题"><a href="#关于磁盘IO的实现问题" class="headerlink" title="关于磁盘IO的实现问题"></a>关于磁盘IO的实现问题</h2><p>在实现过程中有很多关于磁盘IO相关的问题。</p>
+<p>首先，因为磁盘操作是非阻塞的，可以并行执行，所以同时对同一个块进行磁盘操作可能导致不确定性。因为文章中的系统是通过DMA来直接将磁盘IO直接作用到内存中，所以访问相同内存也的磁盘操作也可能导致不确定性。</p>
+<p>解决方案是通过检测IO race操作，并且强制线性执行这些操作。</p>
+<p>第二，因为磁盘操作会直接访问虚拟机的内存，所以磁盘操作还可能和内存访问操作之间发生race。</p>
+<p>一个解决方案是通过对那些进行磁盘操作的页设置页保护。当试图访问被保护的页的时候，会产生一个trap，这样VM就会暂停直到磁盘操作结束。这种将通过修改MMU来保护页的方式太过于昂贵。所以选用方案二。</p>
+<p>方案二为使用bounce buffer。bounce buffer其实就一块和磁盘操作的那块内存相同大小的临时内存。一个磁盘读操作会被引导到去读bounce buffer中的相应内容，在IO完成后才会将数据拷贝到内存中。一个磁盘写操作会被引导为先去写bounce buffer。</p>
+<h1 id="其他设计选择"><a href="#其他设计选择" class="headerlink" title="其他设计选择"></a>其他设计选择</h1><h2 id="共享存储vs非共享存储"><a href="#共享存储vs非共享存储" class="headerlink" title="共享存储vs非共享存储"></a>共享存储vs非共享存储</h2><p>使用非共享存储能带来以下好处：</p>
+<ul>
+<li>如果访问共享存储操作很昂贵的话，那么非共享存储会提高性能。</li>
+<li>如果共享存储不可靠的话，那么多个非共享存储能够提供一些可靠性。</li>
+</ul>
+<p>可能需要解决的麻烦有：</p>
+<ul>
+<li>如果主从两台服务器离得很远，那么需要实现一个让两个磁盘进行显示的同步的机制。</li>
+<li>如果因为某台机器宕机了，或者其他原因导致磁盘之间不再同步，那么必须要有机制进行重同步。</li>
+<li>网络分区问题。可以考虑使用另一个两个VM都能访问的服务器作为权威。比如只能让分区中具有更多节点的那个VM作为primary存在。</li>
+</ul>
+<h2 id="在backup-VM上也执行磁盘读操作"><a href="#在backup-VM上也执行磁盘读操作" class="headerlink" title="在backup VM上也执行磁盘读操作"></a>在backup VM上也执行磁盘读操作</h2><p>默认设计下副本是不执行磁盘读操作的，而是直接从primary接收read的结果。</p>
+<p>所以可以想象如果让backup也去执行磁盘读的话，能够大大减少网络开销。</p>
+<p>但是这种方式也会有一些问题需要解决：</p>
+<ul>
+<li>如果backup到了primary的read成功的指令时机时还没完成read，那么整个副本就要停下来等待。</li>
+<li>如果primary的读成功了，而backup的读失败了，那么backup就得不断的重试直到成功。</li>
+<li>相反的，如果primary的读取失败了，那么操作可能造成对应的内存数据被破坏，这种副作用也要被复制给backup，即使backup会读取成功。</li>
+<li>如果primary会连续进行一次读和一次写操作，那么执行的顺序必须要为主读→从读→主写。会存在一定的同步上的消耗。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>交个朋友吧~</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="TomKK 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="TomKK 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/29/Google-File-System/" rel="next" title="Google File System">
+                <i class="fa fa-chevron-left"></i> Google File System
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="TomKK" />
+            
+              <p class="site-author-name" itemprop="name">TomKK</p>
+              <p class="site-description motion-element" itemprop="description">学而后知不足</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x6982;&#x8FF0;" class="headerlink" title="&#x6982;&#x8FF0;"></a>&#x6982;&#x8FF0;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#环境假设"><span class="nav-number">1.1.</span> <span class="nav-text"><a href="#&#x73AF;&#x5883;&#x5047;&#x8BBE;" class="headerlink" title="&#x73AF;&#x5883;&#x5047;&#x8BBE;"></a>&#x73AF;&#x5883;&#x5047;&#x8BBE;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现难点"><span class="nav-number">1.2.</span> <span class="nav-text"><a href="#&#x5B9E;&#x73B0;&#x96BE;&#x70B9;" class="headerlink" title="&#x5B9E;&#x73B0;&#x96BE;&#x70B9;"></a>&#x5B9E;&#x73B0;&#x96BE;&#x70B9;</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本容错设计"><span class="nav-number">2.</span> <span class="nav-text"><a href="#&#x57FA;&#x672C;&#x5BB9;&#x9519;&#x8BBE;&#x8BA1;" class="headerlink" title="&#x57FA;&#x672C;&#x5BB9;&#x9519;&#x8BBE;&#x8BA1;"></a>&#x57FA;&#x672C;&#x5BB9;&#x9519;&#x8BBE;&#x8BA1;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何保证主从同步"><span class="nav-number">2.1.</span> <span class="nav-text"><a href="#&#x5982;&#x4F55;&#x4FDD;&#x8BC1;&#x4E3B;&#x4ECE;&#x540C;&#x6B65;" class="headerlink" title="&#x5982;&#x4F55;&#x4FDD;&#x8BC1;&#x4E3B;&#x4ECE;&#x540C;&#x6B65;"></a>&#x5982;&#x4F55;&#x4FDD;&#x8BC1;&#x4E3B;&#x4ECE;&#x540C;&#x6B65;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何在Primary失效的情况下保证数据不丢失"><span class="nav-number">2.2.</span> <span class="nav-text"><a href="#&#x5982;&#x4F55;&#x5728;Primary&#x5931;&#x6548;&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#x4FDD;&#x8BC1;&#x6570;&#x636E;&#x4E0D;&#x4E22;&#x5931;" class="headerlink" title="&#x5982;&#x4F55;&#x5728;Primary&#x5931;&#x6548;&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#x4FDD;&#x8BC1;&#x6570;&#x636E;&#x4E0D;&#x4E22;&#x5931;"></a>&#x5982;&#x4F55;&#x5728;Primary&#x5931;&#x6548;&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#x4FDD;&#x8BC1;&#x6570;&#x636E;&#x4E0D;&#x4E22;&#x5931;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如果检测错误并且以正确的方式响应"><span class="nav-number">2.3.</span> <span class="nav-text"><a href="#&#x5982;&#x679C;&#x68C0;&#x6D4B;&#x9519;&#x8BEF;&#x5E76;&#x4E14;&#x4EE5;&#x6B63;&#x786E;&#x7684;&#x65B9;&#x5F0F;&#x54CD;&#x5E94;" class="headerlink" title="&#x5982;&#x679C;&#x68C0;&#x6D4B;&#x9519;&#x8BEF;&#x5E76;&#x4E14;&#x4EE5;&#x6B63;&#x786E;&#x7684;&#x65B9;&#x5F0F;&#x54CD;&#x5E94;"></a>&#x5982;&#x679C;&#x68C0;&#x6D4B;&#x9519;&#x8BEF;&#x5E76;&#x4E14;&#x4EE5;&#x6B63;&#x786E;&#x7684;&#x65B9;&#x5F0F;&#x54CD;&#x5E94;</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#容错性的实际实现"><span class="nav-number">3.</span> <span class="nav-text"><a href="#&#x5BB9;&#x9519;&#x6027;&#x7684;&#x5B9E;&#x9645;&#x5B9E;&#x73B0;" class="headerlink" title="&#x5BB9;&#x9519;&#x6027;&#x7684;&#x5B9E;&#x9645;&#x5B9E;&#x73B0;"></a>&#x5BB9;&#x9519;&#x6027;&#x7684;&#x5B9E;&#x9645;&#x5B9E;&#x73B0;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#启动和重启FT-VM"><span class="nav-number">3.1.</span> <span class="nav-text"><a href="#&#x542F;&#x52A8;&#x548C;&#x91CD;&#x542F;FT-VM" class="headerlink" title="&#x542F;&#x52A8;&#x548C;&#x91CD;&#x542F;FT VM"></a>&#x542F;&#x52A8;&#x548C;&#x91CD;&#x542F;FT VM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#管理logging-channel"><span class="nav-number">3.2.</span> <span class="nav-text"><a href="#&#x7BA1;&#x7406;logging-channel" class="headerlink" title="&#x7BA1;&#x7406;logging channel"></a>&#x7BA1;&#x7406;logging channel</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对虚拟机的控制操作"><span class="nav-number">3.3.</span> <span class="nav-text"><a href="#&#x5BF9;&#x865A;&#x62DF;&#x673A;&#x7684;&#x63A7;&#x5236;&#x64CD;&#x4F5C;" class="headerlink" title="&#x5BF9;&#x865A;&#x62DF;&#x673A;&#x7684;&#x63A7;&#x5236;&#x64CD;&#x4F5C;"></a>&#x5BF9;&#x865A;&#x62DF;&#x673A;&#x7684;&#x63A7;&#x5236;&#x64CD;&#x4F5C;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于磁盘IO的实现问题"><span class="nav-number">3.4.</span> <span class="nav-text"><a href="#&#x5173;&#x4E8E;&#x78C1;&#x76D8;IO&#x7684;&#x5B9E;&#x73B0;&#x95EE;&#x9898;" class="headerlink" title="&#x5173;&#x4E8E;&#x78C1;&#x76D8;IO&#x7684;&#x5B9E;&#x73B0;&#x95EE;&#x9898;"></a>&#x5173;&#x4E8E;&#x78C1;&#x76D8;IO&#x7684;&#x5B9E;&#x73B0;&#x95EE;&#x9898;</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他设计选择"><span class="nav-number">4.</span> <span class="nav-text"><a href="#&#x5176;&#x4ED6;&#x8BBE;&#x8BA1;&#x9009;&#x62E9;" class="headerlink" title="&#x5176;&#x4ED6;&#x8BBE;&#x8BA1;&#x9009;&#x62E9;"></a>&#x5176;&#x4ED6;&#x8BBE;&#x8BA1;&#x9009;&#x62E9;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#共享存储vs非共享存储"><span class="nav-number">4.1.</span> <span class="nav-text"><a href="#&#x5171;&#x4EAB;&#x5B58;&#x50A8;vs&#x975E;&#x5171;&#x4EAB;&#x5B58;&#x50A8;" class="headerlink" title="&#x5171;&#x4EAB;&#x5B58;&#x50A8;vs&#x975E;&#x5171;&#x4EAB;&#x5B58;&#x50A8;"></a>&#x5171;&#x4EAB;&#x5B58;&#x50A8;vs&#x975E;&#x5171;&#x4EAB;&#x5B58;&#x50A8;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在backup-VM上也执行磁盘读操作"><span class="nav-number">4.2.</span> <span class="nav-text"><a href="#&#x5728;backup-VM&#x4E0A;&#x4E5F;&#x6267;&#x884C;&#x78C1;&#x76D8;&#x8BFB;&#x64CD;&#x4F5C;" class="headerlink" title="&#x5728;backup VM&#x4E0A;&#x4E5F;&#x6267;&#x884C;&#x78C1;&#x76D8;&#x8BFB;&#x64CD;&#x4F5C;"></a>&#x5728;backup VM&#x4E0A;&#x4E5F;&#x6267;&#x884C;&#x78C1;&#x76D8;&#x8BFB;&#x64CD;&#x4F5C;</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TomKK</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://http-tomkklalala-github-io.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://tomkklalala.github.io/2020/04/01/VMWare-FT/';
+          this.page.identifier = '2020/04/01/VMWare-FT/';
+          this.page.title = 'VMWare FT';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://http-tomkklalala-github-io.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1uk3Vw0sydAghlwOnBUGYRMn-gzGzoHsz", "op4ebrtGIe4wP41x2oJjqocF");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
