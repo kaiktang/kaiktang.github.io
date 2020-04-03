@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/03/29/Google-File-System/Untitled.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/03/29/Google-File-System/Untitled1.png">
-<meta property="og:updated_time" content="2020-04-01T23:54:49.015Z">
+<meta property="og:updated_time" content="2020-04-03T21:18:27.118Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Google File System">
 <meta name="twitter:description" content="本文主要是对于GFS论文的一些笔记，并穿插了一些自己的思考。 设计概览一些假设GFS在设计时根据观察，总结出了一些他们数据访问的一些特征，根据这些特征做出了以下假设：  该文件系统是有很多廉价的商业机器组成的，所以应该认为系统中发生错误是常态。文件系统需要能够进行自我监控并自我恢复。 该文件系统存储了适中数量的大型文件，并支持小文件操作（相对少量）。 读操作的特征：大型流式读取和小型随机读取。应该">
@@ -597,7 +597,14 @@
 <li>所有的读请求要么也都发给primary，因为primary是清楚哪些请求执行成功，哪些没有的。或者也为读请求设计一个lease系统。</li>
 </ul>
 </li>
+<li><p>GFS是如何判断某个副本是最近的那个？</p>
+</li>
 </ul>
+<p>论文中提到是通过IP地址。所以可以想象当时谷歌应该是将地理位置的较近的两个机器分配了两个很近的IP地址。</p>
+<ul>
+<li>谷歌还在使用GFS吗？</li>
+</ul>
+<p>根据消息说谷歌使用Colossus代替了GFS，提升了master的性能和容错性。</p>
 
       
     </div>
