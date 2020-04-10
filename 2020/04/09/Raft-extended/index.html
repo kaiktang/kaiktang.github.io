@@ -90,13 +90,13 @@
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%201.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%202.png">
-<meta property="og:image" content="http://tomkklalala.github.io/Untitled%203.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%203.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%204.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%205.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%206.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%207.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%208.png">
-<meta property="og:updated_time" content="2020-04-10T06:25:54.099Z">
+<meta property="og:updated_time" content="2020-04-10T16:19:47.757Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Raft extended">
 <meta name="twitter:description" content="本文是阅读这篇论文过程中的一些笔记和个人思考。 概述Raft是一个共识算法，一般作为一个共识模块为某个分布式应用服务，为上层的应用层提供透明的log备份（容错能力），以及修改操作定序的服务（正确性）。 在应用收到客户端的请求后，先委托下层共识层进行log备份，在下层共识模块成功备份操作log返回后，应用才会开始真正执行用户请求并相应客户端。 上层应用层的分布式应用应该可以被看作一个状态机，每次客户">
@@ -457,7 +457,7 @@
 <p>leader在收到来自客户端的请求后，会先将对应的命令追加到自己的log中，然后并行的向其他所有的服务器发送AppendEntries请求，要求他们也追加该log。</p>
 <p>只有当超过半数的服务器都已经将该log持久化，这时应用层才会执行该条log对应的命令，然后向客户端返回执行结果（注意这里并不需要等到所有请求都返回，只要收到了刚刚超过半数的请求的时候就可以不再继续等待）。</p>
 <p>不论leader是否已经将该log执行，只要某个follower没有成功返回，leader会不定的重发该请求，直到所有的log都最终被所有的服务器持久化保存。</p>
-<p><img src="/Untitled%203.png" alt="Raft%20extended/Untitled%203.png"></p>
+<p><img src="Untitled%203.png" alt="Raft%20extended/Untitled%203.png"></p>
 <p>Log是按照上图的样子进行组织的。每个条目不仅存储了状态机的命令，还存储的收到该请求时的term值。term值是用来在服务器之间检测数据不一致性的依据。另外每个条目还有对应的下标来标识它在log中的位置。</p>
 <p>当leader确认某个其创建的log已经被大多数的机器所保存了，然后向上层应用返回时，这个log的状态被成为<code>committed</code>。Raft会保证所有<code>committed</code>的条目都最终会被所有正常工作的状态机所执行。</p>
 <p>当某个log是<code>committed</code>了，那么我们可以知道所有该log前面的log都已经是<code>committed</code>的了。</p>
@@ -599,7 +599,7 @@
 <li>第二，向磁盘中写入快照需要消耗很多时间，这可能会阻碍处理正常的操作。解决方案就是使用write-on-copy技术，这样接受新的log就不会影响到快照任务。论文作者的实现是采用操作系统提供的fork来实现，因为fork最初是和父进程共享虚拟内存页表，并标记为write-on-copy，只有需要修改操作时，才会触发页错误进行拷贝指定页表。</li>
 </ul>
 <h1 id="客户端交互"><a href="#客户端交互" class="headerlink" title="客户端交互"></a>客户端交互</h1><p>Raft系统的客户端会将他们的所有请求都发给leader。当一个客户端刚启动的时候，会随机选择一个节点进行连接，如果该节点并不是当时的leader，那么该节点会拒绝该请求并返回其记录的关于最新leader的信息。如果该信息中指向的leader宕机了，那么客户端会重新随机选择连接一个节点。</p>
-<p>论文作者的目标是让Raft具备linearizable semantics，就是根据读写操作的执行结果，能够反推找到至少一个合理的线性操作序列。</p>
+<p>论文作者的目标是让Raft具备linearizable semantics，就是能够让单进程上的执行顺序符合program order，多进程之间的非并发操作执行顺序符合物理时间上的相对顺序。换句话说就是要求A写入了x结束后, 接下来B一定能读出来。</p>
 <p>但是就目前的描述来说是满足不了的，因为在Raft中有可能某个请求会被重复多次执行，比如如果leader在commit一个log条目后向客户端响应前宕机了，那么客户端会因为超时而重发该请求，这会让集群第二次执行该请求。解决方案是通过让客户端为每个请求设置一个唯一的serial number。</p>
 <p>虽然读请求并不需要写任何log，但是如果没有额外的措施的话，可能会读到过期的数据，这会破坏linearizablity。</p>
 <p>可能导致返回过期数据的原因有：</p>
