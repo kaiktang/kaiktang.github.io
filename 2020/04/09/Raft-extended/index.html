@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="读书笔记," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文是阅读这篇论文过程中的一些笔记和个人思考。 概述Raft是一个共识算法，一般作为一个共识模块为某个分布式应用服务，为上层的应用层提供透明的log备份（容错能力），以及修改操作定序的服务（正确性）。 在应用收到客户端的请求后，先委托下层共识层进行log备份，在下层共识模块成功备份操作log返回后，应用才会开始真正执行用户请求并相应客户端。 上层应用层的分布式应用应该可以被看作一个状态机，每次客户">
+<meta name="keywords" content="读书笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Raft extended">
+<meta property="og:url" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/index.html">
+<meta property="og:site_name" content="TomKK&#39;s blogs">
+<meta property="og:description" content="本文是阅读这篇论文过程中的一些笔记和个人思考。 概述Raft是一个共识算法，一般作为一个共识模块为某个分布式应用服务，为上层的应用层提供透明的log备份（容错能力），以及修改操作定序的服务（正确性）。 在应用收到客户端的请求后，先委托下层共识层进行log备份，在下层共识模块成功备份操作log返回后，应用才会开始真正执行用户请求并相应客户端。 上层应用层的分布式应用应该可以被看作一个状态机，每次客户">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%201.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%202.png">
+<meta property="og:image" content="http://tomkklalala.github.io/Untitled%203.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%204.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%205.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%206.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%207.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%208.png">
+<meta property="og:updated_time" content="2020-04-10T06:25:54.099Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Raft extended">
+<meta name="twitter:description" content="本文是阅读这篇论文过程中的一些笔记和个人思考。 概述Raft是一个共识算法，一般作为一个共识模块为某个分布式应用服务，为上层的应用层提供透明的log备份（容错能力），以及修改操作定序的服务（正确性）。 在应用收到客户端的请求后，先委托下层共识层进行log备份，在下层共识模块成功备份操作log返回后，应用才会开始真正执行用户请求并相应客户端。 上层应用层的分布式应用应该可以被看作一个状态机，每次客户">
+<meta name="twitter:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'FBQ33HXA0Q',
+      apiKey: '5a256d1a0d5075a6a17b29fbae8cdbdc',
+      indexName: 'blog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"搜索文章","hits_empty":"没有找到关于: ${query}","hits_stats":"共 ${hits} 条结果耗时 ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://tomkklalala.github.io/2020/04/09/Raft-extended/"/>
+
+
+
+
+
+  <title>Raft extended | TomKK's blogs</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">TomKK's blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tomkklalala.github.io/2020/04/09/Raft-extended/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TomKK">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TomKK's blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Raft extended</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-09T23:23:03-07:00">
+                2020-04-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/04/09/Raft-extended/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2020/04/09/Raft-extended/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/04/09/Raft-extended/" class="leancloud_visitors" data-flag-title="Raft extended">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文是阅读<a href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf" target="_blank" rel="noopener">这篇论文</a>过程中的一些笔记和个人思考。</p>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Raft是一个共识算法，一般作为一个共识模块为某个分布式应用服务，为上层的应用层提供透明的log备份（容错能力），以及修改操作定序的服务（正确性）。</p>
+<p>在应用收到客户端的请求后，先委托下层共识层进行log备份，在下层共识模块成功备份操作log返回后，应用才会开始真正执行用户请求并相应客户端。</p>
+<p>上层应用层的分布式应用应该可以被看作一个状态机，每次客户端的一次写请求都会触发一次状态机的状态变迁，这些写操作会以log的形式在状态机实例间传递，只要所有的状态机实例都以相同的初始状态开始并都接受相同的log输入（状态变迁），最终将得到一致的状态。</p>
+<h2 id="Paxos的问题"><a href="#Paxos的问题" class="headerlink" title="Paxos的问题"></a>Paxos的问题</h2><p>在过去十几年年，Paxos一直是共识算法的代名词，但是该算法有一些弊端：</p>
+<ul>
+<li>人们很难理解并对其正确性有直观的认识，不利于教学，也使工业界为应用正确改造算法增加了难度。</li>
+<li>Paxos论文中大部分都是对single-decree paxos的描述，省去了很多muti-Paxos的实现细节，使得业界没有统一的实现。</li>
+<li>Paxos每次只能做一个决定，不适合构建实用系统，所以业界的最终实现都要基于Paxos大改。</li>
+</ul>
+<h1 id="Raft算法"><a href="#Raft算法" class="headerlink" title="Raft算法"></a>Raft算法</h1><h2 id="Raft的特点"><a href="#Raft的特点" class="headerlink" title="Raft的特点"></a>Raft的特点</h2><p>Raft中会先选出一个leader节点，由leader来接受请求并协调调度一切，这样简化了问题。</p>
+<p>因为这种设计，Raft得以将共识问题拆解为以下几个相对独立的子问题：</p>
+<ul>
+<li><strong>leader选举</strong>：当一个leader失效后，一个新的leader会被选出。</li>
+<li><strong>Log复制</strong>：leader从客户端接受请求，然后复制到其他follower上。并且在log不一致发生时，在follower之间进行Log重同步。</li>
+<li><strong>安全性</strong>：在存在各种错误的情况下，保证所有应用实例都按照相同的顺序执行修改请求。</li>
+</ul>
+<p>而Raft的正确性也可以通过被分解为以下几个子性质来进行证明，这些性质需要在Raft的任何阶段都一直成立：</p>
+<ul>
+<li><strong>Election Safety</strong>：在任一个term中只能有最多一个leader被选中。</li>
+<li><strong>Leader Append-Only</strong>：leader永远不会覆盖或者删除它自己的log，log修改操作仅限于追加。</li>
+<li><strong>Log Matching</strong>：如果两个机器上的某两个log条目拥有着相同的下标以及term，那么这两个机器上该条目以及之前的条目都是一致的，即拥有相同的前缀。</li>
+<li><strong>Leader Completeness</strong>：如果一个log在某个term被成功提交，那么该log会在未来的所有leader的log出现。换句话说，就是所有leader都会包含之前term所有的被提交的log。</li>
+<li><strong>State Machine Safety</strong>：如果某个下标的log条目对应的写操作被某个状态机执行，那么所有的其他状态机在相同下标处执行的一定是同一个写操作。</li>
+</ul>
+<p>下面是Raft实现的伪代码：</p>
+<p><img src="Untitled.png" alt="Raft%20extended/Untitled.png"></p>
+<h2 id="Raft基础知识"><a href="#Raft基础知识" class="headerlink" title="Raft基础知识"></a>Raft基础知识</h2><p>一个Raft集群往往会包含奇数（&gt;1）个服务器，如果集群由2f+1 (f&gt;0)个服务器组成，那么Raft能保证在最多有f个服务器失效的情况下系统还能正常工作。</p>
+<p>Raft中的节点可能是如下三种身份之一：</p>
+<ul>
+<li><strong>leader</strong>：处理所有请求的入口，follower不处理请求并会重定向用户请求到当前leader。</li>
+<li><strong>follower</strong>：从不主动发起请求，只会被动响应来自leader和candidate的请求。</li>
+<li><strong>candidate</strong>：只会在leader选举中存在。只有candidate才有可能被选为leader。</li>
+</ul>
+<p>Raft并不使用物理时间，而是使用一种逻辑时钟term来描述相对的先后顺序。</p>
+<p>term是一个连续增长的整数。每一个term都是由一个选举产生，在一个candidate被选中为leader的时候会将term加1。Raft保证每个term中只能有最多一个节点（0个或者1个）被选中为leader。</p>
+<p><img src="Untitled%201.png" alt="Raft%20extended/Untitled%201.png"></p>
+<p>每个服务器都会持久化存储一个变量：<code>current term</code>，该变量只会单调增长。在服务器间交互时会请求会带上该变量，接受者不会接受来自更小term的请求；如果收到来自更大term的请求，那么会更新自己的<code>current term</code>，另外如果身份为leader或者candidate身份的服务器收到更大term的的请求（新leader宣示主权），那么他们会自觉的变为follower（识时务者为俊杰）。</p>
+<p><img src="Untitled%202.png" alt="Raft%20extended/Untitled%202.png"></p>
+<p>基本的Raft算法实现只需要两种RPC请求：</p>
+<ul>
+<li><strong>RequestVote</strong>：在candidate竞选leader时会发起该请求。</li>
+<li><strong>AppendEntries</strong>：该RPC被用来在leader和follower之间复制log，并且也可被复用为心跳包请求（请求体log为空时即为心跳包）。</li>
+</ul>
+<p>如果考虑到对磁盘和内存使用率的优化，为了实现日志压缩，还会涉及其他的RPC请求。</p>
+<p>任何请求如果没有及时收到回复，都会进行超时重试。</p>
+<h2 id="leader选举"><a href="#leader选举" class="headerlink" title="leader选举"></a>leader选举</h2><p>一个leader会通过周期性的其他follower发送心跳请求（AppendEntiries），来维持它的权威性，以此来抑制其他follower起义推翻自己。</p>
+<p>如果一个follower在它的<code>election timeout</code>时间内没有收到来自当前leader或者其他candidate的任何请求，那么它就会认为当前的leader已经失效了，自己应该竞选成为新的leader。</p>
+<p>一个follower的竞选过程大致如下：</p>
+<ul>
+<li>将自己的当前term加1：currentTerm++</li>
+<li>将自己的身份变为candidate</li>
+<li>为自己投一票，并且将同时的向集群中的其他的机器发送RequestVote请求，索要选票。</li>
+<li>该candidate的状态只会由以下三种事件所改变：<ol>
+<li>该candidate收到了集群中大部分（至少2f+1中的f+1个）服务器中的选票。其他服务器投票时遵循如下规则：一个term中最多只会投一票，而投给谁是按照先到先得决定。在收到的大部分服务器的选票后，该candidate会将自己身份变为leader，然后立刻向其他服务器发送心跳包以此宣示主权，抑制其他人再竞选leader。因为这里要求集齐大部分选票且每个服务器最多只有一票，所以可以保证一个term中最多只有一个服务器被选为leader。</li>
+<li>如果在竞选期间该candidate受到了来自某个leader的心跳包，并且包含的term大于等于自己的当前的term，那么它会选择放弃竞选，重新变为follower等待时机。如果收到小于自己term的心跳包，则会继续竞选。</li>
+<li>如果有很多follower在很短的时间内变为candidates竞选，那么会导致选票被分散，很可能没有一个人能够得到半数以上的选票，这样在该term中就没有节点能够被选为leader，各个candidate会相继触发超时，进入下一个term的竞选。</li>
+</ol>
+</li>
+</ul>
+<p>根据上面的表述，读者心中有一个担忧，如果这个竞选的过程一直被分票，永远或者长时间的循环下去怎么办。因为这个过程中因为没有leader产生，所以不能处理任何客户端的请求。</p>
+<p>Raft的作者也想到了这个问题，核心的目标就是让尽量少的follower在短时间内参与竞选。</p>
+<p>Raft的思路是通过在某个合理时间区间内随机生成各个服务器的<code>election timeout</code>，这样降低了同时竞选的概率。只要某个candidate在其他follower超时前成为leader并开始发送心跳包，那么就可以成功抑制其他人竞选。注意这里的超时时间是每次都会随机生成的，避免某次因为运气和其他服务器选到了相同或者相近的数字。</p>
+<h2 id="Log复制"><a href="#Log复制" class="headerlink" title="Log复制"></a>Log复制</h2><p>假设已经集群已经选出了一个leader。</p>
+<p>leader在收到来自客户端的请求后，会先将对应的命令追加到自己的log中，然后并行的向其他所有的服务器发送AppendEntries请求，要求他们也追加该log。</p>
+<p>只有当超过半数的服务器都已经将该log持久化，这时应用层才会执行该条log对应的命令，然后向客户端返回执行结果（注意这里并不需要等到所有请求都返回，只要收到了刚刚超过半数的请求的时候就可以不再继续等待）。</p>
+<p>不论leader是否已经将该log执行，只要某个follower没有成功返回，leader会不定的重发该请求，直到所有的log都最终被所有的服务器持久化保存。</p>
+<p><img src="/Untitled%203.png" alt="Raft%20extended/Untitled%203.png"></p>
+<p>Log是按照上图的样子进行组织的。每个条目不仅存储了状态机的命令，还存储的收到该请求时的term值。term值是用来在服务器之间检测数据不一致性的依据。另外每个条目还有对应的下标来标识它在log中的位置。</p>
+<p>当leader确认某个其创建的log已经被大多数的机器所保存了，然后向上层应用返回时，这个log的状态被成为<code>committed</code>。Raft会保证所有<code>committed</code>的条目都最终会被所有正常工作的状态机所执行。</p>
+<p>当某个log是<code>committed</code>了，那么我们可以知道所有该log前面的log都已经是<code>committed</code>的了。</p>
+<p>当leader的状态机执行过该命令后，那么什么时候是其他follower执行该命令的时机呢？</p>
+<p>leader中维护了一个变量记录着目前<code>committed</code>日志中的最大下标leaderCommit。该变量会在和follower的RPC请求中带上包含该变量的信息，这样follower就会根据请求中的信息判断出leader已经提交到了某个log，这时follower就会尝试将对应位置前的所有的未执行的log都进行执行。</p>
+<p>正如前面所说，Log条目有如下两个性质：</p>
+<ol>
+<li>如果不同服务器上的两个log条目具有相同的下标和term，那么这两个条目存储的应该是相同的命令。</li>
+<li>如果两个log条目的下标和term是相同，那么由该下标之前的所有log条目组成的序列应该也是相同的。</li>
+</ol>
+<p>对于性质一，因为一个leader在一个term中最多创建一个特定下标的log条目，而log条目的下标和term一旦创建是不会被修改的。</p>
+<p>对于性质二，是通过AppendEnties的一致性检查机制保证的：在AppendEnties请求中，leader会包含最新的log的紧邻的前一个log条目的下标和term。当follower收到请求后，会根据这些比较对应下标位置的条目是否具有相同的term，如果不同，那么拒绝添加该最新log条目。所以根据数据归纳法，可以很容易得知，所以只要初始状态一致，性质二会一致保持。</p>
+<p>在正常执行的情况下，这种一致性检查是不会失败的。</p>
+<p>事情只有在leader突然奔溃了开始才变得有趣起来 :)。比如之前的leader的一些log在只发给小部分服务器后，leader就宕机了，这就造成了一些机器上的log的同一个下标对应的log条目可能不一致。</p>
+<p><img src="Untitled%204.png" alt="Raft%20extended/Untitled%204.png"></p>
+<p>上图是一些可能的不一致情形，下面讲一下各种情况可能是如何导致的，假设当前为term 8：</p>
+<ul>
+<li>（a）~（b）：对应的节点a和b可能宕机了一段时间或者网络波动，错过了一些RPC请求，导致缺少了一些条目。</li>
+<li>（c）：c号节点可能在term 6的时候被选为了leader，然后term 6前两个条目成功被大多数节点所接受，但是最后两个条目在只发给部分节点时，c号节点就宕机了。</li>
+<li>（d）：d号节点在term 7的时候被选为leader，并且接受了两个客户端请求，但是在仅仅在d本地存储后，节点d就宕机了。</li>
+<li>（e）：e号节点在term 4被选为leader，然后部分条目committed了，部分没有。</li>
+<li>（f）：f号节点在term 2被选中leader，在自己存储了3个条目后宕机了，然后又快速的重启了，又被选中成了term 3的leader，在自己存储了5个条目后，又宕机了。</li>
+</ul>
+<p>Raft强迫让所有节点全盘接受当前leader的log记录，重写那些不一致的条目，以此来解决可能出现的不一致现象。</p>
+<p>这里会产生两个问题：</p>
+<ol>
+<li>问题一：如何高效的利用leader的log覆盖所有的follower上的log。</li>
+<li>问题二：为什么可以信任leader的log？凭什么leader的log就一定是对的，可能丢失一些commited的条目吗？</li>
+</ol>
+<p>第二个问题涉及leader的选举机制，会在下一节讲解，这里先讨论问题一。</p>
+<p>对于问题一，很显然直接广播leader的全部log是可行，但是很低效的策略。</p>
+<p>可以观察到纵观所有的follower上的log序列可能性，可以发现follower一定是和leader有一个相同的log前缀的（因为上面讲的log的性质二，只要某个点是相同的，前面的所有的都是相同的）。所以为了尽可能减少传输的log数量，策略就应该是：找到leader和每个follower的log序列开始不同那个点，从leader传输从那儿开始的后面的所有log进行覆盖。</p>
+<p>根据以上思路，leader为每一个follower都维护了一个<code>nextIndex</code>变量，用来指示下一个leader应该发送给该follower的log条目的下标。每任leader的<code>nextIndex</code>的初始值为当前leader的log记录中的最大下标再加一（最开始乐观的认为大家都是一致的）。</p>
+<p>在本篇论文中，要求leader每次AppendEntries因为一致性检查返回错误的时候，将对应follower的<code>nextIndex</code>减一，然后重发请求，带上nextIndex到最大下标这个区间内的所有log条目，该算法的正确性是比较明显的，一个一个的去试探，最终AppendEnties一定会返回成功，让该follower与当前leader的log一致。</p>
+<p>但是可以想到，这种一次只减少1个单位问题规模的算法是还可以有优化空间的，论文中提供了一个优化思路：</p>
+<p>让follower在AppendEntries返回错误的时候，再返回一些额外的信息：</p>
+<ul>
+<li><strong>xTerm</strong>：进行一致性检查时，follower上比较的那个条目的term。</li>
+<li><strong>xIndex</strong>：属于xTerm的所有条目中第一个条目的下标。</li>
+<li><strong>xLen</strong>：若进行一致性检查时，发现对应位置并没有条目，那么返回当前follower的log的数量。</li>
+</ul>
+<p>在leader收到这样一个错误回复后，一共只有三种情况：</p>
+<ul>
+<li><strong>leader的log中也存在xTerm的条目</strong>：找到leader中xTerm条目的最后一个条目的下标，这里记为n，设置nextIndex=n+1。跳过所有比xTerm大的条目的比较。</li>
+<li><strong>leader的log中不存在xTerm的条目</strong>：设置nextInex=xIndex。直接跳过所有的大于等于xTerm的条目的比较。</li>
+<li><strong>因为对应位置没有条目，所以follower没有返回xTerm</strong>：将nextIndex设置为xLen。跳过所有为空的条目。</li>
+</ul>
+<p>读者可能会想说为什么不能用二分查找呢？</p>
+<p>我也曾有这样的想法，但是考虑到在生产环境中机器发生故障的概率是比较低的，可能机器在运行了几个月甚至几年才会出现一次问题，此时，其实两个机器之间log的差异并不会特别巨大，可能仅仅是在log尾部有一些些不同，使用二分查找的网络请求可能会更多。并且就算有个机器落下了很多很多log，因为现实中错误的偶然性，大多数情况下集群会在某一个term下运行很久才会遭遇错误换一次term，所以上文描述的这种以term为单位来缩减问题规模的策略很高效。</p>
+<h2 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h2><p>现在讨论Raft是如何保证每个状态机能够按照完全一致的顺序执行相同的命令。</p>
+<p>比如，有没有一个宕机了很久的机器突然又上线了，然后被选中成为了leader，然后强迫其他节点接受自己过期的数据呢？</p>
+<h3 id="选举时的限制"><a href="#选举时的限制" class="headerlink" title="选举时的限制"></a>选举时的限制</h3><p>Raft要求所有当选的leader都有全部的committed条目。</p>
+<p>在投票过程中，为了不让数据不全的candidate赢得选举，每个投票的选民在投票前都会和对应candidate比较一下最新的一条log信息，选民只会投票给拥有更“新”数据的candidate。</p>
+<p>判断数据新旧的标准为：</p>
+<ul>
+<li>如果candidate的最后一个log的term和选民的不一样，且candidate的term更大，那么选民才会投他。</li>
+<li>如果candidate的最后一个log的term和选民的一样，且candidate的log长度更长，那么选民才会投给他。</li>
+</ul>
+<h3 id="安全性证明"><a href="#安全性证明" class="headerlink" title="安全性证明"></a>安全性证明</h3><p>下面开始证明为什么所有当选的leader一定拥有所有committed的条目：</p>
+<p>这里采用反证法，我们假设某个leader不包含所有的commited的条目，然后通过得到矛盾来证明该观点。</p>
+<p>假设有一个在term T的leader在该term下commit了一个log条目L，但是这个log条目并没有在未来某个term的leader的log中出现。这里选后面的首次没有持有该log的leader对应的term U（U&gt;T），且记该leader为leaderU。</p>
+<ol>
+<li>因为leader从来不删除或者覆盖条目，所以leaderU在当选的时候就已经不存在那个条目L了。</li>
+<li>leaderT在提交该log L的时候一定是将该log L条目存储到了超过半数的集群节点上，而leaderU当选时也必定收到了超过半数的集群节点的选票。那么，至少这两个节点集合之间一定存在一个交集，我们从该交集中选取一个节点N。</li>
+<li>节点N必定在给leaderU投票之前，存储了该log L。不然，该节点将再没有机会存储该log L，因为现在的term U已经大于创建该log的term T了，该节点会拒绝存储该log L。</li>
+<li>根据假设，leaderU是第一个没有存储该log L的leader，所以leaderU之前的leader是存储有该log L的，因为leader从不删除log，而follower的log会和leader一致。可以知道节点N在给leaderU投票的时候是拥有该log L的。</li>
+<li>因为节点N给leaderU投票了，那么说明leaderU的log至少和节点N一样“新”。那么就会导出两个矛盾点：</li>
+<li>首先，如果节点N和leaderU的最后一个log具有相同的term。那么leaderU的log的长度至少和节点N一样长，所以leaderU应该包含节点N的所有的log。这就是一个矛盾，因为根据假设leaderU不应该拥有节点N拥有的该log L。</li>
+<li>又或者，leaderU的最后一个log的term是大于节点N的，更进一步，是大于T，因为节点N的log的最后一个条目的term至少为T。根据假设，创建的leaderU的最后一个log条目的leader M一定包含log L。所以根据Log Matching性质，只要某一个log条目相同，前面的所有条目都相同，所以leaderU应该包含M中包含的那个log L。这又导致了矛盾。</li>
+</ol>
+<p>至此证明了，所有未来的选中的leader都会包含全部的committed的log。所以可以得到所有的状态机都会按照相同的顺序执行全部的committed的log。</p>
+<h3 id="follower和candidate失效"><a href="#follower和candidate失效" class="headerlink" title="follower和candidate失效"></a>follower和candidate失效</h3><p>在Raft中follower和candidate使用相同的策略应对失效：</p>
+<ul>
+<li>如果一个follower或者candidate在接受请求之前奔溃了，那么所有发给他们的RPC都会失败，然后请求发起方会不定时的重发请求，所以只要他们重启了，请求就能被正常的处理。</li>
+<li>如果一个follower或者candidate在处理完请求后返回请求前时奔溃，那么当他们重启后，可能会重复执行相同的请求，但是在Raft中重复执行并不会破坏状态。比如，一个follower收到一个AppendEntries请求包含了一个已经添加过的log，那么他会忽略该请求。</li>
+</ul>
+<h3 id="可用性和时间选择"><a href="#可用性和时间选择" class="headerlink" title="可用性和时间选择"></a>可用性和时间选择</h3><p>本节主要讨论关于<code>election timeout</code>的选择。</p>
+<p>可以想象该超时时间不能太小，如果太小，小到短于正常的一次网络请求的延迟，那么集群就非常频繁的进行leader选举，因为很可能心跳包还在网络上传输的时候，follower就等不及超时竞选了。</p>
+<p>该超时时间也不能设置的太大，因为如果太大，在该时间内leader奔溃了，follower们会迟迟不进行新的选举。</p>
+<p>上面两种极端情况下，都会造成集群无法继续处理客户端请求，降低集群可用性。</p>
+<p>所以为了选到一个合适的时间，应该要满足如下一个不等式：</p>
+<p><strong>broadcastTime &lt;&lt; electionTimeout &lt;&lt; MTBF</strong></p>
+<ul>
+<li><strong>broadcastTime</strong>：某个服务器并行向其他所有服务器发起一轮RPC请求并且受到回复的时间。<strong>broadcastTime</strong>应该比<strong>electionTimeout</strong>少一个数量级。这样leader能够可靠的发送心跳包来抑制新的选举的发送。</li>
+<li><strong>MTBF</strong>：单机发生故障的平均耗时。<strong>electionTimeout</strong>应该比<strong>MTBF</strong>低几个数量级。这样能保证在leader失效时，集群能够及时作出反应选出新的leader。</li>
+</ul>
+<p>一般来说，<strong>electionTimeout</strong>选择10ms~500ms之间的某个数值。</p>
+<h1 id="集群成员变化"><a href="#集群成员变化" class="headerlink" title="集群成员变化"></a>集群成员变化</h1><p>到目前为止我们都是假设集群的配置信息是固定不会改变的。但是在实际使用中，我们偶尔有修改集群配置的需求，比如：替换那些生效的服务器，修改备份级别等等。</p>
+<p>当然要实现集群成员的变化，我们可以通过让整个集群都下线，再更新配置文件，然后重新启动整个集群来做到。但是这会导致在这段时间内整个集群都无法工作。另外如果整个过程中涉及任何手动操作，还会存在误操作的风险。为了避免这些问题，作者将配置变更自动化，并放入Raft成为了共识算法的一部分。</p>
+<p>为了让这个配置变更的过程安全，必须要保证整个过程中不能同时存在两个leader。</p>
+<p><img src="Untitled%205.png" alt="Raft%20extended/Untitled%205.png"></p>
+<p>但是不幸的是，任何让所有服务器直接全部从老的配置切换到新的配置的方法都是不安全的。</p>
+<p>如果我们想让整个集群切换到一个新的配置，记为Cnew，那么我们如果向当时的集群中所有节点发送Cnew让他们应用Cnew，但是就如上图所示，即使已经有超过半数（3个）的节点已经采用了新的Cnew，只要此时Cold中的节点因为某种原因超时了也开始竞选，那么通过获得Cold集群中的2票（除自己外1票）即可当选leader（因为Cold不知道新增机器的存在所以这一票一定来自S2），此时整个集群中就出现了两个leader。</p>
+<p>为了确保安全性，配置切换需要使用两阶段的方式进行。可以有很多种方式来实现这种两阶段切换，比如，有的系统会在第一阶段中先让Cold的机器都失效，不再处理客户端请求，然后第二阶段启用新的配置。</p>
+<p><img src="Untitled%206.png" alt="Raft%20extended/Untitled%206.png"></p>
+<p>为了解决这个问题，Raft通过让配置信息作为一个特殊的log条目进行在集群中传播，这种条目和正常其他的条目一样也使用AppendEntries接口进行广播复制，和其他log的唯一不同点是，任何节点在收到某个配置的log信息时会立即应用该配置。</p>
+<p>另外除了旧配置<code>Cold</code>和新配置<code>Cnew</code>外，Raft还引入了一个中间态配置<code>Cnew, old</code>。在<code>Cnew, old</code>配置下的leader要提交（commit）一个log，需要同时获得<code>Cold</code>和<code>Cnew</code>集群下超过半数节点的支持。而当<code>Cold</code>和<code>Cnew</code>集群下超过半数的节点均变采用了<code>Cnew, old</code>配置时，我们称<code>Cnew, old</code>被committed，对应的整体集群状态为<code>joint concensus</code>。</p>
+<p>假设新增的服务器已经存储了最新的log数据，并采用的是<code>Cnew, old</code>状态启动加入现有集群：</p>
+<ol>
+<li>客户端向当前集群的leader发送配置变更为<code>Cnew, old</code>的请求。</li>
+<li>集群leader接受到配置<code>Cnew, old</code>后，将其作为log条目保存，并应用该配置信息。</li>
+<li>为了提交最新的这个特殊的log条目<code>Cnew, old</code>，该leader会尝试同时向<code>Cold</code>集群以及<code>Cnew</code>集群的节点进行广播复制该log（通过AppendEntries RPC）。</li>
+<li>如果在<code>Cold</code>集群以及<code>Cnew</code>集群中的大多数节点均接受<code>Cnew, old</code>之前，leader宕机了，那么新的leader可能在<code>Cold</code>或者<code>Cnew, old</code>配置的集群中产生，但是这并不会阻止<code>Cnew, old</code>最终被提交，因为客户端会进行重试重发请求，所以这里整个流程会回到步骤1。最终还坚持<code>Cold</code>的节点的数量将会下降到不足以支持选出一个<code>Cold</code>的leader。</li>
+<li><code>Cnew, old</code>成功被在<code>Cold</code>集群以及<code>Cnew</code>集群中的大多数节点均接受，即<code>Cnew, old</code>被成功提交。至此，依旧还在<code>Cold</code>配置下的所有节点（如果还存在的话）已经不可能选出leader了，因为大部分<code>Cold</code>的节点已经变为<code>Cnew, old</code>了。新的leader只可能在采用<code>Cnew, old</code>配置的机器中产生。</li>
+<li>在收到<code>Cnew, old</code>提交成功的响应后，客户端再向当前<code>Cnew, old</code>配置的leader发送配置变更为<code>Cnew</code>的请求。</li>
+<li>当前的leader收到<code>Cnew</code>配置后，会将其作为log条目保存，并应用该配置信息。</li>
+<li>此时leader只会向新配置<code>Cnew</code>中所包含的服务器进行广播log<code>Cnew</code>。</li>
+<li>假设在将<code>Cnew</code>成功复制给大多数节点之前，当前leader宕机了。那么此时依旧不可能产生<code>Cold</code>配置的leader，新的leader只可能在<code>Cnew, old</code>或者<code>Cnew</code>中产生，但是这并不会阻止<code>Cnew</code>最终被提交的进程，因为客户端会进行重试重发请求，这里流程会回到步骤7。</li>
+<li>当最终<code>Cnew</code>配置最终被提交时，整个配置变更就已经完成了。</li>
+</ol>
+<p>整个过程中集群始终可以处理客户端请求。</p>
+<p>以上方法的核心思想在于，引入了一个中间状态<code>Cnew, old</code>，该状态下的leader不可能和<code>Cold</code>状态或者<code>Cnew</code>状态下的leader共存，因为他们当选需要的选民有交叉，而选民只能投一票。这样就保证了配置切换过程中不可能同时出现两个leader。</p>
+<blockquote>
+<p>其实写到这里我还是有个疑问，如果在上文步骤3的时候，发生了网络分区将<code>Cold</code>的节点都划到了一起，那么不就有可能同时有两个leader存在了吗，一个是<code>Cold</code>一个是<code>Cnew, old</code>。</p>
+</blockquote>
+<p>上面流程的假设是新增的服务器已经存储了最新的log数据，但是一般是不太可能的，新的服务器需要一个时间来进行log同步。为了在这段数据同步的时间内集群还是能够继续工作，Raft引入了一个新的角色<code>non-voting member</code>，这种角色下的服务器只能拷贝log，在leader统计超过半数节点时不算入其中。当log已经同步之后，就可以按照上面的流程来进行配置变更了。</p>
+<p>另一个问题是集群的leader可能在<code>Cnew</code>中被剔除了，那么这种情况下，该leader会在<code>Cnew</code>配置log提交的时候，自动变为follower。所以可以想象其实会有一段奇怪的时期，该leader不属于<code>Cnew</code>集群但是却管理着该集群，所以在这段时间，其统计超过半数节点时不把自己算进去。</p>
+<p>还有一个问题是那些被移除集群的服务器可能会骚扰集群。因为<code>Cnew</code>配置下的leader并不会给这些节点发送心跳包，所以他们会频繁的变为candidate进行竞选leader，向其他节点发送RPC，这可能会导致当前的leader被迫变为follower，这种情况会不断的发生，影响集群正常工作。</p>
+<p>为了解决这个问题，可以通过让follower在收到leader请求后的<code>min(election timeout)</code>时间区间内拒绝响应任何收到的投票请求RequestVote RPC。</p>
+<h1 id="Log-compaction"><a href="#Log-compaction" class="headerlink" title="Log compaction"></a>Log compaction</h1><p>Raft中的log和用户的请求相对应的，在实际使用过程中，我们不可能让log的无限制的增长。因为随着log的增长，其占用的内存、磁盘空间会更大，并且宕机恢复的时间也会更长。如果不加限制，这些问题最终都会导致服务不可用。</p>
+<p>快照Snapshot是解决该问题的最简单的方法。快照是将状态机某个时刻的状态持久化存储，然后就可以安全的将该时刻前的所有的log都丢弃了。</p>
+<p>还有增量进行compaction的方法，比如log cleaning和LSM树。</p>
+<p><img src="Untitled%207.png" alt="Raft%20extended/Untitled%207.png"></p>
+<p>上图展示了Raft中关于snapshot实现的基本想法。</p>
+<p>每个服务器会独立的进行快照，快照仅仅会涉及他们各自的committed的log。快照中除了状态机的状态信息外，还会写入一些元信息：</p>
+<ul>
+<li>last included index：可用该快照替换掉的log中下标最大的那一个。</li>
+<li>last included term：上面所说的同一个log条目的term值。</li>
+<li>为了支持集群成员变化功能，快照中还会写入对应时刻最新的配置信息。</li>
+</ul>
+<p>持久化last included index和last included term是为了让节点做快照紧邻的下一个log的一致性检查时用的。这样leader在遇到远远落后的follower，并发现它自己已经丢弃了要发送给follower的log条目的时候，直接发送snapshot。</p>
+<p><img src="Untitled%208.png" alt="Raft%20extended/Untitled%208.png"></p>
+<p>leader使用一个新的RPC叫InstallSnapshot来向follower发送snapshots。</p>
+<p>通常follower收到的snapshot中会包含更“新”的数据，这样follower就会全盘接受该snapshot覆盖自己的log。</p>
+<p>如果follower收到的snapshot所包含的数据已经在follower的log中存在（可能因为重传或者错误发送导致），那么follower依旧会接受该snapshot，然后删除该snapshot所覆盖的到的log，但是保留那些在snapshot之后的有效的log。</p>
+<p>接下来讨论两个可能影响snapshot性能的问题：</p>
+<ul>
+<li>首先，各个节点需要决定什么时候进行快照。快照的频率不能太高，这样会导致浪费大量的磁盘带宽以及能源。同样如果快照太不频繁，那么节点的内存可能会有告急风险，并且未来宕机重放未快照的log的时间也相应变长。一个策略是当log到达一定的大小的时候就触发快照，这样只要被删除的log的大小远远大于生成的快照的大小，那么磁盘带宽上的损耗就比较小。</li>
+<li>第二，向磁盘中写入快照需要消耗很多时间，这可能会阻碍处理正常的操作。解决方案就是使用write-on-copy技术，这样接受新的log就不会影响到快照任务。论文作者的实现是采用操作系统提供的fork来实现，因为fork最初是和父进程共享虚拟内存页表，并标记为write-on-copy，只有需要修改操作时，才会触发页错误进行拷贝指定页表。</li>
+</ul>
+<h1 id="客户端交互"><a href="#客户端交互" class="headerlink" title="客户端交互"></a>客户端交互</h1><p>Raft系统的客户端会将他们的所有请求都发给leader。当一个客户端刚启动的时候，会随机选择一个节点进行连接，如果该节点并不是当时的leader，那么该节点会拒绝该请求并返回其记录的关于最新leader的信息。如果该信息中指向的leader宕机了，那么客户端会重新随机选择连接一个节点。</p>
+<p>论文作者的目标是让Raft具备linearizable semantics，就是根据读写操作的执行结果，能够反推找到至少一个合理的线性操作序列。</p>
+<p>但是就目前的描述来说是满足不了的，因为在Raft中有可能某个请求会被重复多次执行，比如如果leader在commit一个log条目后向客户端响应前宕机了，那么客户端会因为超时而重发该请求，这会让集群第二次执行该请求。解决方案是通过让客户端为每个请求设置一个唯一的serial number。</p>
+<p>虽然读请求并不需要写任何log，但是如果没有额外的措施的话，可能会读到过期的数据，这会破坏linearizablity。</p>
+<p>可能导致返回过期数据的原因有：</p>
+<ol>
+<li>在一个leader刚上任的时候，虽然根据性质他有全部的committed的log数据，但是他刚开始并不知道哪些log是committed，哪些不是。为了得到这个信息，需要leader在该term提交一个log，但是如果这样的话，系统就只能在直到收到一个写请求后才能服务读请求。这样无疑是低效的，所以raft通过让每一个刚上任的leader都提交一个空的<code>no-op</code>log条目来获取committed信息。</li>
+<li>一个leader在试图返回读请求的时候，实际上可能已经有新的leader产生了，其持有的数据已经非最新的了。为了解决这个问题，raft要求在返回读请求前先向集群中大多数的节点进行一次心跳请求，这样根据<code>election timeout</code>的下界，可以保证一小段时间内不会有新的leader产生，并且可以增加类似lease的机制：让收到心跳的节点在一定时间内不允许给其他leader投票，这样在这段时间内返回客户端请求就是安全的（但是这种方式会依赖绝对时间，如果要保证绝对的安全性可能需要一些额外的机制来进行保障）。</li>
+</ol>
+<h1 id="附录：阅读过程中的一些问题"><a href="#附录：阅读过程中的一些问题" class="headerlink" title="附录：阅读过程中的一些问题"></a>附录：阅读过程中的一些问题</h1><blockquote>
+<p>Raft有没有为了可理解性和简单性牺牲掉一些东西？</p>
+</blockquote>
+<p>有，Raft牺牲了一些性能，比如：</p>
+<ul>
+<li>每个请求都必须要进行持久化操作。为了性能更高效的做法应该是打包很多操作一起写入磁盘。</li>
+<li>集群一次只能处理一个AppendEntries。因为follower会拒绝执行失序的AppendEntries。使用pipeline流水线工作可能更好。</li>
+<li>快照的机制是为那些状态比较少的状态机设计的，因为如果状态数据很大，每次全部写入磁盘会很低效，此时应该仅仅存储和上次相比增量的部分。</li>
+<li>类似的，为了让落后的follower同步最新的log信息，不一定要发送完整的快照信息，应该可以利用follower本地已存在的快照信息来减少传输的数据。</li>
+<li>服务器不能充分利用多核，因为状态机一次只会（按照log的顺序）执行一条指令。</li>
+</ul>
+<p>这些都可以通过修改Raft来实现，但是这样会让Raft在教学上少了很多价值。</p>
+<blockquote>
+<p>有没有什么共识算法是不需要选举leader的？</p>
+</blockquote>
+<p>有很多基于Paxos的算法不需要leader或者选举，所以他们不会因为leader选举而导致系统服务暂停。但是作为代价，他们为达成一致所需要的发送的请求数往往更多。像Raft只需要一轮广播即可达成共识。</p>
+<blockquote>
+<p>假如在发生网络分区时，一个新leader在一个含有大多数节点的分区内产生，而旧leader在另一个分区内。那么旧的leader会如果工作？</p>
+</blockquote>
+<p>假设旧leader所在的分区内只包含少于半数的节点，那么旧leader无法提交新的log，因为它无法获取到超过半数节点的回复。</p>
+<p>假设旧leader所在的分区是和新leader的分区内的节点有交集，即旧leader能够和超过半数的节点进行交互，此时旧leader还是无法获得超过半数节点的回复来进行提交log，因为在分区节点交集部分的节点因为旧leader的term值更小会拒绝进行执行RPC。</p>
+<blockquote>
+<p>当有些节点已经失效了，此时的超过半数是指还在工作的机器的半数，还是全部服务器的半数？</p>
+</blockquote>
+<p>始终是全部服务器的半数。</p>
+<blockquote>
+<p>除了宕机，还有没有其他什么原因让leader下台？</p>
+</blockquote>
+<p>有的。比如如果leader的CPU很慢或者它的网络环境不好导致很多丢包、或者传输过慢，这样其他的follower可能就会超时进行选举。</p>
+<blockquote>
+<p>为什么Raft的log是从1开始作为下标的？</p>
+</blockquote>
+<p>其实还是应该看成是从0开始的，并且下标为0的log的term为0。这得以让第一个AppendEntries RPC可以用0来做为PrevLogIndex，而不至于用-1这个非法的下标。</p>
+<blockquote>
+<p>什么样的应用适合构建在Raft之上？</p>
+</blockquote>
+<p>最好是自包含（self-contained）的应用，即不需要和其他外部的服务进行交互来修改状态。因为如果要和外部服务进行交互的话，那个外部服务也需要能够在任何时刻（某个机器奔溃了、网络分区了、刚重启等等）都支持正确处理重复请求，该外部服务需要为所有的重复的请求提供一致的回复。</p>
+<p>比如，一个商场系统的下单服务构建在Raft之上，而该下单服务在处理请求的时候需要请求外部的一个信用卡服务进行扣款。那么我们肯定不希望因为重复的请求让信用卡多次扣费。</p>
+<blockquote>
+<p>non-voting服务器目的是什么？</p>
+</blockquote>
+<p>我猜测leader在有non-voting服务器存在的时候，计算集群总数的时候是除掉这些non-voting服务器的，所以后面的提交能够继续推进。（不知道是否会存在问题）</p>
+<p>目的是让这些刚启动的服务器能够在不影响提交新的log的情况下进行同步log信息。这样就可以让配置变更的过程加快。因为如果没有non-voting这个设定，会有两个问题：</p>
+<ul>
+<li>这些新的服务器会因为同步信息让<code>Cnew, old</code>的提交必须等到他们同步完后才能完成。</li>
+<li>并且没有客户端的请求能够在这段时间内被处理。</li>
+</ul>
+<blockquote>
+<p>什么情况下一个follower会收到一个落后于它的快照？</p>
+</blockquote>
+<p>网络可能会导致请求乱序到达。比如一个leader先发了一个下标为100的快照，再发了一个下标为110的快照，结果下标为110的快照先被收到。</p>
+<blockquote>
+<p>如果在服务器读取应用一个快照的过程中奔溃了，怎么办？</p>
+</blockquote>
+<p>InstallSnapshot的实现必须要是原子的。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>交个朋友吧~</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="TomKK 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="TomKK 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/01/VMWare-FT/" rel="next" title="VMWare FT">
+                <i class="fa fa-chevron-left"></i> VMWare FT
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="TomKK" />
+            
+              <p class="site-author-name" itemprop="name">TomKK</p>
+              <p class="site-description motion-element" itemprop="description">学而后知不足</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x6982;&#x8FF0;" class="headerlink" title="&#x6982;&#x8FF0;"></a>&#x6982;&#x8FF0;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Paxos的问题"><span class="nav-number">1.1.</span> <span class="nav-text"><a href="#Paxos&#x7684;&#x95EE;&#x9898;" class="headerlink" title="Paxos&#x7684;&#x95EE;&#x9898;"></a>Paxos&#x7684;&#x95EE;&#x9898;</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Raft算法"><span class="nav-number">2.</span> <span class="nav-text"><a href="#Raft&#x7B97;&#x6CD5;" class="headerlink" title="Raft&#x7B97;&#x6CD5;"></a>Raft&#x7B97;&#x6CD5;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Raft的特点"><span class="nav-number">2.1.</span> <span class="nav-text"><a href="#Raft&#x7684;&#x7279;&#x70B9;" class="headerlink" title="Raft&#x7684;&#x7279;&#x70B9;"></a>Raft&#x7684;&#x7279;&#x70B9;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Raft基础知识"><span class="nav-number">2.2.</span> <span class="nav-text"><a href="#Raft&#x57FA;&#x7840;&#x77E5;&#x8BC6;" class="headerlink" title="Raft&#x57FA;&#x7840;&#x77E5;&#x8BC6;"></a>Raft&#x57FA;&#x7840;&#x77E5;&#x8BC6;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#leader选举"><span class="nav-number">2.3.</span> <span class="nav-text"><a href="#leader&#x9009;&#x4E3E;" class="headerlink" title="leader&#x9009;&#x4E3E;"></a>leader&#x9009;&#x4E3E;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Log复制"><span class="nav-number">2.4.</span> <span class="nav-text"><a href="#Log&#x590D;&#x5236;" class="headerlink" title="Log&#x590D;&#x5236;"></a>Log&#x590D;&#x5236;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全性"><span class="nav-number">2.5.</span> <span class="nav-text"><a href="#&#x5B89;&#x5168;&#x6027;" class="headerlink" title="&#x5B89;&#x5168;&#x6027;"></a>&#x5B89;&#x5168;&#x6027;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#选举时的限制"><span class="nav-number">2.5.1.</span> <span class="nav-text"><a href="#&#x9009;&#x4E3E;&#x65F6;&#x7684;&#x9650;&#x5236;" class="headerlink" title="&#x9009;&#x4E3E;&#x65F6;&#x7684;&#x9650;&#x5236;"></a>&#x9009;&#x4E3E;&#x65F6;&#x7684;&#x9650;&#x5236;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安全性证明"><span class="nav-number">2.5.2.</span> <span class="nav-text"><a href="#&#x5B89;&#x5168;&#x6027;&#x8BC1;&#x660E;" class="headerlink" title="&#x5B89;&#x5168;&#x6027;&#x8BC1;&#x660E;"></a>&#x5B89;&#x5168;&#x6027;&#x8BC1;&#x660E;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#follower和candidate失效"><span class="nav-number">2.5.3.</span> <span class="nav-text"><a href="#follower&#x548C;candidate&#x5931;&#x6548;" class="headerlink" title="follower&#x548C;candidate&#x5931;&#x6548;"></a>follower&#x548C;candidate&#x5931;&#x6548;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可用性和时间选择"><span class="nav-number">2.5.4.</span> <span class="nav-text"><a href="#&#x53EF;&#x7528;&#x6027;&#x548C;&#x65F6;&#x95F4;&#x9009;&#x62E9;" class="headerlink" title="&#x53EF;&#x7528;&#x6027;&#x548C;&#x65F6;&#x95F4;&#x9009;&#x62E9;"></a>&#x53EF;&#x7528;&#x6027;&#x548C;&#x65F6;&#x95F4;&#x9009;&#x62E9;</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#集群成员变化"><span class="nav-number">3.</span> <span class="nav-text"><a href="#&#x96C6;&#x7FA4;&#x6210;&#x5458;&#x53D8;&#x5316;" class="headerlink" title="&#x96C6;&#x7FA4;&#x6210;&#x5458;&#x53D8;&#x5316;"></a>&#x96C6;&#x7FA4;&#x6210;&#x5458;&#x53D8;&#x5316;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Log-compaction"><span class="nav-number">4.</span> <span class="nav-text"><a href="#Log-compaction" class="headerlink" title="Log compaction"></a>Log compaction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#客户端交互"><span class="nav-number">5.</span> <span class="nav-text"><a href="#&#x5BA2;&#x6237;&#x7AEF;&#x4EA4;&#x4E92;" class="headerlink" title="&#x5BA2;&#x6237;&#x7AEF;&#x4EA4;&#x4E92;"></a>&#x5BA2;&#x6237;&#x7AEF;&#x4EA4;&#x4E92;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#附录：阅读过程中的一些问题"><span class="nav-number">6.</span> <span class="nav-text"><a href="#&#x9644;&#x5F55;&#xFF1A;&#x9605;&#x8BFB;&#x8FC7;&#x7A0B;&#x4E2D;&#x7684;&#x4E00;&#x4E9B;&#x95EE;&#x9898;" class="headerlink" title="&#x9644;&#x5F55;&#xFF1A;&#x9605;&#x8BFB;&#x8FC7;&#x7A0B;&#x4E2D;&#x7684;&#x4E00;&#x4E9B;&#x95EE;&#x9898;"></a>&#x9644;&#x5F55;&#xFF1A;&#x9605;&#x8BFB;&#x8FC7;&#x7A0B;&#x4E2D;&#x7684;&#x4E00;&#x4E9B;&#x95EE;&#x9898;</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TomKK</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://http-tomkklalala-github-io.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://tomkklalala.github.io/2020/04/09/Raft-extended/';
+          this.page.identifier = '2020/04/09/Raft-extended/';
+          this.page.title = 'Raft extended';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://http-tomkklalala-github-io.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1uk3Vw0sydAghlwOnBUGYRMn-gzGzoHsz", "op4ebrtGIe4wP41x2oJjqocF");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
