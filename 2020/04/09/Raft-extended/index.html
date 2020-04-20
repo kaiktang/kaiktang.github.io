@@ -82,7 +82,7 @@
 <meta name="description" content="本文是阅读这篇论文过程中的一些笔记和个人思考。 概述Raft是一个共识算法，一般作为一个共识模块为某个分布式应用服务，为上层的应用层提供透明的log备份（容错能力），以及修改操作定序的服务（正确性）。 在应用收到客户端的请求后，先委托下层共识层进行log备份，在下层共识模块成功备份操作log返回后，应用才会开始真正执行用户请求并相应客户端。 上层应用层的分布式应用应该可以被看作一个状态机，每次客户">
 <meta name="keywords" content="读书笔记">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Raft extended">
+<meta property="og:title" content="Raft extended论文阅读笔记">
 <meta property="og:url" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/index.html">
 <meta property="og:site_name" content="TomKK&#39;s blogs">
 <meta property="og:description" content="本文是阅读这篇论文过程中的一些笔记和个人思考。 概述Raft是一个共识算法，一般作为一个共识模块为某个分布式应用服务，为上层的应用层提供透明的log备份（容错能力），以及修改操作定序的服务（正确性）。 在应用收到客户端的请求后，先委托下层共识层进行log备份，在下层共识模块成功备份操作log返回后，应用才会开始真正执行用户请求并相应客户端。 上层应用层的分布式应用应该可以被看作一个状态机，每次客户">
@@ -96,9 +96,9 @@
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%206.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%207.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled%208.png">
-<meta property="og:updated_time" content="2020-04-10T16:19:47.757Z">
+<meta property="og:updated_time" content="2020-04-20T05:19:06.936Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Raft extended">
+<meta name="twitter:title" content="Raft extended论文阅读笔记">
 <meta name="twitter:description" content="本文是阅读这篇论文过程中的一些笔记和个人思考。 概述Raft是一个共识算法，一般作为一个共识模块为某个分布式应用服务，为上层的应用层提供透明的log备份（容错能力），以及修改操作定序的服务（正确性）。 在应用收到客户端的请求后，先委托下层共识层进行log备份，在下层共识模块成功备份操作log返回后，应用才会开始真正执行用户请求并相应客户端。 上层应用层的分布式应用应该可以被看作一个状态机，每次客户">
 <meta name="twitter:image" content="http://tomkklalala.github.io/2020/04/09/Raft-extended/Untitled.png">
 
@@ -136,7 +136,7 @@
 
 
 
-  <title>Raft extended | TomKK's blogs</title>
+  <title>Raft extended论文阅读笔记 | TomKK's blogs</title>
   
 
 
@@ -318,7 +318,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Raft extended</h1>
+          <h1 class="post-title" itemprop="name headline">Raft extended论文阅读笔记</h1>
         
 
         <div class="post-meta">
@@ -359,7 +359,7 @@
 
           
           
-             <span id="/2020/04/09/Raft-extended/" class="leancloud_visitors" data-flag-title="Raft extended">
+             <span id="/2020/04/09/Raft-extended/" class="leancloud_visitors" data-flag-title="Raft extended论文阅读笔记">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -721,8 +721,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/04/01/VMWare-FT/" rel="next" title="VMWare FT">
-                <i class="fa fa-chevron-left"></i> VMWare FT
+              <a href="/2020/04/01/VMWare-FT/" rel="next" title="VMWare FT论文阅读笔记">
+                <i class="fa fa-chevron-left"></i> VMWare FT论文阅读笔记
               </a>
             
           </div>
@@ -730,6 +730,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/04/19/ZooKeeper论文阅读笔记/" rel="prev" title="ZooKeeper论文阅读笔记">
+                ZooKeeper论文阅读笔记 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -846,7 +850,7 @@ var jiathis_config={
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1064,7 +1068,7 @@ var jiathis_config={
         var disqus_config = function () {
           this.page.url = 'http://tomkklalala.github.io/2020/04/09/Raft-extended/';
           this.page.identifier = '2020/04/09/Raft-extended/';
-          this.page.title = 'Raft extended';
+          this.page.title = 'Raft extended论文阅读笔记';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://http-tomkklalala-github-io.disqus.com/embed.js';

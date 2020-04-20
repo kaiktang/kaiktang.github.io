@@ -82,16 +82,16 @@
 <meta name="description" content="本文是我在阅读这篇论文过程中的笔记，以及一些自己的思考。 概述本文主要介绍了一个如何构建一个具有容错能力的虚拟机主从集群。 这个论题具有极高的价值，因为这里试图容错备份的不是应用，而是整个虚拟机，理论上来说只要能实现虚拟机级别的高效容错性，那么就能让所有在虚拟机上运行的所有应用都有了同级别的容错性，并且这种容错性是对应用透明的。 一般对于一个虚拟机的同步备份有两种方式：  同步状态转移：即同步的内">
 <meta name="keywords" content="读书笔记">
 <meta property="og:type" content="article">
-<meta property="og:title" content="VMWare FT">
+<meta property="og:title" content="VMWare FT论文阅读笔记">
 <meta property="og:url" content="http://tomkklalala.github.io/2020/04/01/VMWare-FT/index.html">
 <meta property="og:site_name" content="TomKK&#39;s blogs">
 <meta property="og:description" content="本文是我在阅读这篇论文过程中的笔记，以及一些自己的思考。 概述本文主要介绍了一个如何构建一个具有容错能力的虚拟机主从集群。 这个论题具有极高的价值，因为这里试图容错备份的不是应用，而是整个虚拟机，理论上来说只要能实现虚拟机级别的高效容错性，那么就能让所有在虚拟机上运行的所有应用都有了同级别的容错性，并且这种容错性是对应用透明的。 一般对于一个虚拟机的同步备份有两种方式：  同步状态转移：即同步的内">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/01/VMWare-FT/Untitled.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/01/VMWare-FT/Untitled%201.png">
-<meta property="og:updated_time" content="2020-04-03T21:12:22.236Z">
+<meta property="og:updated_time" content="2020-04-20T05:19:18.830Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="VMWare FT">
+<meta name="twitter:title" content="VMWare FT论文阅读笔记">
 <meta name="twitter:description" content="本文是我在阅读这篇论文过程中的笔记，以及一些自己的思考。 概述本文主要介绍了一个如何构建一个具有容错能力的虚拟机主从集群。 这个论题具有极高的价值，因为这里试图容错备份的不是应用，而是整个虚拟机，理论上来说只要能实现虚拟机级别的高效容错性，那么就能让所有在虚拟机上运行的所有应用都有了同级别的容错性，并且这种容错性是对应用透明的。 一般对于一个虚拟机的同步备份有两种方式：  同步状态转移：即同步的内">
 <meta name="twitter:image" content="http://tomkklalala.github.io/2020/04/01/VMWare-FT/Untitled.png">
 
@@ -129,7 +129,7 @@
 
 
 
-  <title>VMWare FT | TomKK's blogs</title>
+  <title>VMWare FT论文阅读笔记 | TomKK's blogs</title>
   
 
 
@@ -311,7 +311,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">VMWare FT</h1>
+          <h1 class="post-title" itemprop="name headline">VMWare FT论文阅读笔记</h1>
         
 
         <div class="post-meta">
@@ -352,7 +352,7 @@
 
           
           
-             <span id="/2020/04/01/VMWare-FT/" class="leancloud_visitors" data-flag-title="VMWare FT">
+             <span id="/2020/04/01/VMWare-FT/" class="leancloud_visitors" data-flag-title="VMWare FT论文阅读笔记">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -629,8 +629,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/03/29/Google-File-System/" rel="next" title="Google File System">
-                <i class="fa fa-chevron-left"></i> Google File System
+              <a href="/2020/03/29/Google-File-System/" rel="next" title="Google File System论文阅读笔记">
+                <i class="fa fa-chevron-left"></i> Google File System论文阅读笔记
               </a>
             
           </div>
@@ -639,8 +639,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/04/09/Raft-extended/" rel="prev" title="Raft extended">
-                Raft extended <i class="fa fa-chevron-right"></i>
+              <a href="/2020/04/09/Raft-extended/" rel="prev" title="Raft extended论文阅读笔记">
+                Raft extended论文阅读笔记 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -758,7 +758,7 @@ var jiathis_config={
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -976,7 +976,7 @@ var jiathis_config={
         var disqus_config = function () {
           this.page.url = 'http://tomkklalala.github.io/2020/04/01/VMWare-FT/';
           this.page.identifier = '2020/04/01/VMWare-FT/';
-          this.page.title = 'VMWare FT';
+          this.page.title = 'VMWare FT论文阅读笔记';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://http-tomkklalala-github-io.disqus.com/embed.js';
