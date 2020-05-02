@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="读书笔记," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文是在读这篇论文过程中的一些笔记，还有一些自己的思考。 因为大部分内容这篇文章对各种操作讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。 简介历史背景最初亚马逊提供了一个EC2（Elastic Compute Cloud）服务，该服务就是AWS在一台服务器上运行一个VMM（vitural machine monitor），然后在上层创建很多的虚拟机向外租售，然后客户获取存储的方式是该">
+<meta name="keywords" content="读书笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Aurora论文阅读笔记">
+<meta property="og:url" content="http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/index.html">
+<meta property="og:site_name" content="TomKK&#39;s blogs">
+<meta property="og:description" content="本文是在读这篇论文过程中的一些笔记，还有一些自己的思考。 因为大部分内容这篇文章对各种操作讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。 简介历史背景最初亚马逊提供了一个EC2（Elastic Compute Cloud）服务，该服务就是AWS在一台服务器上运行一个VMM（vitural machine monitor），然后在上层创建很多的虚拟机向外租售，然后客户获取存储的方式是该">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/Untitled.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/Untitled%201.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/Untitled%202.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/Untitled%201.png">
+<meta property="og:updated_time" content="2020-05-02T02:45:51.147Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Aurora论文阅读笔记">
+<meta name="twitter:description" content="本文是在读这篇论文过程中的一些笔记，还有一些自己的思考。 因为大部分内容这篇文章对各种操作讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。 简介历史背景最初亚马逊提供了一个EC2（Elastic Compute Cloud）服务，该服务就是AWS在一台服务器上运行一个VMM（vitural machine monitor），然后在上层创建很多的虚拟机向外租售，然后客户获取存储的方式是该">
+<meta name="twitter:image" content="http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/Untitled.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'FBQ33HXA0Q',
+      apiKey: '5a256d1a0d5075a6a17b29fbae8cdbdc',
+      indexName: 'blog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"搜索文章","hits_empty":"没有找到关于: ${query}","hits_stats":"共 ${hits} 条结果耗时 ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/"/>
+
+
+
+
+
+  <title>Aurora论文阅读笔记 | TomKK's blogs</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">TomKK's blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TomKK">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TomKK's blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Aurora论文阅读笔记</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-02T10:43:05+08:00">
+                2020-05-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/05/02/Aurora论文阅读笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2020/05/02/Aurora论文阅读笔记/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/05/02/Aurora论文阅读笔记/" class="leancloud_visitors" data-flag-title="Aurora论文阅读笔记">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文是在读<a href="https://pdos.csail.mit.edu/6.824/papers/aurora.pdf" target="_blank" rel="noopener">这篇论文</a>过程中的一些笔记，还有一些自己的思考。</p>
+<p>因为大部分内容<a href="http://www.yunweipai.com/archives/18411.html" target="_blank" rel="noopener">这篇文章</a>对各种操作讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。</p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><h2 id="历史背景"><a href="#历史背景" class="headerlink" title="历史背景"></a>历史背景</h2><p>最初亚马逊提供了一个EC2（Elastic Compute Cloud）服务，该服务就是AWS在一台服务器上运行一个VMM（vitural machine monitor），然后在上层创建很多的虚拟机向外租售，然后客户获取存储的方式是该从服务器的一个物理挂载的磁盘上分一块存储区域使用，但是当然在用户的感知上就仿佛是自己运行的机器上的硬盘一样。</p>
+<p>EC2非常适合那种无状态的服务，能够非常容易的通过购买更多的EC2实例来获得更多的性能。</p>
+<p>但是也有很多用户租EC2用来跑一些有状态服务，比如数据库。此时EC2将显得不那么适合，因为像如果在EC2中跑数据库，那么数据都是存放在物理挂载的磁盘上，如果该宿主服务器宕机了，那么用户将无法访问到数据。为了解决这个AWS提供了S3（Amazon Simple Storage Service）来进行定期为EC2存储快照进行备份，但是在宕机时这种模式下可能会丢失最近一次快照之后的所有数据。 </p>
+<p>随后AWS提供了服务EBS（Amazon Elastic Block Store） ，当用户使用该服务时感知上就像本地的硬盘一样，但是实际上该服务是通过在一对服务器上使用<a href="http://tomkklalala.github.io/2020/04/23/Object-Storage-on-CRAQ%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">Chain Replication</a>实现的一个网络存储服务。此时，如果跑数据库的EC2宕机了，只需要重启一个EC2然后挂载到相同的EBS，这样就能够保证数据不丢失。</p>
+<p>但是EBS还是有缺陷，一个是数据库写操作向EBS发送的数据太多了，这会让性能下降。此时网络通信成了性能的瓶颈所在，另一个是EBS并不能提供非常强的容错性，因为实现EBS的服务器都是放在同一个数据中心中的，如果整个数据中心因为某种原因（地震、洪水等等）失效了，那么会丢失数据。用AWS的说法来说，EBS是在同一个AZ（Availability Zone）中实现的。</p>
+<blockquote>
+<p>如果某个区域内的某个数据中心通过低延迟可靠网络（能够容忍大部分网络错误）和同区域内的其他数据中心相连，那么这些互相连接的同区域的内的数据中心都是一个个AZ。</p>
+</blockquote>
+<h2 id="简化的传统单机数据库"><a href="#简化的传统单机数据库" class="headerlink" title="简化的传统单机数据库"></a>简化的传统单机数据库</h2><p>单机数据库的磁盘中一般会以B树的形式存储数据，数据由一个个数据页组成（data page），磁盘还会存储WAL（write ahead log）。在系统中会运行数据库的软件部分会包含数据页缓存。</p>
+<p>下面主要讨论事务以及故障恢复机制。</p>
+<p>一个典型的事务为如下所示，假设x和y均为100：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">BEGIN</span><br><span class="line">	x = x + <span class="number">10</span></span><br><span class="line">	y = y - <span class="number">10</span></span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+<p>事务能够保证这两个语句是原子的执行的，并且当事务向客户端返回成功表示事务提交时，应该能够保证这些变更能持久。</p>
+<p>为了在成功执行事务之前对客户端不可见，数据库软件会锁住x和y，然后先向磁盘上的日志中写入至少三个log：</p>
+<ol>
+<li>x 100 110</li>
+<li>y 100 90</li>
+<li>commit</li>
+</ol>
+<p>log中包含的信息有：修改的是那个数据、数据的旧值、数据的新值。包含旧值是为了在回滚时使用。当这些log都写入成功后，数据库就可以向客户端返回了。</p>
+<p>如果此时没有宕机发生，那么数据库会在缓存中应用变动，最终这些变动会在被置换的时候写入磁盘（write back）。</p>
+<p>如果此时发生了宕机，那么在数据库重启的时候，会将那些没有应用但是被提交的事务的log应用。</p>
+<h2 id="RDS"><a href="#RDS" class="headerlink" title="RDS"></a>RDS</h2><p>RDS是AWS为了解决前面提出的EBS无法保证整个AZ失效时不丢失数据不丧失可用性。</p>
+<p>它通过在多个AZ之间进行镜像同步上面提出的EBS服务，来提高更高的容错性。每当主数据库收到一个更新操作的时候，都会将产生的IO都转发到另一个AZ中的相同配置的一套设备中，进行同步，只有等到两个AZ中的数据库都正确返回的时候，才代表该操作完成，可以向客户端返回。</p>
+<p><img src="Untitled.png" alt="aurora/Untitled.png"></p>
+<p>因为数据库中修改操作是以页为单位（mysql为16KB）的，所以即使只修改小部分数据，还是可能会造成大量的带宽消耗，这种设计会让网络成为整个系统性能的瓶颈所在，实际使用中性能也并不理想。</p>
+<h1 id="Aurora的基本设计"><a href="#Aurora的基本设计" class="headerlink" title="Aurora的基本设计"></a>Aurora的基本设计</h1><p>Aurora是亚马逊公司提供的一个云原生关系型数据库服务，能够在兼容mysql协议，提供高可用性的基础上提供高吞吐量表现。</p>
+<p>和传统的让用户在租用的机器上运行自己的数据库软件不同，Aurora是一种SaaS服务。</p>
+<p>下面来看为了同时兼顾容错性和性能，Aurora是如何进行系统设计的。</p>
+<p>为了提供更好的容错性，一个Aurora实例拥有6个数据副本，并且这些数据副本分散在了3个AZ中，每个AZ中2个。</p>
+<p>乍一看好像会更慢了，因为系统的响应速度将由最慢的存储节点所决定。</p>
+<p>而Aurora为了解决更多副本带来的性能问题，采用了如下改进：</p>
+<ol>
+<li>只在网络中传输redo log。</li>
+<li>写操作采用大多数投票机制（quorum-based voting protocol）。</li>
+</ol>
+<p>因为log和数据页相比小了很多很多，所以这种设计能够更加高效的利用网络带宽。</p>
+<p>一般来说这种底层的存储服务为了更好的复用性应该是一种通用目的的存储器，但是为了支持这种只传输log的机制，Aurora则是用了一个定制的存储服务。该服务自带了log apply，故障恢复，redo等逻辑，这不仅使得写性能提升，这还使得数据库上层软件能够变为近似无状态的服务，所以能够很快的从失效中恢复。</p>
+<p>而对于大多数投票机制，对于一个有<code>V</code>个存储服务器的集群，数据库服务器无需等待所有的存储服务器的应答，只需收集到<code>Vw</code>个即可认为写入成功。而对于没有其他额外信息下的一个读操作，为了保证一致性，需要从读<code>Vr</code>个存储服务器中读取信息，这里为了保证读写的强一致性，需要保证<code>Vw</code>+<code>Vr</code>&gt;<code>V</code>，且<code>Vw</code>&gt;<code>V</code>/2，这样就能保证向读写操作发送的ACK消息的存储节点集合必有交集。Aurora中，选用<code>Vw</code>为4，<code>Vr</code>为3。</p>
+<p>通过这种投票机制，能够让系统不用等待那些比较慢的节点，避免一些暂时的网络抖动、系统更新等等导致的延迟。</p>
+<p>因为是数据库服务器负责生成和发送log的，所以它保存着各个存储服务器的log的状态，所以对于读操作，可以直接向那个有最新数据的存储服务器读，以此来避免等待<code>Vr</code>个读请求（但是当数据库宕机恢复时需要通过共识读来构建对存储服务器数据持久化状态的认知，并同时清理无用的log，回滚那些未提交事务）。</p>
+<p>通过以上两个优化，相对于RDS，Aurora提升了35倍的写性能。</p>
+<h1 id="存储服务器"><a href="#存储服务器" class="headerlink" title="存储服务器"></a>存储服务器</h1><p>就目前这种实现中，该数据库能存储的数据量其实就是一台机器磁盘的大小，6个副本并没有给Aurora6倍的存储空间。</p>
+<p>为了扩展存储空间，Aurora会将数据分片存储，存储的单位为PG（protection group），每个PG中可以有6个段（Segment）（这里的6个段和之前设定一样两两分散在三个AZ中），每个段大小为10G。</p>
+<p><img src="Untitled 1.png" alt="aurora/Untitled%201.png"></p>
+<p>不同的PG可能会存储在不同的存储服务器上，同样的，一个存储服务器上可能存放这来自不同Aurora实例的PG。</p>
+<p>所以当一个存储服务器宕机了，可能会影响到多个Aurora实例。</p>
+<p>为了尽快恢复一个存储服务器实例，那么势必需要将丢失的PG副本再找新的存储服务器存一份，问题就在是再找一个新的存储服务器吗？如果是，那么如果要恢复一个存有5个PG的存储服务器，需要向某一个机器拷贝50G的数据。但是如果我们不找一个，而是找5个新的存储服务器，那么就可以并行的传输，充分的利用不同机器的带宽资源，这样重备份的过程会更快。</p>
+<p>数据服务器另一个需要考虑的是在接收到log之后尽可能快的向客户端返回，将大量工作放到后台执行，降低响应的延迟。</p>
+<p><img src="Untitled 2.png" alt="aurora/Untitled%202.png"></p>
+<p>具体来讲存储节点执行如下工作：</p>
+<ol>
+<li>存储节点将主实例发送的redo日志放入内存队列，然后将日志从队列移出，持久化到磁盘（这个过程是批量操作）。</li>
+<li>存储节点给主节点发送一个ACK，告诉主节点数据持久化过程已经完成。这个步骤完成以后，主实例与存储节点的交互就已经完成。从Aurora的角度看来，这两个步骤是执行路径上的关键路径，影响系统的吞吐量以及相应时间。此后的步骤与主实例的通信可以独立，异步的方式进行。</li>
+<li>一旦存储节点生成日志文件，它就立刻开始整理这些日志记录以便发现它遗漏了某些日志记录。</li>
+<li>运行点对点的Gossip协议，将遗漏的日志记录补上。（通过Gossip协议，它们可以知道集群中有哪些节点，以及这些节点的状态如何？每一条Gossip消息上都有一个版本号，节点可以对接收到的消息进行版本比对，确保二者得到的信息相同）。这个阶段过后，每个节点上的数据是相同的拷贝。</li>
+<li>将日志记录合并，生成最新的版本的数据，转换成数据库需要的数据块。</li>
+<li>以很高的频率将生成的数据块备份到S3。这个Point-in-time快照技术保证故障恢复的时候可以将数据库恢复到之前特定时间点的一致性状态。通常有两种方法保证Point-in-time快照捕捉到最近的更新。一种方法是指针重定位。当最新版本的Point-in-time快照被创建的时候，它维护一个指针指向原来的快照。另外一种方法是增量维护，只是拷贝被更改的数据。</li>
+<li>运行垃圾回收机制，清理过时的数据块与日志文件。</li>
+<li>定期扫描数据块，进行校验。如果发现损坏数据块，与相邻节点进行通信获取完好的数据块。这是Aurora实现可自主修复损坏数据块的关键技术。</li>
+</ol>
+<p>Aurora中的后台任务的数量和前台任务的数量呈负相关。</p>
+<h1 id="提升读吞吐量"><a href="#提升读吞吐量" class="headerlink" title="提升读吞吐量"></a>提升读吞吐量</h1><p>有很多应用读请求的数量远远大于写请求的数量。</p>
+<p>在Aurora的设计中，所有的写请求都只能被一个数据库服务器所处理，为了让减轻它的负担，Aurora同时添加了很多（最多15个）只提供读服务的数据库服务器。</p>
+<p><img src="Untitled 1.png" alt="aurora/Untitled%201.png"></p>
+<p>只读数据库服务器也会有数据缓存，为了更新这些缓存，主读写数据库服务器会将其所有的log转发给其他所有的只读数据库服务器（图中的水平箭头）。</p>
+<p>为了不让只读数据库服务器向客户端暴露那些还处于事务中的中间态数据，需要使用到下面将讨论的VDL。</p>
+<h1 id="一致性实现"><a href="#一致性实现" class="headerlink" title="一致性实现"></a>一致性实现</h1><p>为了避免通过使用2PC的方式来实现一致性，Aurora为每个log都有一个单调增加的LSN（Log Sequnce Number），并且在数据库服务器中维护了关于各个PG的运行时状态、持久化状态，并且往往在收到来自存储服务器的ACK的时候，更新这些状态。</p>
+<p>正因为维护了各个PG的这些状态，所以Aurora并不需要读<code>Vr</code>个PG的数据来决定最新的数据，而是直接根据保存的PG状态，找到一个存有最新数据的存储服务器直接进行读取。</p>
+<p>那么什么是运行状态和持久状态呢？先介绍一些名词：</p>
+<ul>
+<li>LSN（Log Sequence Number）：每个log都有一个单调递增的LSN。</li>
+<li>VCL（Volume Complete LSN）：连续的log中最大的那个LSN。因为有些log之间可能因为网络等原因缺少部分log，这就导致log不连续。</li>
+<li>CPL（Consistency Point LSN）：提交的事务中的log中最大的那个LSN。</li>
+<li>VDL（Volume Durable LSN）：所有CPL中最大的且小于等于VCL那一个。</li>
+</ul>
+<p>在存储服务进行恢复的时候，所有LSN大于VDL的的log都会被丢弃。只有小于VDL的数据才是真正安全返回给客户端的数据。</p>
+<p>每个事务中最后的那一个log，会让CPL增加，当收到Vw个对于事务最后一个log的ACK的时候，会让VDL增加。</p>
+<p>比如说在存储服务重启时，存储服务器之间通过通信得知，目前日志到1007前都已经连续的存储了（可能存在还未提交的事务），数据库服务器中保存着的各个副本的CPL，也就是成功提交的最高LSN分别为900，1000，1100，因为900&lt;1000&lt;1007，所以我们可以知道VDL应该是1000。</p>
+<p>比如说在存储服务重启时，存储服务器之间通过通信得知，目前日志到1007前都已经连续的存储了，数据库服务器中保存着的各个副本的CPL，也就是成功提交的最高LSN分别为900，1000，1007。因为虽然数据库服务器可能因为网络原因还没收到1007以前所有的事务的ACK消息，但是根据VCL可以知道实际上这些log已经被接收了只是没有来得及发出ACK，所以我们可以知道VDL应该是1007（1000&lt;1007=1007）。</p>
+<h1 id="正常状态下的操作"><a href="#正常状态下的操作" class="headerlink" title="正常状态下的操作"></a>正常状态下的操作</h1><h3 id="写操作"><a href="#写操作" class="headerlink" title="写操作"></a>写操作</h3><p>事务发起的顺序和事务的真正执行顺序可能是不同的，一个事务能够正在被认为是提交，然后能够向客户端返回需要满足：</p>
+<ol>
+<li>收到Vw个ACK。</li>
+<li>该事务前的所有的事务都已经提交。</li>
+</ol>
+<p>正是因为这个机制，所以在写任务繁重的时候，pending的LSN可能远远大于VDL。为了不让pending的事务积压的过多，Aurora限制当要分配的LSN已经超过VDL一千万时，将停止创建log，等待积压的事务被消耗掉。</p>
+<p>需要注意的是log会按照涉及的PG进行分别存储。每个段加上该段上次应用log之后收到的所有log，就是目前最近的数据。log的应用会被延后，直到收到相应的读请求。</p>
+<p>根据每个PG中存放的这些log，可以为PG中的各个段计算出一个SCL，即各个段所连续存储的最大的那个log的LSN。通过SCL可以让存储节点从其他副本中通过gossip协议拉取缺失的log。</p>
+<h3 id="读操作"><a href="#读操作" class="headerlink" title="读操作"></a>读操作</h3><p>在Aurora中，读请求的数据是从缓存中得到的，只有当缓存中不存在对应的数据页时，才会从存储节点读取。</p>
+<p>如果缓存已经满了，那么就要选出一个数据页置换出去，选择的标准为：只有对应的数据页中所保存的log的最大LSN大于VDL的时候，才能被置换。因为如果置换那些数据页的LSN小于VDL的页的话，接下来很可能会马上收到对应这个页的log，那么刚置换出去的数据页又得马上读回来，这是不必要的性能损失。</p>
+<p>因为数据服务器保存着VDL，以及各个存储节点的CPL，所以如果需要从存储服务中读取数据页，只需找那些CPL≥VDL的节点即可，而收到读请求的存储节点应该只会返回对应VDL版本的数据。</p>
+<p>因为数据库掌控了PG的持久化状态，所以其可以为每个PG都计算出一个VDL称为PGMRPL（Protection Group Min Read Point LSN），每个存储节点可以将PGMPRL前的所有log进行应用，并且垃圾回收器可以安全的将PGMRPL前的log都清理。</p>
+<p>在Aurora一个实例中最大支持15个只读数据库。为了降低延迟所有主数据库所产生的log都会被转发给所有的只读数据库，只读数据库收到后，按照以下规则应用log：</p>
+<ol>
+<li>只有那些LSN小于等于VDL的log才会被应用。</li>
+<li>只有那些和缓存中的数据相关的log才会被应用。</li>
+<li>事务的log会被原子的一起应用。</li>
+</ol>
+<h3 id="故障恢复"><a href="#故障恢复" class="headerlink" title="故障恢复"></a>故障恢复</h3><p>当数据库重启时，需要通过一次去quorum读来重建其运行时状态，当数据库对所有的PG都进行了quorum读，那么它就能计算出VDL，之后会将VDL之后的所有log都会被抛弃，同时还需要将这些被抛弃的log对应的部分提交的事务进行回滚。</p>
+<p>更详细的看<a href="http://www.yunweipai.com/archives/18411.html" target="_blank" rel="noopener">这篇文章</a>。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>交个朋友吧~</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="TomKK 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="TomKK 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/23/Object-Storage-on-CRAQ论文阅读笔记/" rel="next" title="Object Storage on CRAQ论文阅读笔记">
+                <i class="fa fa-chevron-left"></i> Object Storage on CRAQ论文阅读笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="TomKK" />
+            
+              <p class="site-author-name" itemprop="name">TomKK</p>
+              <p class="site-description motion-element" itemprop="description">学而后知不足</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x7B80;&#x4ECB;" class="headerlink" title="&#x7B80;&#x4ECB;"></a>&#x7B80;&#x4ECB;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#历史背景"><span class="nav-number">1.1.</span> <span class="nav-text"><a href="#&#x5386;&#x53F2;&#x80CC;&#x666F;" class="headerlink" title="&#x5386;&#x53F2;&#x80CC;&#x666F;"></a>&#x5386;&#x53F2;&#x80CC;&#x666F;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简化的传统单机数据库"><span class="nav-number">1.2.</span> <span class="nav-text"><a href="#&#x7B80;&#x5316;&#x7684;&#x4F20;&#x7EDF;&#x5355;&#x673A;&#x6570;&#x636E;&#x5E93;" class="headerlink" title="&#x7B80;&#x5316;&#x7684;&#x4F20;&#x7EDF;&#x5355;&#x673A;&#x6570;&#x636E;&#x5E93;"></a>&#x7B80;&#x5316;&#x7684;&#x4F20;&#x7EDF;&#x5355;&#x673A;&#x6570;&#x636E;&#x5E93;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RDS"><span class="nav-number">1.3.</span> <span class="nav-text"><a href="#RDS" class="headerlink" title="RDS"></a>RDS</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Aurora的基本设计"><span class="nav-number">2.</span> <span class="nav-text"><a href="#Aurora&#x7684;&#x57FA;&#x672C;&#x8BBE;&#x8BA1;" class="headerlink" title="Aurora&#x7684;&#x57FA;&#x672C;&#x8BBE;&#x8BA1;"></a>Aurora&#x7684;&#x57FA;&#x672C;&#x8BBE;&#x8BA1;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#存储服务器"><span class="nav-number">3.</span> <span class="nav-text"><a href="#&#x5B58;&#x50A8;&#x670D;&#x52A1;&#x5668;" class="headerlink" title="&#x5B58;&#x50A8;&#x670D;&#x52A1;&#x5668;"></a>&#x5B58;&#x50A8;&#x670D;&#x52A1;&#x5668;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#提升读吞吐量"><span class="nav-number">4.</span> <span class="nav-text"><a href="#&#x63D0;&#x5347;&#x8BFB;&#x541E;&#x5410;&#x91CF;" class="headerlink" title="&#x63D0;&#x5347;&#x8BFB;&#x541E;&#x5410;&#x91CF;"></a>&#x63D0;&#x5347;&#x8BFB;&#x541E;&#x5410;&#x91CF;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一致性实现"><span class="nav-number">5.</span> <span class="nav-text"><a href="#&#x4E00;&#x81F4;&#x6027;&#x5B9E;&#x73B0;" class="headerlink" title="&#x4E00;&#x81F4;&#x6027;&#x5B9E;&#x73B0;"></a>&#x4E00;&#x81F4;&#x6027;&#x5B9E;&#x73B0;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#正常状态下的操作"><span class="nav-number">6.</span> <span class="nav-text"><a href="#&#x6B63;&#x5E38;&#x72B6;&#x6001;&#x4E0B;&#x7684;&#x64CD;&#x4F5C;" class="headerlink" title="&#x6B63;&#x5E38;&#x72B6;&#x6001;&#x4E0B;&#x7684;&#x64CD;&#x4F5C;"></a>&#x6B63;&#x5E38;&#x72B6;&#x6001;&#x4E0B;&#x7684;&#x64CD;&#x4F5C;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#写操作"><span class="nav-number">6.0.1.</span> <span class="nav-text"><a href="#&#x5199;&#x64CD;&#x4F5C;" class="headerlink" title="&#x5199;&#x64CD;&#x4F5C;"></a>&#x5199;&#x64CD;&#x4F5C;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#读操作"><span class="nav-number">6.0.2.</span> <span class="nav-text"><a href="#&#x8BFB;&#x64CD;&#x4F5C;" class="headerlink" title="&#x8BFB;&#x64CD;&#x4F5C;"></a>&#x8BFB;&#x64CD;&#x4F5C;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#故障恢复"><span class="nav-number">6.0.3.</span> <span class="nav-text"><a href="#&#x6545;&#x969C;&#x6062;&#x590D;" class="headerlink" title="&#x6545;&#x969C;&#x6062;&#x590D;"></a>&#x6545;&#x969C;&#x6062;&#x590D;</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TomKK</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://http-tomkklalala-github-io.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/';
+          this.page.identifier = '2020/05/02/Aurora论文阅读笔记/';
+          this.page.title = 'Aurora论文阅读笔记';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://http-tomkklalala-github-io.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1uk3Vw0sydAghlwOnBUGYRMn-gzGzoHsz", "op4ebrtGIe4wP41x2oJjqocF");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
