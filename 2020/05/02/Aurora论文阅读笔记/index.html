@@ -79,22 +79,22 @@
 
 
 
-<meta name="description" content="本文是在读这篇论文过程中的一些笔记，还有一些自己的思考。 因为大部分内容这篇文章对各种操作讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。 简介历史背景最初亚马逊提供了一个EC2（Elastic Compute Cloud）服务，该服务就是AWS在一台服务器上运行一个VMM（vitural machine monitor），然后在上层创建很多的虚拟机向外租售，然后客户获取存储的方式是该">
+<meta name="description" content="本文是在读这篇论文过程中的一些笔记，还有一些自己的思考。 因为大部分内容这篇文章已经讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。 简介历史背景最初亚马逊提供了一个EC2（Elastic Compute Cloud）服务，该服务就是AWS在一台服务器上运行一个VMM（vitural machine monitor），然后在上层创建很多的虚拟机向外租售，然后客户获取存储的方式是该从服务">
 <meta name="keywords" content="读书笔记">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Aurora论文阅读笔记">
 <meta property="og:url" content="http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/index.html">
 <meta property="og:site_name" content="TomKK&#39;s blogs">
-<meta property="og:description" content="本文是在读这篇论文过程中的一些笔记，还有一些自己的思考。 因为大部分内容这篇文章对各种操作讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。 简介历史背景最初亚马逊提供了一个EC2（Elastic Compute Cloud）服务，该服务就是AWS在一台服务器上运行一个VMM（vitural machine monitor），然后在上层创建很多的虚拟机向外租售，然后客户获取存储的方式是该">
+<meta property="og:description" content="本文是在读这篇论文过程中的一些笔记，还有一些自己的思考。 因为大部分内容这篇文章已经讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。 简介历史背景最初亚马逊提供了一个EC2（Elastic Compute Cloud）服务，该服务就是AWS在一台服务器上运行一个VMM（vitural machine monitor），然后在上层创建很多的虚拟机向外租售，然后客户获取存储的方式是该从服务">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/Untitled.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/Untitled%201.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/Untitled%202.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/Untitled%201.png">
-<meta property="og:updated_time" content="2020-05-02T02:45:51.147Z">
+<meta property="og:updated_time" content="2020-05-02T02:46:53.790Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Aurora论文阅读笔记">
-<meta name="twitter:description" content="本文是在读这篇论文过程中的一些笔记，还有一些自己的思考。 因为大部分内容这篇文章对各种操作讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。 简介历史背景最初亚马逊提供了一个EC2（Elastic Compute Cloud）服务，该服务就是AWS在一台服务器上运行一个VMM（vitural machine monitor），然后在上层创建很多的虚拟机向外租售，然后客户获取存储的方式是该">
+<meta name="twitter:description" content="本文是在读这篇论文过程中的一些笔记，还有一些自己的思考。 因为大部分内容这篇文章已经讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。 简介历史背景最初亚马逊提供了一个EC2（Elastic Compute Cloud）服务，该服务就是AWS在一台服务器上运行一个VMM（vitural machine monitor），然后在上层创建很多的虚拟机向外租售，然后客户获取存储的方式是该从服务">
 <meta name="twitter:image" content="http://tomkklalala.github.io/2020/05/02/Aurora论文阅读笔记/Untitled.png">
 
 
@@ -386,7 +386,7 @@
 
       
         <p>本文是在读<a href="https://pdos.csail.mit.edu/6.824/papers/aurora.pdf" target="_blank" rel="noopener">这篇论文</a>过程中的一些笔记，还有一些自己的思考。</p>
-<p>因为大部分内容<a href="http://www.yunweipai.com/archives/18411.html" target="_blank" rel="noopener">这篇文章</a>对各种操作讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。</p>
+<p>因为大部分内容<a href="http://www.yunweipai.com/archives/18411.html" target="_blank" rel="noopener">这篇文章</a>已经讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。</p>
 <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><h2 id="历史背景"><a href="#历史背景" class="headerlink" title="历史背景"></a>历史背景</h2><p>最初亚马逊提供了一个EC2（Elastic Compute Cloud）服务，该服务就是AWS在一台服务器上运行一个VMM（vitural machine monitor），然后在上层创建很多的虚拟机向外租售，然后客户获取存储的方式是该从服务器的一个物理挂载的磁盘上分一块存储区域使用，但是当然在用户的感知上就仿佛是自己运行的机器上的硬盘一样。</p>
 <p>EC2非常适合那种无状态的服务，能够非常容易的通过购买更多的EC2实例来获得更多的性能。</p>
 <p>但是也有很多用户租EC2用来跑一些有状态服务，比如数据库。此时EC2将显得不那么适合，因为像如果在EC2中跑数据库，那么数据都是存放在物理挂载的磁盘上，如果该宿主服务器宕机了，那么用户将无法访问到数据。为了解决这个AWS提供了S3（Amazon Simple Storage Service）来进行定期为EC2存储快照进行备份，但是在宕机时这种模式下可能会丢失最近一次快照之后的所有数据。 </p>
@@ -556,6 +556,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2020/05/03/Frangipani论文阅读笔记/" rel="prev" title="Frangipani论文阅读笔记">
+                Frangipani论文阅读笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -671,7 +675,7 @@ var jiathis_config={
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-count">46</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
