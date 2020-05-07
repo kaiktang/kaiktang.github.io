@@ -90,7 +90,7 @@
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/05/分布式事务学习/Untitled.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/05/分布式事务学习/Untitled%201.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/05/分布式事务学习/Untitled%202.png">
-<meta property="og:updated_time" content="2020-05-05T16:49:56.007Z">
+<meta property="og:updated_time" content="2020-05-05T16:59:34.749Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式事务学习">
 <meta name="twitter:description" content="单机事务相信在大学上数据库课的时候都讲过ACID：  Atomicity：指事务的操作要么都完成，要么都不完成（all-or-nothing）。 Consistent：一致性是在事务开始之前和事务结束以后，数据库的完整性没有被破坏。这表示写入的数据必须完全符合所有的预设约束、触发器、级联回滚等。 Isolation：数据库允许多个并发事务同时对其数据进行读写和修改的能力，隔离性可以防止多个事务并发">
@@ -481,7 +481,7 @@
 <p>所以为了让2PC各个成员有更高的可用性，所以一般会将transaction coordinator和worker变为集群，集群中使用类似raft、paxos等容错共识算法。</p>
 <h2 id="三阶段提交（3PC）"><a href="#三阶段提交（3PC）" class="headerlink" title="三阶段提交（3PC）"></a>三阶段提交（3PC）</h2><p><img src="Untitled 1.png" alt="Untitled/Untitled%201.png"></p>
 <p>3PC在2PC的基础上，将commit阶段分为了pre-commit和commit两个阶段。</p>
-<p>在3PC中的pre-commit消息的目的就是让coordinator将这个决定（commit或者abort）先发送给所有worker，在确保所有的worker都已经知道决策结果之后再进行commit，那么即使后面worker宕机重启之后，也不用再依赖coordinator的消息，可以自行进行提交或者回滚。</p>
+<p>在3PC中的pre-commit消息的目的就是让coordinator将这个决定（commit或者abort）先发送给所有worker，在确保所有的worker都已经知道决策结果之后再进行commit，那么即使后面coordinator和部分worker宕机之后，剩余的节点也可以自行进行协商提交或者回滚。</p>
 <p>考虑特殊情况：</p>
 <ul>
 <li>如果A在发送pre-commit之前就挂了，那么B，C，D会因为超时而回滚，A在恢复以后也默认回滚。这样是安全的。</li>
@@ -493,9 +493,9 @@
 </li>
 <li>如果A在发送完pre-commit之后发送doCommit之前宕机了，那么worker间可以互相通信得出commit的结论，然后一起commit，在A重启之后，会发现大家都commit了，自己也会commit。</li>
 </ul>
-<p>3PC中不管宕机几个节点，只要在超时后，存活的worker之间能够通过协商达到一个统一的状态，一起执行commit或者abort，那么后面恢复的节点将可以通过询问简单保持一致就可以了。这是为什么3PC能够消除阻塞的原因。</p>
+<p>3PC中不管宕机几个节点，只要在超时后，存活的worker之间能够通过协商达到一个统一的状态，一起执行commit或者abort，那么后面恢复的节点将可以通过询问简单照做就可以了。这是为什么3PC能够消除阻塞的原因。</p>
 <p>而在2PC中，在节点没有收到commit的情况下，其他节点是有可能有已经提交了的，存活的节点不能擅自回滚，所以2PC下只能阻塞等待。</p>
-<p>根据上面说的实现，可以发现3PC是不能忍受网络分区的，考虑如果因为网络分区将所有收到pre-commit的节点放入一个分区中，而其他没有收到pre-commit的再另一个分区，那么第一个分区内的节点协商会得出commit的结果，而第二分区内的节点会协商出abort的结果，这样就会导致数据不一致。</p>
+<p>根据上面说的实现，可以发现3PC是不能忍受网络分区的，考虑如果因为网络分区将所有收到pre-commit的节点放入一个分区中，而其他没有收到pre-commit的再另一个分区，那么第一个分区内的节点协商会得出commit的结果，而第二分区内的节点会协商出abort的结果，这样就会导致数据不一致。</p>
 <h2 id="Sage"><a href="#Sage" class="headerlink" title="Sage"></a>Sage</h2><p><img src="Untitled 2.png" alt="Untitled/Untitled%202.png"></p>
 <p>对于一个耗时很长很长的事务，通过2PC将所有数据一直锁着肯定是不合理的，所以Saga通过将一个长事务，拆成很多小的事务依次执行，然后为每个事务准备一个补偿事务，如果其中一个事务执行失败了，那么会逆向的依次执行对应的补偿事务，以此让状态回滚回最初。</p>
 <p>但是这种模式下因为子事务是分别commit的，可能会有破坏isolation的操作出现，比如在上图中T1在本地提交之后，在整个大的事务没有提交之前，被其他的程序改了或者读了数据，最终因为后面的T3执行失败，导致整个大事务要回滚，那么之前的被读取的数据可能就是脏数据。并且因为数据被改了有可能C1执行也会失败。单机事务</p>
@@ -567,6 +567,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/05/08/Spanner论文阅读笔记/" rel="prev" title="Spanner论文阅读笔记">
+                Spanner论文阅读笔记 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -683,7 +687,7 @@ var jiathis_config={
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
