@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="读书笔记," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="这篇文章是我阅读这篇论文过程中做的笔记，以及一些自己的思考。 简介Spark是由当时计算框架无法高效处理的两个问题所驱动设计：迭代算法和交互式数据挖掘工具。 相比于很有名的MapReduce，Spark有如下优势：  由于计算过程会尽可能的利用内存，性能上会有大大提升，即使在内存放不下数据的情况下也至少不会比MapReduce慢。 对于MapReduce，只能通过将数据写入一个外部可靠存储系统来在">
+<meta name="keywords" content="读书笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark论文阅读笔记">
+<meta property="og:url" content="http://tomkklalala.github.io/2020/05/11/Spark论文阅读笔记/index.html">
+<meta property="og:site_name" content="TomKK&#39;s blogs">
+<meta property="og:description" content="这篇文章是我阅读这篇论文过程中做的笔记，以及一些自己的思考。 简介Spark是由当时计算框架无法高效处理的两个问题所驱动设计：迭代算法和交互式数据挖掘工具。 相比于很有名的MapReduce，Spark有如下优势：  由于计算过程会尽可能的利用内存，性能上会有大大提升，即使在内存放不下数据的情况下也至少不会比MapReduce慢。 对于MapReduce，只能通过将数据写入一个外部可靠存储系统来在">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/05/11/Spark论文阅读笔记/Untitled.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/05/11/Spark论文阅读笔记/Untitled%201.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/05/11/Spark论文阅读笔记/Untitled%202.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/05/11/Spark论文阅读笔记/Untitled%203.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/05/11/Spark论文阅读笔记/Untitled%204.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/05/11/Spark论文阅读笔记/Untitled%205.png">
+<meta property="og:image" content="http://tomkklalala.github.io/2020/05/11/Spark论文阅读笔记/Untitled%206.png">
+<meta property="og:updated_time" content="2020-05-11T13:56:43.350Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spark论文阅读笔记">
+<meta name="twitter:description" content="这篇文章是我阅读这篇论文过程中做的笔记，以及一些自己的思考。 简介Spark是由当时计算框架无法高效处理的两个问题所驱动设计：迭代算法和交互式数据挖掘工具。 相比于很有名的MapReduce，Spark有如下优势：  由于计算过程会尽可能的利用内存，性能上会有大大提升，即使在内存放不下数据的情况下也至少不会比MapReduce慢。 对于MapReduce，只能通过将数据写入一个外部可靠存储系统来在">
+<meta name="twitter:image" content="http://tomkklalala.github.io/2020/05/11/Spark论文阅读笔记/Untitled.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'FBQ33HXA0Q',
+      apiKey: '5a256d1a0d5075a6a17b29fbae8cdbdc',
+      indexName: 'blog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"搜索文章","hits_empty":"没有找到关于: ${query}","hits_stats":"共 ${hits} 条结果耗时 ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://tomkklalala.github.io/2020/05/11/Spark论文阅读笔记/"/>
+
+
+
+
+
+  <title>Spark论文阅读笔记 | TomKK's blogs</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">TomKK's blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tomkklalala.github.io/2020/05/11/Spark论文阅读笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TomKK">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TomKK's blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spark论文阅读笔记</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-11T21:52:33+08:00">
+                2020-05-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/05/11/Spark论文阅读笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2020/05/11/Spark论文阅读笔记/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/05/11/Spark论文阅读笔记/" class="leancloud_visitors" data-flag-title="Spark论文阅读笔记">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这篇文章是我阅读<a href="https://pdos.csail.mit.edu/6.824/papers/zaharia-spark.pdf" target="_blank" rel="noopener">这篇论文</a>过程中做的笔记，以及一些自己的思考。</p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Spark是由当时计算框架无法高效处理的两个问题所驱动设计：迭代算法和交互式数据挖掘工具。</p>
+<p>相比于很有名的MapReduce，Spark有如下优势：</p>
+<ol>
+<li>由于计算过程会尽可能的利用内存，性能上会有大大提升，即使在内存放不下数据的情况下也至少不会比MapReduce慢。</li>
+<li>对于MapReduce，只能通过将数据写入一个外部可靠存储系统来在两个MapReduce任务之间重用数据，只会造成巨大的的I/O消耗。而Spark能够让程序员控制将数据在内存中缓存（或者写入存储系统）来在任务间共享，避免了冗余I/O消耗。</li>
+<li>Spark能够更高效表达更多的计算模式，换句话说是Spark能解决的问题是MapReduce能处理的问题的超集。</li>
+<li>Spark对计算过程提供了（可控的）容错性，能够通过缓存中间结果避免任务失效时从头重算整个计算过程，而MapReduce则往往需要更多计算和IO来进行恢复。</li>
+</ol>
+<p>Spark使用Resilient Distributed Datasets（RDDs）来抽象内存中的是数据（目前已经转向DataFrame）实现以上特性。</p>
+<p>和其他分布式全局共享内存、key-value存储，数据库等应用提供的细粒度的操作相比，RDDs提供的是更粗粒度的操作（transformation），比如map、fileter和join等，这些操作会同时对大量数据应用相同的操作。这使得Spark能够通过写log的方式只将这些操作（而非像上述系统需要在log中记录数据）保存下来，以此构建一个操作序列来高效的提供容错性。当计算过程中一个RDD丢失时，只需要根据log重放该RDD对应的操作历史即可重新得到。当然Spark的默认前提是输入是来自于可靠高容错的存储服务比如HDFS。</p>
+<h1 id="Resilient-Distributed-Datasets-RDDs"><a href="#Resilient-Distributed-Datasets-RDDs" class="headerlink" title="Resilient Distributed Datasets (RDDs)"></a>Resilient Distributed Datasets (RDDs)</h1><p>RDD是一个只读的，分片的数据集合，只能通过对：</p>
+<ol>
+<li>可靠存储服务</li>
+<li>或者，其他RDD</li>
+</ol>
+<p>进行一些确定操作而得到。</p>
+<h1 id="Spark-API"><a href="#Spark-API" class="headerlink" title="Spark API"></a>Spark API</h1><p>这些返回值为RDD的操作被称为转换（transformation），转换被调用时，并不是立即执行的，而是仅仅在操作序列中log一条。</p>
+<p>积累的转换只有每次在遇到action的时候才会一起执行，action是一些应用于RDD的操作，但是返回值确实一个数值或者一些导出到存储系统的数据。</p>
+<p>正是因为转换的这种惰性执行策略，使得Spark能够对操作序列进行分析和优化，比如可以让部分操作流水线执行，这样后面的操作不用等待前面操作完全结束再开始。</p>
+<p><img src="Untitled.png" alt="Spark%200f4f442d718e442fb1fef8c271fb6c43/Untitled.png"></p>
+<p>上图是Spark提供的接口：</p>
+<ul>
+<li><p>Transformation：</p>
+<ul>
+<li><code>map</code>：对RDD每个数据执行指定函数，该函数的返回值替换原来数据。</li>
+<li><code>filter</code>：对所有数据对执行指定函数，仅保留返回true的RDD子集。</li>
+<li><code>flatMap</code>：map的函数是返回一个数据，但是<code>flatMap</code>的函数可以返回多个数据，这使得RDD内条目的数量往往会变多。</li>
+<li><code>sample</code>：类似于map，但是会随机从父数据集中得到一个子集。虽然是随机操作，但是RDD会存储生成随机数用的种子，这使得未来恢复数据再次执行时会得到相同的输出。</li>
+<li><code>groupByKey</code>：只能使用于kv数据对类型的RDD。将RDD中的数据对根据相同的key进行整合，得到的RDD的key将是无重复的。</li>
+<li><code>reduceByKey</code>：只能使用于kv数据对类型的RDD。遍历RDD中key相同的数据对，指定的函数接收两个参数，第一个参数为上一次执行的返回值，第二个参数为本轮执行的数据对的value。</li>
+<li><code>union</code>：将两个RDD合并为一个RDD。注意并不去重。</li>
+<li><code>join</code>：类似mysql中的left join，将两个RDD根据某个关联函数合并。</li>
+<li><code>cogroup</code>：将两个RDD各自groupByKey之后的结果再进行一次groupByKey。</li>
+<li><code>crossProduct</code>：RDD的笛卡尔积</li>
+<li><code>mapValues</code>：只能使用于kv数据对类型的RDD。等价于对所有的值的集合使用map。</li>
+<li><code>sort</code>：略</li>
+<li><code>partitionBy</code>：根据用户指定函数进行数据分片。默认使用hash。</li>
+</ul>
+</li>
+<li><p>Actions：</p>
+<ul>
+<li><code>count</code>：返回元素数量。</li>
+<li><code>collect</code>：返回RDD对应的元素。</li>
+<li><code>reduce</code>：遍历RDD中所有数据，指定的函数接收两个参数，第一个参数为上一次执行的返回值，第二个参数为本轮执行的数据对的value。</li>
+<li><code>lookup</code>：返回RDD中某个key对应的数据。</li>
+<li><code>save</code>：将RDD输出到存储系统的指定路径。</li>
+</ul>
+<h2 id="表示RDD"><a href="#表示RDD" class="headerlink" title="表示RDD"></a>表示RDD</h2><p>RDD的表示方式需要能够支持将各种操作进行任意组合，并且还需要能够表示出RDD之间的依赖关系。</p>
+<p>Spark使用如下信息来表示一个RDD：</p>
+<ul>
+<li>一组组成当前RDD的分片数据</li>
+<li>当前RDD对父RDD的一组依赖。</li>
+<li>一个基于父RDD来计算得到当前RDD的函数。</li>
+<li>关于分片模式的元数据。</li>
+<li>关于分片存放信息的元数据。</li>
+</ul>
+<p><img src="Untitled 1.png" alt="Spark%200f4f442d718e442fb1fef8c271fb6c43/Untitled%201.png"></p>
+<p>比如，RDD会将HDFS上一个文件的每个文件块作为一个分片，并且记录各个文件块的位置。同时如果对该RDD执行map转换的话，那么新生成的RDD会是相同的分区，且其分区的信息是本地父分区map执行的结果。</p>
+<p>Spark将RDD的依赖分为两种：</p>
+<ul>
+<li><code>narrow dependency</code>：父RDD的每个分片仅仅被最多一个子RDD的分片使用。</li>
+<li><code>wide dependency</code>：父RDD的部分分片可能被多个子RDD的分片所依赖。</li>
+</ul>
+<p>例如，<code>map</code>将导致一个<code>narrow dependency</code>，而<code>join</code>将导致一个<code>wide dependency</code>（除非父RDD都事先经过hash-partition）。</p>
+<p>其实本质上，这个依赖描述的就是一个操作是否会导致父分片在网络上传输进行数据重组（shuffle）。<code>wide dependency</code>需要进行shuffle，而<code>narrow dependency</code>则是往往在本地执行。</p>
+<p>之所以RDD要分类依赖关系是因为以下两个原因：</p>
+<ul>
+<li><code>narrow dependency</code>允许在本地对所有的父分片进行流水线执行。比如一个先执行map再执行filter的操作序列，可以在map计算完一个元素后直接将结果传给filter，而不用等待map任务完全结束后再开始filter任务。而与之相反，<code>wide dependency</code>则需要所有的父分片都准备就绪以后，在节点间进行数据重组。</li>
+<li>当一个节点失效后，<code>narrow dependency</code>可以更高效的恢复。因为对于<code>narrow dependency</code>，只需要依赖更少数量的父分片就可以重新计算得出。而对于<code>wide dependency</code>则可能需要依赖整个父RDD。这种差异在考虑到内存管理中的驱逐（evict）时会被放大，因为每个节点上内存资源是有限的，极端情况下，丢失的分片所有依赖的父分片都已经被驱逐出内存，那么<code>wide dependency</code>可能会需要将所有父分片全部从源头计算一遍（可以利用<code>persist</code>缓解）。</li>
+</ul>
+<h2 id="RDD-vs-DSM"><a href="#RDD-vs-DSM" class="headerlink" title="RDD vs DSM"></a>RDD vs DSM</h2><p>在DSM（Distributed Shared Memory）系统中，应用允许在一个全局的地址空间内读写任意位置。</p>
+<p>RDD和DSM的主要区别在于：</p>
+<ul>
+<li>RDD只允许通过粗粒度的转换操作来创建。而DSM则允许随机细粒度读写。RDD的这种限制使得RDD在失效恢复时更加高效，因为他仅仅需要操作序列历史就可以进行恢复，而DSM为了容错一般会提供检查点机制（checkpoint），这种机制会消耗大量的存储空间。另外，RDD只需要重计算部分分区，且可以通过将各个分片恢复任务分派给不同机器，从而进行并行恢复。</li>
+<li>因为所有的RDD一旦创建就不可再更改，所以对于那些计算较慢的节点，可以同时启用备用任务且不需要考虑并发控制的问题。而DSM如果要同时执行备用任务的话，会有并发控制的问题，因为他们修改的是同一块内存空间。</li>
+<li>RDD的粗粒度操作能够让调度器基于数据局部性来调用任务，以此来提升性能。</li>
+<li>RDD在系统没有足够内存的时候，能够自动降级，将数据存储到磁盘上，此时性能将和MapReduce的之类计算系统类似。</li>
+</ul>
+<p><img src="Untitled 2.png" alt="Spark%200f4f442d718e442fb1fef8c271fb6c43/Untitled%202.png"></p>
+<h2 id="例子：pageRank"><a href="#例子：pageRank" class="headerlink" title="例子：pageRank"></a>例子：pageRank</h2><p>驱动（driver）代码。</p>
+<p><img src="Untitled 3.png" alt="Spark%200f4f442d718e442fb1fef8c271fb6c43/Untitled%203.png"></p>
+<p>RDD操作序列（lineage）图。</p>
+<p><img src="Untitled 4.png" alt="Spark%200f4f442d718e442fb1fef8c271fb6c43/Untitled%204.png"></p>
+<p>可以看到Spark会将循环迭代操作变成一个很长很长的操作系列图。</p>
+<p>为了避免发生失效时，因为过长的操作系列图而导致长时间的重计算，Spark提供了一个接口<code>persist</code>，能够让用户选择将一个RDD存储到存储服务中，比如这个例子中，如果迭代次数提高可以考虑将ranks每隔几轮迭代就<code>persist</code>一次。</p>
+<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><p>论文作者通过大概14000行Scala代码实现的Spark。Spark能够使用Hadoop现有的数据插件API从任何Hadoop输入源中读取数据（比如HDFS，HBase等）。</p>
+<h2 id="任务调度"><a href="#任务调度" class="headerlink" title="任务调度"></a>任务调度</h2><p>每当用户调用一个action时，调度器会通过该RDD的操作序列图构建一个有向无环图（DAG），图中的节点为一个个需要执行的阶段（stage）。</p>
+<p><img src="Untitled 5.png" alt="Spark%200f4f442d718e442fb1fef8c271fb6c43/Untitled%205.png"></p>
+<p>每个执行阶段会包含尽可能多的可以流水线执行的操作，即互相是<code>narrow dependency</code>的分片计算任务。每个阶段的边界为<code>wide dependency</code>导致的数据重组操作（shuffle）。</p>
+<p>调度器会根据数据的局部性来进行分配任务。如果一个计算任务需要的分片已经在某个节点的内存中了，那么就将任务分配给该节点。另外，如果一个任务显式声明了期望的执行位置（比如，一个HDFS文件），那么就将任务分配给指定节点。</p>
+<p>对于<code>wide dependency</code>，Spark目前会在持有父分区的节点上将中间结果持久化，以此来简化失效恢复过程。</p>
+<h2 id="解释器集成"><a href="#解释器集成" class="headerlink" title="解释器集成"></a>解释器集成</h2><p>Spark基于Sacala的交互式shell也提供了一个交互式的shell。</p>
+<p>Scala解释器一般来说对用户输入的每行输入都会创建一个类并编译加载进JVM，并且执行该类的函数。这个生成的类包含了一个单例的对象，该对象包含了该行中所包含的变量或者函数。</p>
+<p>比如，用户输入了如下两行代码：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> x = <span class="number">5</span></span><br><span class="line">println(x)</span><br></pre></td></tr></table></figure>
+<p>第一行执行结束之后，会生成一个Line1的类，并且导致第二行编译成<code>println(Line1.getInstance().x)</code>。</p>
+<p>Spark修改Scala的解释器的以下两点：</p>
+<ol>
+<li>Class shipping：在用户输入一行代码之后，将生成的类的字节码通过HTTP发送给worker。</li>
+<li>Modified code generation：一般来说每行代码创建的单例对象是通过调用其类的静态方法来访问的。这使得当未来序列化一个对象时该引用了之前的变量，java不会把将对应的实例也一起发送过去。所以Spark将其修改了代码的生成，将其变为了直接访问对象实例，而非通过静态方法来间接访问。</li>
+</ol>
+<p><img src="Untitled 6.png" alt="Spark%200f4f442d718e442fb1fef8c271fb6c43/Untitled%206.png"></p>
+<h2 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h2><p>Spark提供了三种选项来存储需要持久存在的RDD：</p>
+<ol>
+<li>以java对象的方式存在内存。</li>
+<li>以序列化后的java对象的方式存在内存。</li>
+<li>存在磁盘上。</li>
+</ol>
+<p>因为JVM能够直接访问，所以第一种方式性能最快，第二种则更加节省内存，第三种则在数据量大到内存放不下的时候可以使用，避免重新计算花费太大的代价。</p>
+<p>为了管理有限的内存资源，Spark采用LRU策略来管理内存。</p>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>交个朋友吧~</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="TomKK 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="TomKK 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/09/FaRM论文阅读笔记/" rel="next" title="FaRM论文阅读笔记">
+                <i class="fa fa-chevron-left"></i> FaRM论文阅读笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="TomKK" />
+            
+              <p class="site-author-name" itemprop="name">TomKK</p>
+              <p class="site-description motion-element" itemprop="description">学而后知不足</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x7B80;&#x4ECB;" class="headerlink" title="&#x7B80;&#x4ECB;"></a>&#x7B80;&#x4ECB;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Resilient-Distributed-Datasets-RDDs"><span class="nav-number">2.</span> <span class="nav-text"><a href="#Resilient-Distributed-Datasets-RDDs" class="headerlink" title="Resilient Distributed Datasets (RDDs)"></a>Resilient Distributed Datasets (RDDs)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spark-API"><span class="nav-number">3.</span> <span class="nav-text"><a href="#Spark-API" class="headerlink" title="Spark API"></a>Spark API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#表示RDD"><span class="nav-number">3.1.</span> <span class="nav-text"><a href="#&#x8868;&#x793A;RDD" class="headerlink" title="&#x8868;&#x793A;RDD"></a>&#x8868;&#x793A;RDD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RDD-vs-DSM"><span class="nav-number">3.2.</span> <span class="nav-text"><a href="#RDD-vs-DSM" class="headerlink" title="RDD vs DSM"></a>RDD vs DSM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例子：pageRank"><span class="nav-number">3.3.</span> <span class="nav-text"><a href="#&#x4F8B;&#x5B50;&#xFF1A;pageRank" class="headerlink" title="&#x4F8B;&#x5B50;&#xFF1A;pageRank"></a>&#x4F8B;&#x5B50;&#xFF1A;pageRank</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现"><span class="nav-number">4.</span> <span class="nav-text"><a href="#&#x5B9E;&#x73B0;" class="headerlink" title="&#x5B9E;&#x73B0;"></a>&#x5B9E;&#x73B0;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#任务调度"><span class="nav-number">4.1.</span> <span class="nav-text"><a href="#&#x4EFB;&#x52A1;&#x8C03;&#x5EA6;" class="headerlink" title="&#x4EFB;&#x52A1;&#x8C03;&#x5EA6;"></a>&#x4EFB;&#x52A1;&#x8C03;&#x5EA6;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解释器集成"><span class="nav-number">4.2.</span> <span class="nav-text"><a href="#&#x89E3;&#x91CA;&#x5668;&#x96C6;&#x6210;" class="headerlink" title="&#x89E3;&#x91CA;&#x5668;&#x96C6;&#x6210;"></a>&#x89E3;&#x91CA;&#x5668;&#x96C6;&#x6210;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存管理"><span class="nav-number">4.3.</span> <span class="nav-text"><a href="#&#x5185;&#x5B58;&#x7BA1;&#x7406;" class="headerlink" title="&#x5185;&#x5B58;&#x7BA1;&#x7406;"></a>&#x5185;&#x5B58;&#x7BA1;&#x7406;</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TomKK</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://http-tomkklalala-github-io.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://tomkklalala.github.io/2020/05/11/Spark论文阅读笔记/';
+          this.page.identifier = '2020/05/11/Spark论文阅读笔记/';
+          this.page.title = 'Spark论文阅读笔记';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://http-tomkklalala-github-io.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1uk3Vw0sydAghlwOnBUGYRMn-gzGzoHsz", "op4ebrtGIe4wP41x2oJjqocF");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
