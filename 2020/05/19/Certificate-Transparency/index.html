@@ -92,7 +92,7 @@
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/19/Certificate-Transparency/Untitled%202.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/19/Certificate-Transparency/Untitled%203.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/19/Certificate-Transparency/Untitled%204.png">
-<meta property="og:updated_time" content="2020-05-19T14:45:00.952Z">
+<meta property="og:updated_time" content="2020-05-20T02:21:23.822Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Certificate Transparency">
 <meta name="twitter:description" content="本文是看这篇文章过程中的笔记，还有自己的一些思考。 前面写的文章讲述的都是封闭的系统，集群的服务器都是由一家公司所掌控，所以是默认可信的，不会发生拜占庭错误。但是现实中有的系统是公开的所有的人都可以使用的，且系统的服务器可能由多家不同的机构或者公司所维护，那么用户在访问服务的时候，难免会有一个疑问：“我是否在和正确的服务器通信？” 背景介绍HTTP时代在20世纪90年代，人们都在使用的是HTTP协">
@@ -429,14 +429,14 @@
 <li>浏览器</li>
 <li>web服务器</li>
 <li>Certificate Transparency Log服务器</li>
-<li>审计服务器</li>
-<li>监控服务器</li>
+<li>审计服务器（Auditor）</li>
+<li>监控服务器（Monitor）</li>
 </ul>
-<p>其中审计服务器和监控服务器往往是和web服务器一体的。整个系统的简化的工作流程如下：</p>
+<p>其中监控服务器往往是和web服务器一体而审计服务器是运行在浏览器内部的。整个系统的简化的工作流程如下：</p>
 <ol>
 <li>在CA服务器生成证书后，需要将证书发送给CT Log服务器进行存储。</li>
-<li>浏览器收到收到web服务器的证书后，会向CT Log服务器索要证明。如果CT log服务器提供的证明成立，则浏览器会选择相信，即继续建立连接。反之拒绝建立连接。</li>
-<li>监控服务器会从CT Log服务器拉取其名下的证书，审计服务器将拉取到的证书列表和web服务器维护的合法证书列表进行对比，若有不一致的证书，则吊销它。</li>
+<li>浏览器收到收到web服务器的证书后，审计服务器会向CT Log服务器索要证明。如果CT log服务器提供的证明成立，则浏览器会选择相信，即继续建立连接。反之拒绝建立连接。</li>
+<li>监控服务器会从CT Log服务器拉取其名下的证书，将拉取到的证书列表和web服务器维护的合法证书列表进行对比，若有不一致的证书，则吊销它。</li>
 </ol>
 <p>可以看到整个系统的核心在于Certificate Transparency Log服务器是如何实现的。</p>
 <h2 id="Certificate-Transparency-Log服务器"><a href="#Certificate-Transparency-Log服务器" class="headerlink" title="Certificate Transparency Log服务器"></a>Certificate Transparency Log服务器</h2><p>CT Log服务器是一个append-only的Log存储服务器，且在网络中存在多个。浏览器中会内置一批合法CT Log服务器地址列表。</p>
@@ -462,14 +462,14 @@
 <h2 id="阶段性总结"><a href="#阶段性总结" class="headerlink" title="阶段性总结"></a>阶段性总结</h2><p>假设浏览器想要验证某个假证书，我们站在一个黑客的角度尝试去欺骗浏览器，那么该受黑客控制的CT Log服务器：</p>
 <ul>
 <li><p>情况一：该假证书的确在底层的Log序列中。</p>
-<p>那么，这种情况下，的确客户端会信任并使用该证书。但是最终该假证书会被审计服务器所检测到，并吊销。</p>
+<p>那么，这种情况下，的确客户端会信任并使用该证书。但是最终该假证书会被监控服务器所检测到，并吊销。</p>
 </li>
 <li><p>情况二：该假证书不在底层Log序列中，但是黑客试图伪造一系列节点哈希值，来得到和当前树根哈希相同的树根哈希。</p>
 <p>由哈希的性质可以保证，几乎可以认定不可能在有限时间内找到另一个包含假证书的Log序列能够计算得到相同的树根哈希。</p>
 </li>
-<li><p>情况三：黑客在CT Log服务器中暂时将假证书添加进Log序列，计算出树根哈希后马上删除，再重新计算正确的树根哈希。这样审计服务器也无法察觉到。</p>
+<li><p>情况三：黑客在CT Log服务器中暂时将假证书添加进Log序列，计算出树根哈希后马上删除，再重新计算正确的树根哈希。这样监控服务器也无法察觉到。</p>
 </li>
-<li><p>情况四：黑客在CT Log服务器中维护两个（或者多个）Log序列，一个序列中包含假证书负责欺骗特定浏览器，一个不包含假证书的序列专门用来响应其他的请求（包含浏览器和审计服务器）。</p>
+<li><p>情况四：黑客在CT Log服务器中维护两个（或者多个）Log序列，一个序列中包含假证书负责欺骗特定浏览器，一个不包含假证书的序列专门用来响应其他的请求（包含浏览器和监控服务器）。</p>
 </li>
 </ul>
 <p>基于上面Merkle Tree提供的功能，能够防御上述情况一和情况二，但是对于情况三和四，束手无策。</p>
@@ -494,6 +494,11 @@
 </ol>
 <p>那么浏览器端的验证逻辑的伪代码如下：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">validate(bits B as record R):</span><br><span class="line">    <span class="keyword">if</span> R ≥ cached.N:</span><br><span class="line">        N, T = server.Latest()</span><br><span class="line">        <span class="keyword">if</span> server.TreeProof(cached.N, N) cannot be verified:</span><br><span class="line">            fail loudly</span><br><span class="line">        cached.N, cached.T = N, T</span><br><span class="line">    <span class="keyword">if</span> server.RecordProof(R, cached.N) cannot be verified using B:</span><br><span class="line">        fail loudly</span><br><span class="line">    accept B as record R</span><br></pre></td></tr></table></figure>
+<h1 id="拓展阅读"><a href="#拓展阅读" class="headerlink" title="拓展阅读"></a>拓展阅读</h1><p><a href="https://tools.ietf.org/html/rfc6962#section-4.5" target="_blank" rel="noopener">RFC 6962 - Certificate Transparency</a></p>
+<p><a href="https://www.certificate-transparency.org/" target="_blank" rel="noopener">Certificate Transparency</a></p>
+<p><a href="https://www.ssl.com/article/how-do-browsers-handle-revoked-ssl-tls-certificates/" target="_blank" rel="noopener">How Do Browsers Handle Revoked SSL/TLS Certificates?</a></p>
+<p><a href="https://www.facebook.com/notes/protect-the-graph/introducing-our-certificate-transparency-monitoring-tool/1811919779048165/" target="_blank" rel="noopener">Facebook</a></p>
+<p><a href="https://blog.cloudflare.com/introducing-certificate-transparency-monitoring/" target="_blank" rel="noopener">Introducing Certificate Transparency Monitoring</a></p>
 
       
     </div>
@@ -724,7 +729,7 @@ var jiathis_config={
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#背景介绍"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x80CC;&#x666F;&#x4ECB;&#x7ECD;" class="headerlink" title="&#x80CC;&#x666F;&#x4ECB;&#x7ECD;"></a>&#x80CC;&#x666F;&#x4ECB;&#x7ECD;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP时代"><span class="nav-number">1.1.</span> <span class="nav-text"><a href="#HTTP&#x65F6;&#x4EE3;" class="headerlink" title="HTTP&#x65F6;&#x4EE3;"></a>HTTP&#x65F6;&#x4EE3;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTPS时代"><span class="nav-number">1.2.</span> <span class="nav-text"><a href="#HTTPS&#x65F6;&#x4EE3;" class="headerlink" title="HTTPS&#x65F6;&#x4EE3;"></a>HTTPS&#x65F6;&#x4EE3;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#纯CA模式的问题"><span class="nav-number">1.3.</span> <span class="nav-text"><a href="#&#x7EAF;CA&#x6A21;&#x5F0F;&#x7684;&#x95EE;&#x9898;" class="headerlink" title="&#x7EAF;CA&#x6A21;&#x5F0F;&#x7684;&#x95EE;&#x9898;"></a>&#x7EAF;CA&#x6A21;&#x5F0F;&#x7684;&#x95EE;&#x9898;</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#尝试：公开数据库"><span class="nav-number">2.</span> <span class="nav-text"><a href="#&#x5C1D;&#x8BD5;&#xFF1A;&#x516C;&#x5F00;&#x6570;&#x636E;&#x5E93;" class="headerlink" title="&#x5C1D;&#x8BD5;&#xFF1A;&#x516C;&#x5F00;&#x6570;&#x636E;&#x5E93;"></a>&#x5C1D;&#x8BD5;&#xFF1A;&#x516C;&#x5F00;&#x6570;&#x636E;&#x5E93;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Certificate-Transparency"><span class="nav-number">3.</span> <span class="nav-text"><a href="#Certificate-Transparency" class="headerlink" title="Certificate Transparency"></a>Certificate Transparency</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Certificate-Transparency-Log服务器"><span class="nav-number">3.1.</span> <span class="nav-text"><a href="#Certificate-Transparency-Log&#x670D;&#x52A1;&#x5668;" class="headerlink" title="Certificate Transparency Log&#x670D;&#x52A1;&#x5668;"></a>Certificate Transparency Log&#x670D;&#x52A1;&#x5668;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Merkle-Tree"><span class="nav-number">3.2.</span> <span class="nav-text"><a href="#Merkle-Tree" class="headerlink" title="Merkle Tree"></a>Merkle Tree</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阶段性总结"><span class="nav-number">3.3.</span> <span class="nav-text"><a href="#&#x9636;&#x6BB5;&#x6027;&#x603B;&#x7ED3;" class="headerlink" title="&#x9636;&#x6BB5;&#x6027;&#x603B;&#x7ED3;"></a>&#x9636;&#x6BB5;&#x6027;&#x603B;&#x7ED3;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Merkle-tree前缀校验"><span class="nav-number">3.4.</span> <span class="nav-text"><a href="#Merkle-tree&#x524D;&#x7F00;&#x6821;&#x9A8C;" class="headerlink" title="Merkle tree&#x524D;&#x7F00;&#x6821;&#x9A8C;"></a>Merkle tree&#x524D;&#x7F00;&#x6821;&#x9A8C;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CT-Log服务器接口设计"><span class="nav-number">3.5.</span> <span class="nav-text"><a href="#CT-Log&#x670D;&#x52A1;&#x5668;&#x63A5;&#x53E3;&#x8BBE;&#x8BA1;" class="headerlink" title="CT Log&#x670D;&#x52A1;&#x5668;&#x63A5;&#x53E3;&#x8BBE;&#x8BA1;"></a>CT Log&#x670D;&#x52A1;&#x5668;&#x63A5;&#x53E3;&#x8BBE;&#x8BA1;</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#背景介绍"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x80CC;&#x666F;&#x4ECB;&#x7ECD;" class="headerlink" title="&#x80CC;&#x666F;&#x4ECB;&#x7ECD;"></a>&#x80CC;&#x666F;&#x4ECB;&#x7ECD;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP时代"><span class="nav-number">1.1.</span> <span class="nav-text"><a href="#HTTP&#x65F6;&#x4EE3;" class="headerlink" title="HTTP&#x65F6;&#x4EE3;"></a>HTTP&#x65F6;&#x4EE3;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTPS时代"><span class="nav-number">1.2.</span> <span class="nav-text"><a href="#HTTPS&#x65F6;&#x4EE3;" class="headerlink" title="HTTPS&#x65F6;&#x4EE3;"></a>HTTPS&#x65F6;&#x4EE3;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#纯CA模式的问题"><span class="nav-number">1.3.</span> <span class="nav-text"><a href="#&#x7EAF;CA&#x6A21;&#x5F0F;&#x7684;&#x95EE;&#x9898;" class="headerlink" title="&#x7EAF;CA&#x6A21;&#x5F0F;&#x7684;&#x95EE;&#x9898;"></a>&#x7EAF;CA&#x6A21;&#x5F0F;&#x7684;&#x95EE;&#x9898;</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#尝试：公开数据库"><span class="nav-number">2.</span> <span class="nav-text"><a href="#&#x5C1D;&#x8BD5;&#xFF1A;&#x516C;&#x5F00;&#x6570;&#x636E;&#x5E93;" class="headerlink" title="&#x5C1D;&#x8BD5;&#xFF1A;&#x516C;&#x5F00;&#x6570;&#x636E;&#x5E93;"></a>&#x5C1D;&#x8BD5;&#xFF1A;&#x516C;&#x5F00;&#x6570;&#x636E;&#x5E93;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Certificate-Transparency"><span class="nav-number">3.</span> <span class="nav-text"><a href="#Certificate-Transparency" class="headerlink" title="Certificate Transparency"></a>Certificate Transparency</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Certificate-Transparency-Log服务器"><span class="nav-number">3.1.</span> <span class="nav-text"><a href="#Certificate-Transparency-Log&#x670D;&#x52A1;&#x5668;" class="headerlink" title="Certificate Transparency Log&#x670D;&#x52A1;&#x5668;"></a>Certificate Transparency Log&#x670D;&#x52A1;&#x5668;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Merkle-Tree"><span class="nav-number">3.2.</span> <span class="nav-text"><a href="#Merkle-Tree" class="headerlink" title="Merkle Tree"></a>Merkle Tree</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阶段性总结"><span class="nav-number">3.3.</span> <span class="nav-text"><a href="#&#x9636;&#x6BB5;&#x6027;&#x603B;&#x7ED3;" class="headerlink" title="&#x9636;&#x6BB5;&#x6027;&#x603B;&#x7ED3;"></a>&#x9636;&#x6BB5;&#x6027;&#x603B;&#x7ED3;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Merkle-tree前缀校验"><span class="nav-number">3.4.</span> <span class="nav-text"><a href="#Merkle-tree&#x524D;&#x7F00;&#x6821;&#x9A8C;" class="headerlink" title="Merkle tree&#x524D;&#x7F00;&#x6821;&#x9A8C;"></a>Merkle tree&#x524D;&#x7F00;&#x6821;&#x9A8C;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CT-Log服务器接口设计"><span class="nav-number">3.5.</span> <span class="nav-text"><a href="#CT-Log&#x670D;&#x52A1;&#x5668;&#x63A5;&#x53E3;&#x8BBE;&#x8BA1;" class="headerlink" title="CT Log&#x670D;&#x52A1;&#x5668;&#x63A5;&#x53E3;&#x8BBE;&#x8BA1;"></a>CT Log&#x670D;&#x52A1;&#x5668;&#x63A5;&#x53E3;&#x8BBE;&#x8BA1;</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#拓展阅读"><span class="nav-number">4.</span> <span class="nav-text"><a href="#&#x62D3;&#x5C55;&#x9605;&#x8BFB;" class="headerlink" title="&#x62D3;&#x5C55;&#x9605;&#x8BFB;"></a>&#x62D3;&#x5C55;&#x9605;&#x8BFB;</span></a></li></ol></div>
             
 
           </div>
