@@ -92,7 +92,7 @@
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/19/Certificate-Transparency/Untitled%202.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/19/Certificate-Transparency/Untitled%203.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/19/Certificate-Transparency/Untitled%204.png">
-<meta property="og:updated_time" content="2020-05-20T02:21:23.822Z">
+<meta property="og:updated_time" content="2020-05-20T04:20:06.126Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Certificate Transparency">
 <meta name="twitter:description" content="本文是看这篇文章过程中的笔记，还有自己的一些思考。 前面写的文章讲述的都是封闭的系统，集群的服务器都是由一家公司所掌控，所以是默认可信的，不会发生拜占庭错误。但是现实中有的系统是公开的所有的人都可以使用的，且系统的服务器可能由多家不同的机构或者公司所维护，那么用户在访问服务的时候，难免会有一个疑问：“我是否在和正确的服务器通信？” 背景介绍HTTP时代在20世纪90年代，人们都在使用的是HTTP协">
@@ -475,7 +475,7 @@
 <p>基于上面Merkle Tree提供的功能，能够防御上述情况一和情况二，但是对于情况三和四，束手无策。</p>
 <p>为了解决情况三和情况四，CT Log服务器的设计者还提供了一个基于某个树根哈希与另一个树根哈希来证明前者的log序列是后者的前缀的接口。</p>
 <p>这样对于情况三，如果客户端发现CT Log服务器之前提供的树根哈希和现在提供的树根哈希之间不是前缀关系，那么就可以断定这个CT Log服务器有问题。</p>
-<p>对于情况四，Certificate Transparency规定所有浏览器之间会通过gossip协议向一个公共的“池子”中发送自己从CT Log服务器收到过的树根哈希，然后周期性的随机抽取若干个来自相同CT Log服务器的树根哈希进行前缀校验。若某次前缀校验失败，那么就可以断定对应的CT Log服务器有问题。</p>
+<p>对于情况四，Certificate Transparency规定所有浏览器之间会向一个公共的“池子”中发送自己从CT Log服务器收到过的树根哈希，然后周期性的随机抽取若干个来自相同CT Log服务器的树根哈希进行前缀校验。若某次前缀校验失败，那么就可以断定对应的CT Log服务器有问题。</p>
 <h2 id="Merkle-tree前缀校验"><a href="#Merkle-tree前缀校验" class="headerlink" title="Merkle tree前缀校验"></a>Merkle tree前缀校验</h2><p>为了高效的验证某个Merkle tree的树根哈希T被包含于另一个树根哈希T’，CT Log服务器只需要提供一系列节点哈希使得浏览器能够成功计算出T和T’。</p>
 <p><img src="Untitled 4.png" alt="Certificate%20Transparency%20198af67ff0aa43fda592079aaceeb512/Untitled%204.png"></p>
 <p>假设需要证明一个长度为7的log序列是一个长度为13的log序列的前缀，那么只要为浏览器提供[h(2, 0), h(1, 2), h(0, 6), h(0, 7), h(2, 2), h(0, 12)]。注意这里返回的节点哈希没有包括上图中x和y，这是因为这些节点的哈希会在未来随着新的Log的添加而变化，而浏览器需要进行缓存节点信息，所以不能使用。</p>
