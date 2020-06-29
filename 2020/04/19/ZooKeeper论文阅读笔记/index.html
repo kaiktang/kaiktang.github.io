@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/19/ZooKeeper论文阅读笔记/Untitled.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/04/19/ZooKeeper论文阅读笔记/Untitled%201.png">
-<meta property="og:updated_time" content="2020-04-21T23:40:23.726Z">
+<meta property="og:updated_time" content="2020-06-29T15:38:31.146Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ZooKeeper论文阅读笔记">
 <meta name="twitter:description" content="本文是我阅读这篇论文过程中的笔记，以及一些自己的思考。 之前的Raft文章中，介绍了一个读写操作都是linearizable的系统。这类系统能够让集群提供的服务在用户看来仿佛在和单机系统交互。仿佛这种化零为整的效果应该就已经是完美的解决方法没有任何问题？ 但是这样的系统有一个致命的问题是：如果你为集群购置了N台机器，那么理想情况下你应该得到N倍的性能，再不济至少能提升一些性能吧。但是遗憾的是，如果">
@@ -572,13 +572,11 @@ func ReadLock(){
 <p>但是这并没有问题，因为即使使用这样一份快照，基于它重放快照时刻起后面的全部操作信息，最终还是能够保证恢复到最新状态的。这是因为ZooKeeper中，状态变更只要按照相同的顺序重放，即使重放多次，最终得到的状态都是一样的。</p>
 <p>比如，假设在data tree中有两个节点/foo和/goo，他们存储的内容分别为f1和g1，并且在快照开始时他们的版本号均为1。假设在生成快照期间，会执行以下状态变更：</p>
 <ol>
-<li><setdatatxn, 2="" foo,="" f2,=""></setdatatxn,></li>
-<li><setdatatxn, 2="" goo,="" g2,=""></setdatatxn,></li>
-<li><setdatatxn, 3="" foo,="" f3,="">
-
-</setdatatxn,></li>
+<li>\<setdatatxn, foo,="" f2,="" 2\=""></setdatatxn,></li>
+<li><setdatatxn, goo,="" g2,="" 2\=""></setdatatxn,></li>
+<li>\<setdatatxn, foo,="" f3,="" 3\=""></setdatatxn,></li>
 </ol>
-<p>格式为：<transactiontype, path,="" value,="" new-version=""></transactiontype,></p>
+<p>格式为：\<transactiontype, path,="" value,="" new-version\=""></transactiontype,></p>
 <p>在执行完这些状态变更后，/foo和/goo应该存储的值分别为f3和g2，版本号分别为3和2。但是生成的fuzzy snapshot可能记录的是f3和g1，该状态并不是一个合法的瞬时状态，但是如果重新按序执行上面的操作一遍，最终得到的还是一致的正确的最新的状态。</p>
 <h2 id="客户-服务端交互"><a href="#客户-服务端交互" class="headerlink" title="客户-服务端交互"></a>客户-服务端交互</h2><p>这一节主要讲的是如何做到前面提到过两个顺序性保证的。</p>
 <p>首先对于第一个全局linearizable的写操作，是因为所有的写操作都会被转发给leader，而leader在执行写操作的时候是一个一个执行的，并不会和其他读或者写操作进行并发，因此这也保证了文件变动通知发送的有序性。另外需要注意的是，监听事件的注册信息和事件的发送都是由和客户端直接相连的那个服务器处理的。</p>
