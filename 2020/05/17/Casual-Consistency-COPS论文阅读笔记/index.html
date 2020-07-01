@@ -93,7 +93,7 @@
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/17/Casual-Consistency-COPS论文阅读笔记/Untitled%203.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/17/Casual-Consistency-COPS论文阅读笔记/Untitled%202.png">
 <meta property="og:image" content="http://tomkklalala.github.io/2020/05/17/Casual-Consistency-COPS论文阅读笔记/Untitled%204.png">
-<meta property="og:updated_time" content="2020-07-01T07:50:44.467Z">
+<meta property="og:updated_time" content="2020-07-01T08:53:18.327Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Casual Consistency: COPS论文阅读笔记">
 <meta name="twitter:description" content="本文是我阅读这篇论文过程中的笔记，以及自己的思考。 简介目前我读过的论文中涉及远距离多数据中心的存储系统有：  Spanner Facebook Memcache  他们的特点都是读操作可以由任意数据中心所处理（本地读），很快，但是写操作则要集中到某个数据中心处理。像Spanner需要由相应数据所在Paxos group中的leader节点来主持进行写操作，并在其他follower节点之间进行共识">
@@ -472,12 +472,12 @@
 <p><code>(value, v2, _) ← get_by_version(X, version=LATEST)</code></p>
 <p>在调用返回后，Client Library会在context中记录下以下信息，为未来的写操作准备依赖关系：</p>
 <ul>
-<li>[X, v2]</li>
+<li><code>&lt;X, v2&gt;</code></li>
 </ul>
 <p>同样的，假设第二句代码<code>get(Y)</code>返回的version为v4，那么此时context就变成这样：</p>
 <ul>
-<li>[X, v2]</li>
-<li>[Y, v4]</li>
+<li><code>&lt;X, v2&gt;</code></li>
+<li><code>&lt;Y, v4&gt;</code></li>
 </ul>
 <h2 id="COPS中的写操作"><a href="#COPS中的写操作" class="headerlink" title="COPS中的写操作"></a>COPS中的写操作</h2><p>基于上面的读操作介绍，这里会结合例子给出COPS处理写操作的具体流程。</p>
 <p>假设目前客户端逻辑为如下（这里为了清晰省去了context的创建和使用）：</p>
@@ -489,26 +489,26 @@
 <ul>
 <li>key：本例中应该设置为Z</li>
 <li>val：本例中应该设置为111</li>
-<li>nearest：该数据的最近的依赖关系。本例中应该设置为[[X, v2], [Y, v4]]。</li>
+<li>nearest：该数据的最近的依赖关系。本例中应该设置为<code>[&lt;X, v2&gt;, &lt;Y, v4&gt;]</code>。</li>
 </ul>
 <p>接口会返回一个布尔值代表操作是否成功，如果成功那么第二个返回值为数据的版本号，假设这里返回v3，即</p>
-<p><code>(true, v3) ← put_after (Z, 111, [deps], [[X, v2], [Y, v4]], vers=nil)</code></p>
+<p><code>(true, v3) ← put_after (Z, 111, [deps], [&lt;X, v2&gt;, &lt;Y, v4&gt;], vers=nil)</code></p>
 <p>而在COPS收到<code>put_after</code>请求之后：</p>
 <ol>
 <li><p>先为Z创建一个新的版本号，创建的规则就是之前说的Lamport timestamp+id。这里假设为v3。</p>
 </li>
-<li><p>将[Z, 111, v3]进行存储，如果之前已经有关于Z的数据了，那么会覆盖。</p>
+<li><p>将<code>&lt;Z, 111, v3&gt;</code>进行存储，如果之前已经有关于Z的数据了，那么会覆盖。</p>
 </li>
-<li><p>接下来是向其他集群转发请求，这也是通过<code>put_after</code>来实现的。故下一步为向其他所有集群发送RPC，<code>put_after (Z, 111, [deps], [[X, v2], [Y, v4]], vers=v3)</code></p>
+<li><p>接下来是向其他集群转发请求，这也是通过<code>put_after</code>来实现的。故下一步为向其他所有集群发送RPC，<code>put_after (Z, 111, [deps], [&lt;X, v2&gt;, &lt;Y, v4&gt;], vers=v3)</code></p>
 </li>
-<li><p>在其他COPS集群收到转发的写操作后，会先缓存该操作，并提取出操作中的依赖<code>[[X, v2], [Y, v4]]</code>，然后不断联系存储本集群内X和Y的分片服务器检查依赖关系是否已经满足，使用的是如下接口：</p>
+<li><p>在其他COPS集群收到转发的写操作后，会先缓存该操作，并提取出操作中的依赖<code>[&lt;X, v2&gt;, &lt;Y, v4&gt;]</code>，然后不断联系存储本集群内X和Y的分片服务器检查依赖关系是否已经满足，使用的是如下接口：</p>
 <p><code>bool ← dep_check (key, version)</code>，实现处理逻辑很简单也就是比较实际存储的key对应的version是否大于参数中的指定的version，在本例中即为：</p>
 <p><code>bool ← dep_check (X, v2)</code>和<code>bool ← dep_check (Y, v4)</code></p>
 <p>当以上两个请求都成功返回之后，此COPS集群才会真正的执行对应的操作，并响应最初的集群。</p>
 </li>
 <li><p>当所有集群都响应执行成功后，该集群才会响应客户端的<code>put(Z, 111)</code>。</p>
 </li>
-<li><p>当<code>put(Z, 111)</code>返回后，客户端还要更新context，经过优化后处理的逻辑为：直接将整个context抹除后替换为[Z, v3]。之所以可以这么做是因为：<code>put(Z, 111)</code>后未来的所有操作都依赖[Z, v3]，当然还有[Z, v3]的依赖们，但是因为[Z, v3]是已经确定在所有集群中都已经存储了的，所以[Z, v3]的依赖们也一定存储了，再次声明是多余的，故可以安全的删掉context中之前的全部依赖关系。</p>
+<li><p>当<code>put(Z, 111)</code>返回后，客户端还要更新context，经过优化后处理的逻辑为：直接将整个context抹除后替换为<code>&lt;Z, v3&gt;</code>。之所以可以这么做是因为：<code>put(Z, 111)</code>后未来的所有操作都依赖<code>&lt;Z, v3&gt;</code>，当然还有<code>&lt;Z, v3&gt;</code>的依赖们，但是因为<code>&lt;Z, v3&gt;</code>是已经确定在所有集群中都已经存储了的，所以<code>&lt;Z, v3&gt;</code>的依赖们也一定存储了，再次声明是多余的，故可以安全的删掉context中之前的全部依赖关系。</p>
 </li>
 </ol>
 <p>根据上面COPS写操作的流程可以看到有潜在的的问题：</p>
@@ -518,9 +518,9 @@
 </blockquote>
 <p><img src="Untitled 3.png" alt="Casual%20Consistency%20COPS%20db84a5a63f0a462f872b21faa0564ace/Untitled%203.png"></p>
 <p>假设客户端存储的是全部依赖。这上图就是一个典型的COPS-GT的context中维护的全量依赖图。</p>
-<p>但是根据分析不难发现，对于Z4，其全量依赖关系有[t2, u1, v6, w1, x3, y1]，这些依赖关系中还存在子依赖关系，比如y1的依赖为x3和w1等。</p>
-<p>这时就要问，此时x3和w1还有存在的必要吗？根据传递性，只要y1已经被本地集群（local cluster）成功的存储，那么其实COPS-GT的存储机制就已经保证了y1的依赖[x3, w1]已经存储了。所以y1即可代表x3和w1。</p>
-<p>同理，u1也可以去掉。可能需要纠结一下的是t2，虽然t2是Z4的直接依赖，但是因为其可以被v6所代表，所以可以分析出z4真正需要存储依赖信息只有[y1, v6]。</p>
+<p>但是根据分析不难发现，对于Z4，其全量依赖关系有<code>&lt;t2, u1, v6, w1, x3, y1&gt;</code>，这些依赖关系中还存在子依赖关系，比如y1的依赖为x3和w1等。</p>
+<p>这时就要问，此时x3和w1还有存在的必要吗？根据传递性，只要y1已经被本地集群（local cluster）成功的存储，那么其实COPS-GT的存储机制就已经保证了y1的依赖<code>&lt;x3, w1&gt;</code>已经存储了。所以y1即可代表x3和w1。</p>
+<p>同理，u1也可以去掉。可能需要纠结一下的是t2，虽然t2是Z4的直接依赖，但是因为其可以被v6所代表，所以可以分析出z4真正需要存储依赖信息只有<code>&lt;y1, v6&gt;</code>。</p>
 <p>所以经过此优化后的context中只需要存储精简后的“最近”依赖即可，也就是上图表格中的第二列。那些不需要的依赖可以通过垃圾回收清理掉。</p>
 <h1 id="COPS-GT"><a href="#COPS-GT" class="headerlink" title="COPS-GT"></a>COPS-GT</h1><p>COPS无法仅仅通过<code>get</code>来实现同时读多个key的读事务。</p>
 <p>比如考虑下面的例子，C1在将其相册权限修改为private之后，在相册中添加了一些隐私照片，同时另一个用户C2在读取相册信息：</p>
@@ -542,7 +542,7 @@
 <p>可以看到不一致的原因就在于，最后C1应该使用v2的ACL来对v2的album进行权限判断，但是这里却使用了过期的v1。这才造成了即使C2修改了ACL但是C1还是有可能能够看到其隐私相册。</p>
 <p>为了解决这个问题，需要保证访问ACL和album是在一个读事务中完成：类似<code>get_trans(ACL, album)</code>。而<code>get_trans</code>需要返回的数据能够保证参数中的key对应数据</p>
 <p>之所以之前的相册权限和内容访问不一致就是因为读取almu，COPS-GT的<code>get_tran</code>需要保证：<strong>如果传入参数中的key之间有依赖关系的话，返回的数据需要保证能够满足这些依赖关系</strong>。</p>
-<p>例子中，因为[album, v2]依赖于[ACL, v2]，所以<code>get_trans(ACL, album)</code>就不能返回[[album, v2], [ACL, v1]]给用户。因为这会造成不一致。</p>
+<p>例子中，因为<code>&lt;album, v2&gt;</code>依赖于<code>&lt;ACL, v2&gt;</code>，所以<code>get_trans(ACL, album)</code>就不能返回<code>[&lt;album, v2&gt;, &lt;ACL, v1&gt;]</code>给用户。因为这会造成不一致。</p>
 <p><img src="Untitled 4.png" alt="Casual%20Consistency%20COPS%20db84a5a63f0a462f872b21faa0564ace/Untitled%204.png"></p>
 <p>上图就是<code>get_tran</code>的实现伪代码：</p>
 <ol>
