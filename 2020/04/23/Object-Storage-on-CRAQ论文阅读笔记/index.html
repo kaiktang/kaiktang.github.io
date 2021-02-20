@@ -477,7 +477,7 @@
 <h2 id="某个数据中心内的CRAQ"><a href="#某个数据中心内的CRAQ" class="headerlink" title="某个数据中心内的CRAQ"></a>某个数据中心内的CRAQ</h2><p>在CRAQ的当前实现中，使用一致性哈希来在一个数据中心中放置链，可能会将多个chain id都映射到同一个头结点。这种方式和很多其他基于数据中心的对象存储服务类似。另一个可选的方式是，和GFS还有CR中提到的一样，使用类似目录服务来管理成员关系，而链成员是随机生成的，比如说，每个链可以包含一些随机的节点。这种方法能够潜在提升系统恢复的并行性。但是代价就是需要更高的中心化，以及存储更多的元信息。</p>
 <h2 id="跨多数据中心的CRAQ"><a href="#跨多数据中心的CRAQ" class="headerlink" title="跨多数据中心的CRAQ"></a>跨多数据中心的CRAQ</h2><p>在将多数据中心组织在一起的时候，应该小心的选择数据中心在链中的顺序，以此来减少写操作的延迟。</p>
 <p>但是即使是经过这样优化的链，在需横跨大范围的写操作的延迟层面还是无法和传统的主从架构向媲美，因为主从架构能够并行传输给所有副本节点。但是CRAQ允许将写操作流水线执行，和主从架构相比这大大提高了写操作的吞吐量。</p>
-<h2 id="ZooKeeper协作服务"><a href="#ZooKeeper协作服务" class="headerlink" title="ZooKeeper协作服务"></a>ZooKeeper协作服务</h2><p>因为从头写一个可靠的协作服务太耗时和复杂，所以CRAQ使用<a href="http://tomkklalala.github.io/2020/04/19/ZooKeeper%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">ZooKeeper</a>来提供协作服务。</p>
+<h2 id="ZooKeeper协作服务"><a href="#ZooKeeper协作服务" class="headerlink" title="ZooKeeper协作服务"></a>ZooKeeper协作服务</h2><p>因为从头写一个可靠的协作服务太耗时和复杂，所以CRAQ使用<a href="http://tomkklalala.github.io/2020/04/19/ZooKeeper%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/" target="_blank" rel="noopener">ZooKeeper</a>来提供协作服务。</p>
 <p>但是ZooKeeper并没有就在多数据中心环境下运行进行优化，因为vanilla的实现不关心数据中心的网络拓扑结构或层次结构，这使得ZooKeeper节点间需要多次大范围传输协作消息。CRAQ目前的实现确保节点总是和一个附近的ZooKeeper向连。</p>
 <p>为了消除ZooKeeper在多数据中心间的冗余消耗，可以选择构建一个层次化的ZooKeeper实例：每个数据中心可以包含他们自己的ZooKeeper实例（由多节点构成），然后可能通过某种leader选举算法，选出一个代表，让该代表加入到全局ZooKeeper实例（多数据中心）中。</p>
 <p>另一个可选的设计是通过修改ZooKeeper代码，让它能够感知网络拓扑，CRAQ目前采用的这种方式。</p>

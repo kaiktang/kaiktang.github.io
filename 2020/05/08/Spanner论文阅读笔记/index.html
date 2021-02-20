@@ -430,7 +430,7 @@
 <p>这个保证可以通过简单的让leader每次延长<code>lease interval</code>的时候都将其通过Paxos进行共识来实现。等到新leader上任时，会读取上任leader最新的<code>lease interval</code>，然后等到确定其<code>lease interval</code>不会重叠的时候才会开始工作。</p>
 <p>第二种实现方式可以不用Paxos进行共识。只需要要求任何一个副本在收到一个lease vote请求并为其投票之后，直到TT.after(TT.now().latest+10)返回true前，都不再为任何其他服务器投票。证明过程略，感兴趣的可以看论文附录A。</p>
 <p>leader还维护了一个变量<code>Smax</code>，代表该leader使用过的最大的时间戳。因为Spanner的实现中，允许leader主动退位，那么为了保证<code>lease interval</code>不重叠，要求先等到TT.after(<code>Smax</code>)返回为true时，才允许一个leader主动退位。</p>
-<h2 id="读写事务（RW-Transactions）"><a href="#读写事务（RW-Transactions）" class="headerlink" title="读写事务（RW Transactions）"></a>读写事务（RW Transactions）</h2><p>这种事务中的读写操作使用<a href="http://tomkklalala.github.io/2020/05/05/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E5%AD%A6%E4%B9%A0/">两阶段锁和两阶段提交</a>的方式实现。Spanner的实现大体上是和我上篇文章中讲的是一致的，不同点在于Spanner中coordinator和participants都是运行在Paxos之上的集群，提高了可用性 ，降低了阻塞的可能性。在2PC过程中，是coordinator leader和事务涉及到的participants leader们之间进行交互。</p>
+<h2 id="读写事务（RW-Transactions）"><a href="#读写事务（RW-Transactions）" class="headerlink" title="读写事务（RW Transactions）"></a>读写事务（RW Transactions）</h2><p>这种事务中的读写操作使用<a href="http://tomkklalala.github.io/2020/05/05/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E5%AD%A6%E4%B9%A0/" target="_blank" rel="noopener">两阶段锁和两阶段提交</a>的方式实现。Spanner的实现大体上是和我上篇文章中讲的是一致的，不同点在于Spanner中coordinator和participants都是运行在Paxos之上的集群，提高了可用性 ，降低了阻塞的可能性。在2PC过程中，是coordinator leader和事务涉及到的participants leader们之间进行交互。</p>
 <p>基于两阶段锁协议，这种类型的事务的时间戳可以是在所有锁获得之后释放之前的任意时间内确定，Spanner采用的是Paxos中共识写入该事务的commit log中记录的时间戳。</p>
 <p>为了保证写操作的强一致性，Spanner保证如下两个不变性：</p>
 <ol>
