@@ -188,125 +188,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://kaiktang.github.io/2018/11/18/Go语言中的比较运算符/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="TomKK">
-      <meta itemprop="description" content="学而后知不足">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="TomKK's blogs">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/11/18/Go语言中的比较运算符/" class="post-title-link" itemprop="url">Go语言中的比较运算符</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-11-18 14:53:15" itemprop="dateCreated datePublished" datetime="2018-11-18T14:53:15+08:00">2018-11-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-01-06 15:00:14" itemprop="dateModified" datetime="2019-01-06T15:00:14+08:00">2019-01-06</time>
-              </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2018/11/18/Go语言中的比较运算符/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/11/18/Go语言中的比较运算符/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Go语言中的比较运算符"><a href="#Go语言中的比较运算符" class="headerlink" title="Go语言中的比较运算符"></a>Go语言中的比较运算符</h1><h2 id="实例一"><a href="#实例一" class="headerlink" title="实例一"></a>实例一</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    s := <span class="keyword">struct</span>&#123; name <span class="keyword">string</span> &#125;&#123;<span class="string">"foo"</span>&#125;</span><br><span class="line">    t := T&#123;<span class="string">"foo"</span>&#125;</span><br><span class="line">    fmt.Println(s == t)  <span class="comment">// true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="实例二"><a href="#实例二" class="headerlink" title="实例二"></a>实例二</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a <span class="keyword">int</span> = <span class="number">1</span></span><br><span class="line"><span class="keyword">var</span> b <span class="keyword">rune</span> = <span class="string">'1'</span></span><br><span class="line">fmt.Println(a == b) <span class="comment">//invalid operation: a == b (mismatched types int and rune)</span></span><br></pre></td></tr></table></figure>
-<h2 id="等于和不等于运算符"><a href="#等于和不等于运算符" class="headerlink" title="等于和不等于运算符"></a>等于和不等于运算符</h2><p>要求操作数是可比较的。在Go的官方声明中如下说道：</p>
-<ul>
-<li>boolean是可比较的。</li>
-<li>整数和浮点数也是可以比较的。</li>
-</ul>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a <span class="keyword">int</span> = <span class="number">1</span></span><br><span class="line"><span class="keyword">var</span> b <span class="keyword">int</span> = <span class="number">2</span></span><br><span class="line"><span class="keyword">var</span> c <span class="keyword">float32</span> = <span class="number">3.3</span></span><br><span class="line"><span class="keyword">var</span> d <span class="keyword">float32</span> = <span class="number">4.4</span></span><br><span class="line">fmt.Println(a == b) <span class="comment">// false</span></span><br><span class="line">fmt.Println(c == d) <span class="comment">// false</span></span><br><span class="line">fmt.Println(a == d) <span class="comment">// mismatched types int and float32</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>复数仅当他们的实数部分和虚数部分均相等才会返回相等。</li>
-<li>字符串是可比较的。</li>
-<li>指针在当均为nil或者都指向同一个变量的时候返回true。</li>
-</ul>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    t1 := T&#123;<span class="string">"foo"</span>&#125;</span><br><span class="line">    t2 := T&#123;<span class="string">"bar"</span>&#125;</span><br><span class="line">    p1 := &amp;t1</span><br><span class="line">    p2 := &amp;t1</span><br><span class="line">    p3 := &amp;t2</span><br><span class="line">    fmt.Println(p1 == p2)   <span class="comment">// true</span></span><br><span class="line">    fmt.Println(p2 == p3)   <span class="comment">// false</span></span><br><span class="line">    fmt.Println(p3 == <span class="literal">nil</span>)  <span class="comment">// false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>注意：不占内存的变量的地址可能返回true或者false，我们不能依赖它的结果。</p>
-</blockquote>
-<ul>
-<li><code>channel</code>只有当他们均为nil或者均是同一个make生成时才会相等。</li>
-</ul>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ch1 := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">ch2 := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">fmt.Println(ch1 == ch2)  <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>接口类型是可比较的。和channel和指针类型一样，两个接口类型仅当他们都是nil或者动态类型和动态值均相等时才相等。</li>
-</ul>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    m()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> J <span class="keyword">interface</span> &#123;</span><br><span class="line">    m()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">m</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"><span class="keyword">type</span> U <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(U)</span> <span class="title">m</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> i1, i2, i3, i4 I</span><br><span class="line">    <span class="keyword">var</span> j1 J</span><br><span class="line">    i1 = T&#123;<span class="string">"foo"</span>&#125;</span><br><span class="line">    i2 = T&#123;<span class="string">"foo"</span>&#125;</span><br><span class="line">    i3 = T&#123;<span class="string">"bar"</span>&#125;</span><br><span class="line">    i4 = U&#123;<span class="string">"foo"</span>&#125;</span><br><span class="line">    fmt.Println(i1 == i2)  <span class="comment">// true</span></span><br><span class="line">    fmt.Println(i1 == i3)  <span class="comment">// false</span></span><br><span class="line">    fmt.Println(i1 == i4)  <span class="comment">// false</span></span><br><span class="line">    fmt.Println(i1 == j1)  <span class="comment">// false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>被比较的接口类型的方法集不能不相交。</p>
-</blockquote>
-<ul>
-<li>类型为接口类型I的变量i和非接口类型T之间是可比较的，当且仅当T实现了I并且T的值是可比较的。他们仅当他们的动态类型和动态值都是相等的时候才会相等。</li>
-</ul>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    m()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">m</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"><span class="keyword">type</span> S <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(S)</span> <span class="title">m</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    t := T&#123;&#125;</span><br><span class="line">    s := S&#123;&#125;</span><br><span class="line">    <span class="keyword">var</span> i I</span><br><span class="line">    i = T&#123;&#125;</span><br><span class="line">    fmt.Println(t == i)  <span class="comment">// true</span></span><br><span class="line">    fmt.Println(s == i)  <span class="comment">// false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>结构体之间也是可以比较的，要求所有的字段都可比较，但是只要求所有的非空字段都相等即可算作相等。</li>
-</ul>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">a := <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">    _ <span class="keyword">int32</span></span><br><span class="line">&#125;&#123;name: <span class="string">"foo"</span>&#125;</span><br><span class="line">b := <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">    _ <span class="keyword">int32</span></span><br><span class="line">&#125;&#123;name: <span class="string">"foo"</span>&#125;</span><br><span class="line">fmt.Println(a == b)  <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>对于数组，他们的元素类型需要可比较而且对应的元素是相等的，就会返回相等。</li>
-</ul>
-<p>有三个类型是不可比较的：<code>map</code>、<code>slice</code>、<code>function</code>，如果被用来比较将会抛出错误“map can only be compared to nil.”</p>
-<h2 id="比较运算符"><a href="#比较运算符" class="headerlink" title="比较运算符"></a>比较运算符</h2><p>这些运算符也只能被用在三种类型上：整数、浮点数和字符串。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://kaiktang.github.io/2018/11/18/Practical-Go-学习心得/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -712,6 +593,125 @@
 <p><a href="https://dave.cheney.net/practical-go/presentations/qcon-china.html#_footnoteref_9" target="_blank" rel="noopener">9</a>. <a href="https://www.amazon.com/Philosophy-Software-Design-John-Ousterhout/dp/1732102201" target="_blank" rel="noopener">https://www.amazon.com/Philosophy-Software-Design-John-Ousterhout/dp/1732102201</a></p>
 <p><a href="https://dave.cheney.net/practical-go/presentations/qcon-china.html#_footnoteref_10" target="_blank" rel="noopener">10</a>. <a href="https://blog.golang.org/errors-are-values" target="_blank" rel="noopener">https://blog.golang.org/errors-are-values</a></p>
 <p><a href="https://dave.cheney.net/practical-go/presentations/qcon-china.html#_footnoteref_11" target="_blank" rel="noopener">11</a>. <a href="http://www.gopl.io/" target="_blank" rel="noopener">http://www.gopl.io/</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://kaiktang.github.io/2018/11/18/Go语言中的比较运算符/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="TomKK">
+      <meta itemprop="description" content="学而后知不足">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TomKK's blogs">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/11/18/Go语言中的比较运算符/" class="post-title-link" itemprop="url">Go语言中的比较运算符</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-11-18 14:53:15" itemprop="dateCreated datePublished" datetime="2018-11-18T14:53:15+08:00">2018-11-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-01-06 15:00:14" itemprop="dateModified" datetime="2019-01-06T15:00:14+08:00">2019-01-06</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2018/11/18/Go语言中的比较运算符/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/11/18/Go语言中的比较运算符/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Go语言中的比较运算符"><a href="#Go语言中的比较运算符" class="headerlink" title="Go语言中的比较运算符"></a>Go语言中的比较运算符</h1><h2 id="实例一"><a href="#实例一" class="headerlink" title="实例一"></a>实例一</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    s := <span class="keyword">struct</span>&#123; name <span class="keyword">string</span> &#125;&#123;<span class="string">"foo"</span>&#125;</span><br><span class="line">    t := T&#123;<span class="string">"foo"</span>&#125;</span><br><span class="line">    fmt.Println(s == t)  <span class="comment">// true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="实例二"><a href="#实例二" class="headerlink" title="实例二"></a>实例二</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a <span class="keyword">int</span> = <span class="number">1</span></span><br><span class="line"><span class="keyword">var</span> b <span class="keyword">rune</span> = <span class="string">'1'</span></span><br><span class="line">fmt.Println(a == b) <span class="comment">//invalid operation: a == b (mismatched types int and rune)</span></span><br></pre></td></tr></table></figure>
+<h2 id="等于和不等于运算符"><a href="#等于和不等于运算符" class="headerlink" title="等于和不等于运算符"></a>等于和不等于运算符</h2><p>要求操作数是可比较的。在Go的官方声明中如下说道：</p>
+<ul>
+<li>boolean是可比较的。</li>
+<li>整数和浮点数也是可以比较的。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a <span class="keyword">int</span> = <span class="number">1</span></span><br><span class="line"><span class="keyword">var</span> b <span class="keyword">int</span> = <span class="number">2</span></span><br><span class="line"><span class="keyword">var</span> c <span class="keyword">float32</span> = <span class="number">3.3</span></span><br><span class="line"><span class="keyword">var</span> d <span class="keyword">float32</span> = <span class="number">4.4</span></span><br><span class="line">fmt.Println(a == b) <span class="comment">// false</span></span><br><span class="line">fmt.Println(c == d) <span class="comment">// false</span></span><br><span class="line">fmt.Println(a == d) <span class="comment">// mismatched types int and float32</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>复数仅当他们的实数部分和虚数部分均相等才会返回相等。</li>
+<li>字符串是可比较的。</li>
+<li>指针在当均为nil或者都指向同一个变量的时候返回true。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    t1 := T&#123;<span class="string">"foo"</span>&#125;</span><br><span class="line">    t2 := T&#123;<span class="string">"bar"</span>&#125;</span><br><span class="line">    p1 := &amp;t1</span><br><span class="line">    p2 := &amp;t1</span><br><span class="line">    p3 := &amp;t2</span><br><span class="line">    fmt.Println(p1 == p2)   <span class="comment">// true</span></span><br><span class="line">    fmt.Println(p2 == p3)   <span class="comment">// false</span></span><br><span class="line">    fmt.Println(p3 == <span class="literal">nil</span>)  <span class="comment">// false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意：不占内存的变量的地址可能返回true或者false，我们不能依赖它的结果。</p>
+</blockquote>
+<ul>
+<li><code>channel</code>只有当他们均为nil或者均是同一个make生成时才会相等。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ch1 := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">ch2 := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">fmt.Println(ch1 == ch2)  <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>接口类型是可比较的。和channel和指针类型一样，两个接口类型仅当他们都是nil或者动态类型和动态值均相等时才相等。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    m()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> J <span class="keyword">interface</span> &#123;</span><br><span class="line">    m()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">m</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"><span class="keyword">type</span> U <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(U)</span> <span class="title">m</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> i1, i2, i3, i4 I</span><br><span class="line">    <span class="keyword">var</span> j1 J</span><br><span class="line">    i1 = T&#123;<span class="string">"foo"</span>&#125;</span><br><span class="line">    i2 = T&#123;<span class="string">"foo"</span>&#125;</span><br><span class="line">    i3 = T&#123;<span class="string">"bar"</span>&#125;</span><br><span class="line">    i4 = U&#123;<span class="string">"foo"</span>&#125;</span><br><span class="line">    fmt.Println(i1 == i2)  <span class="comment">// true</span></span><br><span class="line">    fmt.Println(i1 == i3)  <span class="comment">// false</span></span><br><span class="line">    fmt.Println(i1 == i4)  <span class="comment">// false</span></span><br><span class="line">    fmt.Println(i1 == j1)  <span class="comment">// false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>被比较的接口类型的方法集不能不相交。</p>
+</blockquote>
+<ul>
+<li>类型为接口类型I的变量i和非接口类型T之间是可比较的，当且仅当T实现了I并且T的值是可比较的。他们仅当他们的动态类型和动态值都是相等的时候才会相等。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    m()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">m</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"><span class="keyword">type</span> S <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(S)</span> <span class="title">m</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    t := T&#123;&#125;</span><br><span class="line">    s := S&#123;&#125;</span><br><span class="line">    <span class="keyword">var</span> i I</span><br><span class="line">    i = T&#123;&#125;</span><br><span class="line">    fmt.Println(t == i)  <span class="comment">// true</span></span><br><span class="line">    fmt.Println(s == i)  <span class="comment">// false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>结构体之间也是可以比较的，要求所有的字段都可比较，但是只要求所有的非空字段都相等即可算作相等。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">a := <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">    _ <span class="keyword">int32</span></span><br><span class="line">&#125;&#123;name: <span class="string">"foo"</span>&#125;</span><br><span class="line">b := <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">    _ <span class="keyword">int32</span></span><br><span class="line">&#125;&#123;name: <span class="string">"foo"</span>&#125;</span><br><span class="line">fmt.Println(a == b)  <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>对于数组，他们的元素类型需要可比较而且对应的元素是相等的，就会返回相等。</li>
+</ul>
+<p>有三个类型是不可比较的：<code>map</code>、<code>slice</code>、<code>function</code>，如果被用来比较将会抛出错误“map can only be compared to nil.”</p>
+<h2 id="比较运算符"><a href="#比较运算符" class="headerlink" title="比较运算符"></a>比较运算符</h2><p>这些运算符也只能被用在三种类型上：整数、浮点数和字符串。</p>
 
       
     </div>
@@ -2174,7 +2174,7 @@
 <script>
   function loadCount() {
     var d = document, s = d.createElement('script');
-    s.src = 'https://http-tomkklalala-github-io.disqus.com/count.js';
+    s.src = 'https://kaiktang.disqus.com/count.js';
     s.id = 'dsq-count-scr';
     (d.head || d.body).appendChild(s);
   }
