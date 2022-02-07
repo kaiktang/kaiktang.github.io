@@ -1,85 +1,26 @@
 <!DOCTYPE html>
-
-
-
-  
-
-
-<html class="theme-next pisces use-motion" lang="zh-Hans">
+<html lang="zh-Hans">
 <head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaiktang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":null,"activeClass":"disqus"},"algolia":{"appID":"FBQ33HXA0Q","apiKey":"5a256d1a0d5075a6a17b29fbae8cdbdc","indexName":"blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
-
-
-
-
-
-  <meta name="keywords" content="区块链,Solidity," />
-
-
-
-
-
-
-
-
-
-
-<meta name="description" content="Solidity介绍  官网：http://solidity.readthedocs.io/en/develop/   Solidity 是一个面向合约的高级语言，其语法类似于JavaScript 。是运行在以太坊虚拟机中的代码。  Solidity 是静态类型的编程语言，编译期间会检查其数据类型。支持继承、类和复杂的用户定义类型。  在线体验： https://remix.ethereum.or">
+  <meta name="description" content="Solidity介绍  官网：http://solidity.readthedocs.io/en/develop/   Solidity 是一个面向合约的高级语言，其语法类似于JavaScript 。是运行在以太坊虚拟机中的代码。  Solidity 是静态类型的编程语言，编译期间会检查其数据类型。支持继承、类和复杂的用户定义类型。  在线体验： https://remix.ethereum.or">
 <meta name="keywords" content="区块链,Solidity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="学习Solidity">
@@ -92,48 +33,24 @@
 <meta name="twitter:title" content="学习Solidity">
 <meta name="twitter:description" content="Solidity介绍  官网：http://solidity.readthedocs.io/en/develop/   Solidity 是一个面向合约的高级语言，其语法类似于JavaScript 。是运行在以太坊虚拟机中的代码。  Solidity 是静态类型的编程语言，编译期间会检查其数据类型。支持继承、类和复杂的用户定义类型。  在线体验： https://remix.ethereum.or">
 
+<link rel="canonical" href="http://kaiktang.github.io/2018/03/12/学习Solidity/">
 
 
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Pisces',
-    version: '5.1.4',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: true,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    duoshuo: {
-      userId: '0',
-      author: '博主'
-    },
-    algolia: {
-      applicationID: 'FBQ33HXA0Q',
-      apiKey: '5a256d1a0d5075a6a17b29fbae8cdbdc',
-      indexName: 'blog',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"搜索文章","hits_empty":"没有找到关于: ${query}","hits_stats":"共 ${hits} 条结果耗时 ${time} ms"}
-    }
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
   };
 </script>
-
-
-
-  <link rel="canonical" href="http://kaiktang.github.io/2018/03/12/学习Solidity/"/>
-
-
-
-
 
   <title>学习Solidity | TomKK's blogs</title>
   
 
 
-
-
-
-  <script type="text/javascript">
+  <script>
     var _hmt = _hmt || [];
     (function() {
       var hm = document.createElement("script");
@@ -146,238 +63,197 @@
 
 
 
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
-  
-  
-    
-  
-
-  <div class="container sidebar-position-left page-post-detail">
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
-    
-
-    <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">TomKK's blogs</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
-      
-        <p class="site-subtitle"></p>
-      
   </div>
 
-  <div class="site-nav-toggle">
-    <button>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">TomKK's blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
   </div>
 </div>
 
+
+
+
 <nav class="site-nav">
-  
-
-  
-    <ul id="menu" class="menu">
-      
-        
+  <ul id="menu" class="menu">
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
-            
-            首页
-          </a>
-        </li>
-      
-        
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
         <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
-            
-            标签
-          </a>
-        </li>
-      
-        
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            归档
-          </a>
-        </li>
-      
 
-      
-        <li class="menu-item menu-item-search">
-          
-            <a href="javascript:;" class="popup-trigger">
-          
-            
-              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
-            
-            搜索
-          </a>
-        </li>
-      
-    </ul>
-  
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
 
-  
-    <div class="site-search">
-      
-  
-  <div class="algolia-popup popup search-popup">
-    <div class="algolia-search">
-      <div class="algolia-search-input-icon">
-        <i class="fa fa-search"></i>
-      </div>
-      <div class="algolia-search-input" id="algolia-search-input"></div>
-    </div>
-
-    <div class="algolia-results">
-      <div id="algolia-stats"></div>
-      <div id="algolia-hits"></div>
-      <div id="algolia-pagination" class="algolia-pagination"></div>
-    </div>
-
-    <span class="popup-btn-close">
-      <i class="fa fa-times-circle"></i>
-    </span>
-  </div>
-
-
-
-
-    </div>
-  
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
 </nav>
 
 
 
- </div>
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
     </header>
 
-    <main id="main" class="main">
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
       <div class="main-inner">
         <div class="content-wrap">
-          <div id="content" class="content">
+          
+
+          <div class="content post posts-expand">
             
 
-  <div id="posts" class="posts-expand">
     
-
-  
-
   
   
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://kaiktang.github.io/2018/03/12/学习Solidity/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="TomKK">
-      <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="TomKK">
+      <meta itemprop="description" content="学而后知不足">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="TomKK's blogs">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">学习Solidity</h1>
-        
+        <h1 class="post-title" itemprop="name headline">
+          学习Solidity
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-12T10:45:54+08:00">
-                2018-03-12
-              </time>
-            
+              <span class="post-meta-item-text">Posted on</span>
 
-            
-
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
+              <time title="Created: 2018-03-12 10:45:54" itemprop="dateCreated datePublished" datetime="2018-03-12T10:45:54+08:00">2018-03-12</time>
+            </span>
+              <span class="post-meta-item">
                 <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
+                  <i class="fa fa-calendar-check-o"></i>
                 </span>
-                <a href="/2018/03/12/学习Solidity/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2018/03/12/学习Solidity/" itemprop="commentCount"></span>
-                </a>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-01-06 15:08:17" itemprop="dateModified" datetime="2019-01-06T15:08:17+08:00">2019-01-06</time>
               </span>
-            
-          
 
           
-          
-             <span id="/2018/03/12/学习Solidity/" class="leancloud_visitors" data-flag-title="学习Solidity">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
+            <span id="/2018/03/12/学习Solidity/" class="post-meta-item leancloud_visitors" data-flag-title="学习Solidity" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2018/03/12/学习Solidity/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/12/学习Solidity/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 
         </div>
       </header>
-    
 
     
     
     
     <div class="post-body" itemprop="articleBody">
-
-      
-      
 
       
         <h1 id="Solidity介绍"><a href="#Solidity介绍" class="headerlink" title="Solidity介绍"></a>Solidity介绍</h1><blockquote>
@@ -734,573 +610,307 @@
 <h2 id="Using-For"><a href="#Using-For" class="headerlink" title="Using For"></a>Using For</h2><p> <code>using A for B;</code>用来将库<code>A</code>中的函数绑定到<code>B</code>上，那么B在调用A的函数的时候，方法的第一个参数默认就是B变量。 <code>using A for *;</code>将A上的函数绑定到所有类型上。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.16;</span><br><span class="line"></span><br><span class="line">// This is the same code as before, just without comments</span><br><span class="line">library Set &#123;</span><br><span class="line">  struct Data &#123; mapping(uint =&gt; bool) flags; &#125;</span><br><span class="line"></span><br><span class="line">  function insert(Data storage self, uint value)</span><br><span class="line">      public</span><br><span class="line">      returns (bool)</span><br><span class="line">  &#123;</span><br><span class="line">      if (self.flags[value])</span><br><span class="line">        return false; // already there</span><br><span class="line">      self.flags[value] = true;</span><br><span class="line">      return true;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  function remove(Data storage self, uint value)</span><br><span class="line">      public</span><br><span class="line">      returns (bool)</span><br><span class="line">  &#123;</span><br><span class="line">      if (!self.flags[value])</span><br><span class="line">          return false; // not there</span><br><span class="line">      self.flags[value] = false;</span><br><span class="line">      return true;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  function contains(Data storage self, uint value)</span><br><span class="line">      public</span><br><span class="line">      view</span><br><span class="line">      returns (bool)</span><br><span class="line">  &#123;</span><br><span class="line">      return self.flags[value];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">contract C &#123;</span><br><span class="line">    using Set for Set.Data; // this is the crucial change</span><br><span class="line">    Set.Data knownValues;</span><br><span class="line"></span><br><span class="line">    function register(uint value) public &#123;</span><br><span class="line">        // Here, all variables of type Set.Data have</span><br><span class="line">        // corresponding member functions.</span><br><span class="line">        // The following function call is identical to</span><br><span class="line">        // `Set.insert(knownValues, value)`</span><br><span class="line">        require(knownValues.insert(value));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-      
     </div>
-    
-    
-    
 
     
-
     
-      <div>
-        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
-  <div>交个朋友吧~</div>
-  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-    <span>打赏</span>
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
   </button>
-  <div id="QR" style="display: none;">
-
-    
-      <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="TomKK 微信支付"/>
-        <p>微信支付</p>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="TomKK WeChat Pay">
+        <p>WeChat Pay</p>
       </div>
-    
-
-    
-      <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="/images/alipay.jpg" alt="TomKK 支付宝"/>
-        <p>支付宝</p>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="TomKK Alipay">
+        <p>Alipay</p>
       </div>
-    
-
-    
 
   </div>
 </div>
 
-      </div>
-    
 
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/区块链/" rel="tag"># 区块链</a>
-          
-            <a href="/tags/Solidity/" rel="tag"># Solidity</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2018/03/05/p2p网络学习/" rel="next" title="p2p网络学习">
-                <i class="fa fa-chevron-left"></i> p2p网络学习
-              </a>
-            
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/区块链/" rel="tag"># 区块链</a>
+              <a href="/tags/Solidity/" rel="tag"># Solidity</a>
           </div>
 
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/04/28/EVM学习/" rel="prev" title="EVM学习">
-                EVM学习 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-
-    <div class="post-spread">
-      
-        <!-- JiaThis Button BEGIN -->
-<div class="jiathis_style">
-<span class="jiathis_txt">分享到：</span>
-<a class="jiathis_button_fav">收藏夹</a>
-<a class="jiathis_button_copy">复制网址</a>
-<a class="jiathis_button_email">邮件</a>
-<a class="jiathis_button_weixin">微信</a>
-<a class="jiathis_button_qzone">QQ空间</a>
-<a class="jiathis_button_tqq">腾讯微博</a>
-<a class="jiathis_button_douban">豆瓣</a>
-<a class="jiathis_button_share">一键分享</a>
-
-<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
-<a class="jiathis_counter_style"></a>
-</div>
-<script type="text/javascript" >
-var jiathis_config={
-  data_track_clickback:true,
-  summary:"",
-  shortUrl:false,
-  hideMore:false
-}
-</script>
-<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
-<!-- JiaThis Button END -->
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-
-  
-    <div class="comments" id="comments">
-      <div id="disqus_thread">
-        <noscript>
-          Please enable JavaScript to view the
-          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
-        </noscript>
-      </div>
-    </div>
-
-  
-
-
-
-        </div>
         
-          
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/03/05/p2p网络学习/" rel="prev" title="p2p网络学习">
+      <i class="fa fa-chevron-left"></i> p2p网络学习
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/04/28/EVM学习/" rel="next" title="EVM学习">
+      EVM学习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
   
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
     </div>
   </div>
+  
 
-  <aside id="sidebar" class="sidebar">
-    
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
     <div class="sidebar-inner">
 
-      
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
 
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-            
-              <img class="site-author-image" itemprop="image"
-                src="/images/avatar.jpg"
-                alt="TomKK" />
-            
-              <p class="site-author-name" itemprop="name">TomKK</p>
-              <p class="site-description motion-element" itemprop="description">学而后知不足</p>
-          </div>
-
-          <nav class="site-state motion-element">
-
-            
-              <div class="site-state-item site-state-posts">
-              
-                <a href="/archives/">
-              
-                  <span class="site-state-item-count">55</span>
-                  <span class="site-state-item-name">日志</span>
-                </a>
-              </div>
-            
-
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-tags">
-                <a href="/tags/index.html">
-                  <span class="site-state-item-count">26</span>
-                  <span class="site-state-item-name">标签</span>
-                </a>
-              </div>
-            
-
-          </nav>
-
-          
-
-          
-
-          
-          
-
-          
-          
-
-          
-
-        </div>
-      </section>
-
-      
       <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Solidity介绍"><span class="nav-number">1.</span> <span class="nav-text"><a href="#Solidity&#x4ECB;&#x7ECD;" class="headerlink" title="Solidity&#x4ECB;&#x7ECD;"></a>Solidity&#x4ECB;&#x7ECD;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Solidity源文件的布局"><span class="nav-number">2.</span> <span class="nav-text"><a href="#Solidity&#x6E90;&#x6587;&#x4EF6;&#x7684;&#x5E03;&#x5C40;" class="headerlink" title="Solidity&#x6E90;&#x6587;&#x4EF6;&#x7684;&#x5E03;&#x5C40;"></a>Solidity&#x6E90;&#x6587;&#x4EF6;&#x7684;&#x5E03;&#x5C40;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Version-Pragma"><span class="nav-number">2.1.</span> <span class="nav-text"><a href="#Version-Pragma" class="headerlink" title="Version Pragma"></a>Version Pragma</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#导入语句"><span class="nav-number">2.2.</span> <span class="nav-text"><a href="#&#x5BFC;&#x5165;&#x8BED;&#x53E5;" class="headerlink" title="&#x5BFC;&#x5165;&#x8BED;&#x53E5;"></a>&#x5BFC;&#x5165;&#x8BED;&#x53E5;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#State-Sariables"><span class="nav-number">2.3.</span> <span class="nav-text"><a href="#State-Sariables" class="headerlink" title="State Sariables"></a>State Sariables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Functions"><span class="nav-number">2.4.</span> <span class="nav-text"><a href="#Functions" class="headerlink" title="Functions"></a>Functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Function-Modifiers"><span class="nav-number">2.5.</span> <span class="nav-text"><a href="#Function-Modifiers" class="headerlink" title="Function Modifiers"></a>Function Modifiers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Events"><span class="nav-number">2.6.</span> <span class="nav-text"><a href="#Events" class="headerlink" title="Events"></a>Events</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Struct-Types"><span class="nav-number">2.7.</span> <span class="nav-text"><a href="#Struct-Types" class="headerlink" title="Struct Types"></a>Struct Types</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Enum-Types"><span class="nav-number">2.8.</span> <span class="nav-text"><a href="#Enum-Types" class="headerlink" title="Enum Types"></a>Enum Types</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类型"><span class="nav-number">3.</span> <span class="nav-text"><a href="#&#x7C7B;&#x578B;" class="headerlink" title="&#x7C7B;&#x578B;"></a>&#x7C7B;&#x578B;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#值类型"><span class="nav-number">3.1.</span> <span class="nav-text"><a href="#&#x503C;&#x7C7B;&#x578B;" class="headerlink" title="&#x503C;&#x7C7B;&#x578B;"></a>&#x503C;&#x7C7B;&#x578B;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Boolean（布尔）"><span class="nav-number">3.1.1.</span> <span class="nav-text"><a href="#Boolean&#xFF08;&#x5E03;&#x5C14;&#xFF09;" class="headerlink" title="Boolean&#xFF08;&#x5E03;&#x5C14;&#xFF09;"></a>Boolean&#xFF08;&#x5E03;&#x5C14;&#xFF09;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Integers（整数）"><span class="nav-number">3.1.2.</span> <span class="nav-text"><a href="#Integers&#xFF08;&#x6574;&#x6570;&#xFF09;" class="headerlink" title="Integers&#xFF08;&#x6574;&#x6570;&#xFF09;"></a>Integers&#xFF08;&#x6574;&#x6570;&#xFF09;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fixed-Point-Numbers（定点数）"><span class="nav-number">3.1.3.</span> <span class="nav-text"><a href="#Fixed-Point-Numbers&#xFF08;&#x5B9A;&#x70B9;&#x6570;&#xFF09;" class="headerlink" title="Fixed Point Numbers&#xFF08;&#x5B9A;&#x70B9;&#x6570;&#xFF09;"></a>Fixed Point Numbers&#xFF08;&#x5B9A;&#x70B9;&#x6570;&#xFF09;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Address（地址）"><span class="nav-number">3.1.4.</span> <span class="nav-text"><a href="#Address&#xFF08;&#x5730;&#x5740;&#xFF09;" class="headerlink" title="Address&#xFF08;&#x5730;&#x5740;&#xFF09;"></a>Address&#xFF08;&#x5730;&#x5740;&#xFF09;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fixed-size-byte-arrays（定长字节数组）"><span class="nav-number">3.1.5.</span> <span class="nav-text"><a href="#Fixed-size-byte-arrays&#xFF08;&#x5B9A;&#x957F;&#x5B57;&#x8282;&#x6570;&#x7EC4;&#xFF09;" class="headerlink" title="Fixed-size byte arrays&#xFF08;&#x5B9A;&#x957F;&#x5B57;&#x8282;&#x6570;&#x7EC4;&#xFF09;"></a>Fixed-size byte arrays&#xFF08;&#x5B9A;&#x957F;&#x5B57;&#x8282;&#x6570;&#x7EC4;&#xFF09;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dynamically-sized-byte-array（变长字节数组）"><span class="nav-number">3.1.6.</span> <span class="nav-text"><a href="#Dynamically-sized-byte-array&#xFF08;&#x53D8;&#x957F;&#x5B57;&#x8282;&#x6570;&#x7EC4;&#xFF09;" class="headerlink" title="Dynamically-sized byte array&#xFF08;&#x53D8;&#x957F;&#x5B57;&#x8282;&#x6570;&#x7EC4;&#xFF09;"></a>Dynamically-sized byte array&#xFF08;&#x53D8;&#x957F;&#x5B57;&#x8282;&#x6570;&#x7EC4;&#xFF09;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Address-Literals（地址字面值）"><span class="nav-number">3.1.7.</span> <span class="nav-text"><a href="#Address-Literals&#xFF08;&#x5730;&#x5740;&#x5B57;&#x9762;&#x503C;&#xFF09;" class="headerlink" title="Address Literals&#xFF08;&#x5730;&#x5740;&#x5B57;&#x9762;&#x503C;&#xFF09;"></a>Address Literals&#xFF08;&#x5730;&#x5740;&#x5B57;&#x9762;&#x503C;&#xFF09;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Rational-and-Integer-Literals（有理数和整数常量）"><span class="nav-number">3.1.8.</span> <span class="nav-text"><a href="#Rational-and-Integer-Literals&#xFF08;&#x6709;&#x7406;&#x6570;&#x548C;&#x6574;&#x6570;&#x5E38;&#x91CF;&#xFF09;" class="headerlink" title="Rational and Integer Literals&#xFF08;&#x6709;&#x7406;&#x6570;&#x548C;&#x6574;&#x6570;&#x5E38;&#x91CF;&#xFF09;"></a>Rational and Integer Literals&#xFF08;&#x6709;&#x7406;&#x6570;&#x548C;&#x6574;&#x6570;&#x5E38;&#x91CF;&#xFF09;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#String-Literals（字符串字面值）"><span class="nav-number">3.1.9.</span> <span class="nav-text"><a href="#String-Literals&#xFF08;&#x5B57;&#x7B26;&#x4E32;&#x5B57;&#x9762;&#x503C;&#xFF09;" class="headerlink" title="String Literals&#xFF08;&#x5B57;&#x7B26;&#x4E32;&#x5B57;&#x9762;&#x503C;&#xFF09;"></a>String Literals&#xFF08;&#x5B57;&#x7B26;&#x4E32;&#x5B57;&#x9762;&#x503C;&#xFF09;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hexadecimal-Literals（十六进制字面值）"><span class="nav-number">3.1.10.</span> <span class="nav-text"><a href="#Hexadecimal-Literals&#xFF08;&#x5341;&#x516D;&#x8FDB;&#x5236;&#x5B57;&#x9762;&#x503C;&#xFF09;" class="headerlink" title="Hexadecimal Literals&#xFF08;&#x5341;&#x516D;&#x8FDB;&#x5236;&#x5B57;&#x9762;&#x503C;&#xFF09;"></a>Hexadecimal Literals&#xFF08;&#x5341;&#x516D;&#x8FDB;&#x5236;&#x5B57;&#x9762;&#x503C;&#xFF09;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Enums（枚举）"><span class="nav-number">3.1.11.</span> <span class="nav-text"><a href="#Enums&#xFF08;&#x679A;&#x4E3E;&#xFF09;" class="headerlink" title="Enums&#xFF08;&#x679A;&#x4E3E;&#xFF09;"></a>Enums&#xFF08;&#x679A;&#x4E3E;&#xFF09;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Function-Types（函数类型）"><span class="nav-number">3.1.12.</span> <span class="nav-text"><a href="#Function-Types&#xFF08;&#x51FD;&#x6570;&#x7C7B;&#x578B;&#xFF09;" class="headerlink" title="Function Types&#xFF08;&#x51FD;&#x6570;&#x7C7B;&#x578B;&#xFF09;"></a>Function Types&#xFF08;&#x51FD;&#x6570;&#x7C7B;&#x578B;&#xFF09;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用类型"><span class="nav-number">3.2.</span> <span class="nav-text"><a href="#&#x5F15;&#x7528;&#x7C7B;&#x578B;" class="headerlink" title="&#x5F15;&#x7528;&#x7C7B;&#x578B;"></a>&#x5F15;&#x7528;&#x7C7B;&#x578B;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据存储位置"><span class="nav-number">3.2.1.</span> <span class="nav-text"><a href="#&#x6570;&#x636E;&#x5B58;&#x50A8;&#x4F4D;&#x7F6E;" class="headerlink" title="&#x6570;&#x636E;&#x5B58;&#x50A8;&#x4F4D;&#x7F6E;"></a>&#x6570;&#x636E;&#x5B58;&#x50A8;&#x4F4D;&#x7F6E;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Arrays"><span class="nav-number">3.2.2.</span> <span class="nav-text"><a href="#Arrays" class="headerlink" title="Arrays"></a>Arrays</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分配内存数组"><span class="nav-number">3.2.3.</span> <span class="nav-text"><a href="#&#x5206;&#x914D;&#x5185;&#x5B58;&#x6570;&#x7EC4;" class="headerlink" title="&#x5206;&#x914D;&#x5185;&#x5B58;&#x6570;&#x7EC4;"></a>&#x5206;&#x914D;&#x5185;&#x5B58;&#x6570;&#x7EC4;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Array-Literals-Inline-Arrays（数组字面值-行内数组）"><span class="nav-number">3.2.4.</span> <span class="nav-text"><a href="#Array-Literals-Inline-Arrays&#xFF08;&#x6570;&#x7EC4;&#x5B57;&#x9762;&#x503C;-&#x884C;&#x5185;&#x6570;&#x7EC4;&#xFF09;" class="headerlink" title="Array Literals / Inline Arrays&#xFF08;&#x6570;&#x7EC4;&#x5B57;&#x9762;&#x503C;/&#x884C;&#x5185;&#x6570;&#x7EC4;&#xFF09;"></a>Array Literals / Inline Arrays&#xFF08;&#x6570;&#x7EC4;&#x5B57;&#x9762;&#x503C;/&#x884C;&#x5185;&#x6570;&#x7EC4;&#xFF09;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Structs"><span class="nav-number">3.2.5.</span> <span class="nav-text"><a href="#Structs" class="headerlink" title="Structs"></a>Structs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mappings"><span class="nav-number">3.2.6.</span> <span class="nav-text"><a href="#Mappings" class="headerlink" title="Mappings"></a>Mappings</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#涉及左值的运算符"><span class="nav-number">3.3.</span> <span class="nav-text"><a href="#&#x6D89;&#x53CA;&#x5DE6;&#x503C;&#x7684;&#x8FD0;&#x7B97;&#x7B26;" class="headerlink" title="&#x6D89;&#x53CA;&#x5DE6;&#x503C;&#x7684;&#x8FD0;&#x7B97;&#x7B26;"></a>&#x6D89;&#x53CA;&#x5DE6;&#x503C;&#x7684;&#x8FD0;&#x7B97;&#x7B26;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#delete"><span class="nav-number">3.3.1.</span> <span class="nav-text"><a href="#delete" class="headerlink" title="delete"></a>delete</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本类型之间的转换"><span class="nav-number">3.4.</span> <span class="nav-text"><a href="#&#x57FA;&#x672C;&#x7C7B;&#x578B;&#x4E4B;&#x95F4;&#x7684;&#x8F6C;&#x6362;" class="headerlink" title="&#x57FA;&#x672C;&#x7C7B;&#x578B;&#x4E4B;&#x95F4;&#x7684;&#x8F6C;&#x6362;"></a>&#x57FA;&#x672C;&#x7C7B;&#x578B;&#x4E4B;&#x95F4;&#x7684;&#x8F6C;&#x6362;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#隐式转换"><span class="nav-number">3.4.1.</span> <span class="nav-text"><a href="#&#x9690;&#x5F0F;&#x8F6C;&#x6362;" class="headerlink" title="&#x9690;&#x5F0F;&#x8F6C;&#x6362;"></a>&#x9690;&#x5F0F;&#x8F6C;&#x6362;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类型推断"><span class="nav-number">3.4.2.</span> <span class="nav-text"><a href="#&#x7C7B;&#x578B;&#x63A8;&#x65AD;" class="headerlink" title="&#x7C7B;&#x578B;&#x63A8;&#x65AD;"></a>&#x7C7B;&#x578B;&#x63A8;&#x65AD;</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#单位以及全局变量"><span class="nav-number">4.</span> <span class="nav-text"><a href="#&#x5355;&#x4F4D;&#x4EE5;&#x53CA;&#x5168;&#x5C40;&#x53D8;&#x91CF;" class="headerlink" title="&#x5355;&#x4F4D;&#x4EE5;&#x53CA;&#x5168;&#x5C40;&#x53D8;&#x91CF;"></a>&#x5355;&#x4F4D;&#x4EE5;&#x53CA;&#x5168;&#x5C40;&#x53D8;&#x91CF;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Ether-Units"><span class="nav-number">4.1.</span> <span class="nav-text"><a href="#Ether-Units" class="headerlink" title="Ether Units"></a>Ether Units</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Time-Units"><span class="nav-number">4.2.</span> <span class="nav-text"><a href="#Time-Units" class="headerlink" title="Time Units"></a>Time Units</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#区块和交易属性"><span class="nav-number">4.2.1.</span> <span class="nav-text"><a href="#&#x533A;&#x5757;&#x548C;&#x4EA4;&#x6613;&#x5C5E;&#x6027;" class="headerlink" title="&#x533A;&#x5757;&#x548C;&#x4EA4;&#x6613;&#x5C5E;&#x6027;"></a>&#x533A;&#x5757;&#x548C;&#x4EA4;&#x6613;&#x5C5E;&#x6027;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#错误处理"><span class="nav-number">4.2.2.</span> <span class="nav-text"><a href="#&#x9519;&#x8BEF;&#x5904;&#x7406;" class="headerlink" title="&#x9519;&#x8BEF;&#x5904;&#x7406;"></a>&#x9519;&#x8BEF;&#x5904;&#x7406;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数学和密码学函数"><span class="nav-number">4.2.3.</span> <span class="nav-text"><a href="#&#x6570;&#x5B66;&#x548C;&#x5BC6;&#x7801;&#x5B66;&#x51FD;&#x6570;" class="headerlink" title="&#x6570;&#x5B66;&#x548C;&#x5BC6;&#x7801;&#x5B66;&#x51FD;&#x6570;"></a>&#x6570;&#x5B66;&#x548C;&#x5BC6;&#x7801;&#x5B66;&#x51FD;&#x6570;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#地址相关"><span class="nav-number">4.2.4.</span> <span class="nav-text"><a href="#&#x5730;&#x5740;&#x76F8;&#x5173;" class="headerlink" title="&#x5730;&#x5740;&#x76F8;&#x5173;"></a>&#x5730;&#x5740;&#x76F8;&#x5173;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#合约相关"><span class="nav-number">4.2.5.</span> <span class="nav-text"><a href="#&#x5408;&#x7EA6;&#x76F8;&#x5173;" class="headerlink" title="&#x5408;&#x7EA6;&#x76F8;&#x5173;"></a>&#x5408;&#x7EA6;&#x76F8;&#x5173;</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#表达式和控制结构"><span class="nav-number">5.</span> <span class="nav-text"><a href="#&#x8868;&#x8FBE;&#x5F0F;&#x548C;&#x63A7;&#x5236;&#x7ED3;&#x6784;" class="headerlink" title="&#x8868;&#x8FBE;&#x5F0F;&#x548C;&#x63A7;&#x5236;&#x7ED3;&#x6784;"></a>&#x8868;&#x8FBE;&#x5F0F;&#x548C;&#x63A7;&#x5236;&#x7ED3;&#x6784;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#控制结构"><span class="nav-number">5.1.</span> <span class="nav-text"><a href="#&#x63A7;&#x5236;&#x7ED3;&#x6784;" class="headerlink" title="&#x63A7;&#x5236;&#x7ED3;&#x6784;"></a>&#x63A7;&#x5236;&#x7ED3;&#x6784;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数调用"><span class="nav-number">5.2.</span> <span class="nav-text"><a href="#&#x51FD;&#x6570;&#x8C03;&#x7528;" class="headerlink" title="&#x51FD;&#x6570;&#x8C03;&#x7528;"></a>&#x51FD;&#x6570;&#x8C03;&#x7528;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#内部函数调用"><span class="nav-number">5.2.1.</span> <span class="nav-text"><a href="#&#x5185;&#x90E8;&#x51FD;&#x6570;&#x8C03;&#x7528;" class="headerlink" title="&#x5185;&#x90E8;&#x51FD;&#x6570;&#x8C03;&#x7528;"></a>&#x5185;&#x90E8;&#x51FD;&#x6570;&#x8C03;&#x7528;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#外部函数调用"><span class="nav-number">5.2.2.</span> <span class="nav-text"><a href="#&#x5916;&#x90E8;&#x51FD;&#x6570;&#x8C03;&#x7528;" class="headerlink" title="&#x5916;&#x90E8;&#x51FD;&#x6570;&#x8C03;&#x7528;"></a>&#x5916;&#x90E8;&#x51FD;&#x6570;&#x8C03;&#x7528;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通过new来创建合约"><span class="nav-number">5.2.3.</span> <span class="nav-text"><a href="#&#x901A;&#x8FC7;new&#x6765;&#x521B;&#x5EFA;&#x5408;&#x7EA6;" class="headerlink" title="&#x901A;&#x8FC7;new&#x6765;&#x521B;&#x5EFA;&#x5408;&#x7EA6;"></a>&#x901A;&#x8FC7;<code>new</code>&#x6765;&#x521B;&#x5EFA;&#x5408;&#x7EA6;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#赋值操作"><span class="nav-number">5.2.4.</span> <span class="nav-text"><a href="#&#x8D4B;&#x503C;&#x64CD;&#x4F5C;" class="headerlink" title="&#x8D4B;&#x503C;&#x64CD;&#x4F5C;"></a>&#x8D4B;&#x503C;&#x64CD;&#x4F5C;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于Arrays和Structs的一些问题"><span class="nav-number">5.2.5.</span> <span class="nav-text"><a href="#&#x5173;&#x4E8E;Arrays&#x548C;Structs&#x7684;&#x4E00;&#x4E9B;&#x95EE;&#x9898;" class="headerlink" title="&#x5173;&#x4E8E;Arrays&#x548C;Structs&#x7684;&#x4E00;&#x4E9B;&#x95EE;&#x9898;"></a>&#x5173;&#x4E8E;Arrays&#x548C;Structs&#x7684;&#x4E00;&#x4E9B;&#x95EE;&#x9898;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#作用域和声明"><span class="nav-number">5.3.</span> <span class="nav-text"><a href="#&#x4F5C;&#x7528;&#x57DF;&#x548C;&#x58F0;&#x660E;" class="headerlink" title="&#x4F5C;&#x7528;&#x57DF;&#x548C;&#x58F0;&#x660E;"></a>&#x4F5C;&#x7528;&#x57DF;&#x548C;&#x58F0;&#x660E;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#错误处理：Assert-Require-Revert-and-Exceptions"><span class="nav-number">5.4.</span> <span class="nav-text"><a href="#&#x9519;&#x8BEF;&#x5904;&#x7406;&#xFF1A;Assert-Require-Revert-and-Exceptions" class="headerlink" title="&#x9519;&#x8BEF;&#x5904;&#x7406;&#xFF1A;Assert, Require, Revert and Exceptions"></a>&#x9519;&#x8BEF;&#x5904;&#x7406;&#xFF1A;Assert, Require, Revert and Exceptions</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#合约"><span class="nav-number">6.</span> <span class="nav-text"><a href="#&#x5408;&#x7EA6;" class="headerlink" title="&#x5408;&#x7EA6;"></a>&#x5408;&#x7EA6;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#可见性和Getters"><span class="nav-number">6.1.</span> <span class="nav-text"><a href="#&#x53EF;&#x89C1;&#x6027;&#x548C;Getters" class="headerlink" title="&#x53EF;&#x89C1;&#x6027;&#x548C;Getters"></a>&#x53EF;&#x89C1;&#x6027;&#x548C;Getters</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Getter函数"><span class="nav-number">6.2.</span> <span class="nav-text"><a href="#Getter&#x51FD;&#x6570;" class="headerlink" title="Getter&#x51FD;&#x6570;"></a>Getter&#x51FD;&#x6570;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数修改器"><span class="nav-number">6.3.</span> <span class="nav-text"><a href="#&#x51FD;&#x6570;&#x4FEE;&#x6539;&#x5668;" class="headerlink" title="&#x51FD;&#x6570;&#x4FEE;&#x6539;&#x5668;"></a>&#x51FD;&#x6570;&#x4FEE;&#x6539;&#x5668;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常状态变量"><span class="nav-number">6.4.</span> <span class="nav-text"><a href="#&#x5E38;&#x72B6;&#x6001;&#x53D8;&#x91CF;" class="headerlink" title="&#x5E38;&#x72B6;&#x6001;&#x53D8;&#x91CF;"></a>&#x5E38;&#x72B6;&#x6001;&#x53D8;&#x91CF;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数"><span class="nav-number">6.5.</span> <span class="nav-text"><a href="#&#x51FD;&#x6570;" class="headerlink" title="&#x51FD;&#x6570;"></a>&#x51FD;&#x6570;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#View-Functions"><span class="nav-number">6.5.1.</span> <span class="nav-text"><a href="#View-Functions" class="headerlink" title="View Functions"></a>View Functions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pure-Functions"><span class="nav-number">6.5.2.</span> <span class="nav-text"><a href="#Pure-Functions" class="headerlink" title="Pure Functions"></a>Pure Functions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fallback-Function"><span class="nav-number">6.5.3.</span> <span class="nav-text"><a href="#Fallback-Function" class="headerlink" title="Fallback Function"></a>Fallback Function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法重载"><span class="nav-number">6.5.4.</span> <span class="nav-text"><a href="#&#x65B9;&#x6CD5;&#x91CD;&#x8F7D;" class="headerlink" title="&#x65B9;&#x6CD5;&#x91CD;&#x8F7D;"></a>&#x65B9;&#x6CD5;&#x91CD;&#x8F7D;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事件"><span class="nav-number">6.6.</span> <span class="nav-text"><a href="#&#x4E8B;&#x4EF6;" class="headerlink" title="&#x4E8B;&#x4EF6;"></a>&#x4E8B;&#x4EF6;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承"><span class="nav-number">6.7.</span> <span class="nav-text"><a href="#&#x7EE7;&#x627F;" class="headerlink" title="&#x7EE7;&#x627F;"></a>&#x7EE7;&#x627F;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为基合约设置参数"><span class="nav-number">6.7.1.</span> <span class="nav-text"><a href="#&#x4E3A;&#x57FA;&#x5408;&#x7EA6;&#x8BBE;&#x7F6E;&#x53C2;&#x6570;" class="headerlink" title="&#x4E3A;&#x57FA;&#x5408;&#x7EA6;&#x8BBE;&#x7F6E;&#x53C2;&#x6570;"></a>&#x4E3A;&#x57FA;&#x5408;&#x7EA6;&#x8BBE;&#x7F6E;&#x53C2;&#x6570;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多继承的钻石问题"><span class="nav-number">6.7.2.</span> <span class="nav-text"><a href="#&#x591A;&#x7EE7;&#x627F;&#x7684;&#x94BB;&#x77F3;&#x95EE;&#x9898;" class="headerlink" title="&#x591A;&#x7EE7;&#x627F;&#x7684;&#x94BB;&#x77F3;&#x95EE;&#x9898;"></a>&#x591A;&#x7EE7;&#x627F;&#x7684;&#x94BB;&#x77F3;&#x95EE;&#x9898;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#继承相同名称不同类型的成员"><span class="nav-number">6.7.3.</span> <span class="nav-text"><a href="#&#x7EE7;&#x627F;&#x76F8;&#x540C;&#x540D;&#x79F0;&#x4E0D;&#x540C;&#x7C7B;&#x578B;&#x7684;&#x6210;&#x5458;" class="headerlink" title="&#x7EE7;&#x627F;&#x76F8;&#x540C;&#x540D;&#x79F0;&#x4E0D;&#x540C;&#x7C7B;&#x578B;&#x7684;&#x6210;&#x5458;"></a>&#x7EE7;&#x627F;&#x76F8;&#x540C;&#x540D;&#x79F0;&#x4E0D;&#x540C;&#x7C7B;&#x578B;&#x7684;&#x6210;&#x5458;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象合约"><span class="nav-number">6.8.</span> <span class="nav-text"><a href="#&#x62BD;&#x8C61;&#x5408;&#x7EA6;" class="headerlink" title="&#x62BD;&#x8C61;&#x5408;&#x7EA6;"></a>&#x62BD;&#x8C61;&#x5408;&#x7EA6;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口"><span class="nav-number">6.9.</span> <span class="nav-text"><a href="#&#x63A5;&#x53E3;" class="headerlink" title="&#x63A5;&#x53E3;"></a>&#x63A5;&#x53E3;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Libraries"><span class="nav-number">6.10.</span> <span class="nav-text"><a href="#Libraries" class="headerlink" title="Libraries"></a>Libraries</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-For"><span class="nav-number">6.11.</span> <span class="nav-text"><a href="#Using-For" class="headerlink" title="Using For"></a>Using For</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Solidity介绍"><span class="nav-number">1.</span> <span class="nav-text">Solidity介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Solidity源文件的布局"><span class="nav-number">2.</span> <span class="nav-text">Solidity源文件的布局</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Version-Pragma"><span class="nav-number">2.1.</span> <span class="nav-text">Version Pragma</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#导入语句"><span class="nav-number">2.2.</span> <span class="nav-text">导入语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#State-Sariables"><span class="nav-number">2.3.</span> <span class="nav-text">State Sariables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Functions"><span class="nav-number">2.4.</span> <span class="nav-text">Functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Function-Modifiers"><span class="nav-number">2.5.</span> <span class="nav-text">Function Modifiers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Events"><span class="nav-number">2.6.</span> <span class="nav-text">Events</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Struct-Types"><span class="nav-number">2.7.</span> <span class="nav-text">Struct Types</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Enum-Types"><span class="nav-number">2.8.</span> <span class="nav-text">Enum Types</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类型"><span class="nav-number">3.</span> <span class="nav-text">类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#值类型"><span class="nav-number">3.1.</span> <span class="nav-text">值类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Boolean（布尔）"><span class="nav-number">3.1.1.</span> <span class="nav-text">Boolean（布尔）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Integers（整数）"><span class="nav-number">3.1.2.</span> <span class="nav-text">Integers（整数）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fixed-Point-Numbers（定点数）"><span class="nav-number">3.1.3.</span> <span class="nav-text">Fixed Point Numbers（定点数）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Address（地址）"><span class="nav-number">3.1.4.</span> <span class="nav-text">Address（地址）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fixed-size-byte-arrays（定长字节数组）"><span class="nav-number">3.1.5.</span> <span class="nav-text">Fixed-size byte arrays（定长字节数组）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dynamically-sized-byte-array（变长字节数组）"><span class="nav-number">3.1.6.</span> <span class="nav-text">Dynamically-sized byte array（变长字节数组）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Address-Literals（地址字面值）"><span class="nav-number">3.1.7.</span> <span class="nav-text">Address Literals（地址字面值）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Rational-and-Integer-Literals（有理数和整数常量）"><span class="nav-number">3.1.8.</span> <span class="nav-text">Rational and Integer Literals（有理数和整数常量）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#String-Literals（字符串字面值）"><span class="nav-number">3.1.9.</span> <span class="nav-text">String Literals（字符串字面值）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hexadecimal-Literals（十六进制字面值）"><span class="nav-number">3.1.10.</span> <span class="nav-text">Hexadecimal Literals（十六进制字面值）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Enums（枚举）"><span class="nav-number">3.1.11.</span> <span class="nav-text">Enums（枚举）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Function-Types（函数类型）"><span class="nav-number">3.1.12.</span> <span class="nav-text">Function Types（函数类型）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用类型"><span class="nav-number">3.2.</span> <span class="nav-text">引用类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据存储位置"><span class="nav-number">3.2.1.</span> <span class="nav-text">数据存储位置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Arrays"><span class="nav-number">3.2.2.</span> <span class="nav-text">Arrays</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分配内存数组"><span class="nav-number">3.2.3.</span> <span class="nav-text">分配内存数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Array-Literals-Inline-Arrays（数组字面值-行内数组）"><span class="nav-number">3.2.4.</span> <span class="nav-text">Array Literals / Inline Arrays（数组字面值/行内数组）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Structs"><span class="nav-number">3.2.5.</span> <span class="nav-text">Structs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mappings"><span class="nav-number">3.2.6.</span> <span class="nav-text">Mappings</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#涉及左值的运算符"><span class="nav-number">3.3.</span> <span class="nav-text">涉及左值的运算符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#delete"><span class="nav-number">3.3.1.</span> <span class="nav-text">delete</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本类型之间的转换"><span class="nav-number">3.4.</span> <span class="nav-text">基本类型之间的转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#隐式转换"><span class="nav-number">3.4.1.</span> <span class="nav-text">隐式转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类型推断"><span class="nav-number">3.4.2.</span> <span class="nav-text">类型推断</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#单位以及全局变量"><span class="nav-number">4.</span> <span class="nav-text">单位以及全局变量</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Ether-Units"><span class="nav-number">4.1.</span> <span class="nav-text">Ether Units</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Time-Units"><span class="nav-number">4.2.</span> <span class="nav-text">Time Units</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#区块和交易属性"><span class="nav-number">4.2.1.</span> <span class="nav-text">区块和交易属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#错误处理"><span class="nav-number">4.2.2.</span> <span class="nav-text">错误处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数学和密码学函数"><span class="nav-number">4.2.3.</span> <span class="nav-text">数学和密码学函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#地址相关"><span class="nav-number">4.2.4.</span> <span class="nav-text">地址相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#合约相关"><span class="nav-number">4.2.5.</span> <span class="nav-text">合约相关</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#表达式和控制结构"><span class="nav-number">5.</span> <span class="nav-text">表达式和控制结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#控制结构"><span class="nav-number">5.1.</span> <span class="nav-text">控制结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数调用"><span class="nav-number">5.2.</span> <span class="nav-text">函数调用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#内部函数调用"><span class="nav-number">5.2.1.</span> <span class="nav-text">内部函数调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#外部函数调用"><span class="nav-number">5.2.2.</span> <span class="nav-text">外部函数调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通过new来创建合约"><span class="nav-number">5.2.3.</span> <span class="nav-text">通过new来创建合约</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#赋值操作"><span class="nav-number">5.2.4.</span> <span class="nav-text">赋值操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于Arrays和Structs的一些问题"><span class="nav-number">5.2.5.</span> <span class="nav-text">关于Arrays和Structs的一些问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#作用域和声明"><span class="nav-number">5.3.</span> <span class="nav-text">作用域和声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#错误处理：Assert-Require-Revert-and-Exceptions"><span class="nav-number">5.4.</span> <span class="nav-text">错误处理：Assert, Require, Revert and Exceptions</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#合约"><span class="nav-number">6.</span> <span class="nav-text">合约</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#可见性和Getters"><span class="nav-number">6.1.</span> <span class="nav-text">可见性和Getters</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Getter函数"><span class="nav-number">6.2.</span> <span class="nav-text">Getter函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数修改器"><span class="nav-number">6.3.</span> <span class="nav-text">函数修改器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常状态变量"><span class="nav-number">6.4.</span> <span class="nav-text">常状态变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数"><span class="nav-number">6.5.</span> <span class="nav-text">函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#View-Functions"><span class="nav-number">6.5.1.</span> <span class="nav-text">View Functions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pure-Functions"><span class="nav-number">6.5.2.</span> <span class="nav-text">Pure Functions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fallback-Function"><span class="nav-number">6.5.3.</span> <span class="nav-text">Fallback Function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法重载"><span class="nav-number">6.5.4.</span> <span class="nav-text">方法重载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事件"><span class="nav-number">6.6.</span> <span class="nav-text">事件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承"><span class="nav-number">6.7.</span> <span class="nav-text">继承</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为基合约设置参数"><span class="nav-number">6.7.1.</span> <span class="nav-text">为基合约设置参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多继承的钻石问题"><span class="nav-number">6.7.2.</span> <span class="nav-text">多继承的钻石问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#继承相同名称不同类型的成员"><span class="nav-number">6.7.3.</span> <span class="nav-text">继承相同名称不同类型的成员</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象合约"><span class="nav-number">6.8.</span> <span class="nav-text">抽象合约</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口"><span class="nav-number">6.9.</span> <span class="nav-text">接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Libraries"><span class="nav-number">6.10.</span> <span class="nav-text">Libraries</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-For"><span class="nav-number">6.11.</span> <span class="nav-text">Using For</span></a></li></ol></li></ol></div>
+      </div>
       <!--/noindex-->
-      
 
-      
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="TomKK"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">TomKK</p>
+  <div class="site-description" itemprop="description">学而后知不足</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:tomkklalala@qq.com" title="E-Mail → mailto:tomkklalala@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
 
     </div>
   </aside>
+  <div id="sidebar-dimmer"></div>
 
 
-        
       </div>
     </main>
 
-    <footer id="footer" class="footer">
+    <footer class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">TomKK</span>
-
-  
 </div>
-
-
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
-
-
-
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
-
-
-
-
-        
-
-
-
-
-
-
-
-        
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
-    
-
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
   </div>
 
-  
+        
 
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
 
 
 
 
 
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-  
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
-
-
-
-  
-
-
-  
-
-    
-      <script id="dsq-count-scr" src="https://http-tomkklalala-github-io.disqus.com/count.js" async></script>
-    
-
-    
-      <script type="text/javascript">
-        var disqus_config = function () {
-          this.page.url = 'http://kaiktang.github.io/2018/03/12/学习Solidity/';
-          this.page.identifier = '2018/03/12/学习Solidity/';
-          this.page.title = '学习Solidity';
-        };
-        var d = document, s = d.createElement('script');
-        s.src = 'https://http-tomkklalala-github-io.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', '' + +new Date());
-        (d.head || d.body).appendChild(s);
-      </script>
-    
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-  
-  
-  
-  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
-
-  
-  
-  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
-  
-
-  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
-
-
-
-  
-
-  
-  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
-  <script>AV.initialize("1uk3Vw0sydAghlwOnBUGYRMn-gzGzoHsz", "op4ebrtGIe4wP41x2oJjqocF");</script>
-  <script>
-    function showTime(Counter) {
-      var query = new AV.Query(Counter);
-      var entries = [];
-      var $visitors = $(".leancloud_visitors");
-
-      $visitors.each(function () {
-        entries.push( $(this).attr("id").trim() );
-      });
-
-      query.containedIn('url', entries);
-      query.find()
-        .done(function (results) {
-          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
-
-          if (results.length === 0) {
-            $visitors.find(COUNT_CONTAINER_REF).text(0);
-            return;
-          }
-
-          for (var i = 0; i < results.length; i++) {
-            var item = results[i];
-            var url = item.get('url');
-            var time = item.get('time');
-            var element = document.getElementById(url);
-
-            $(element).find(COUNT_CONTAINER_REF).text(time);
-          }
-          for(var i = 0; i < entries.length; i++) {
-            var url = entries[i];
-            var element = document.getElementById(url);
-            var countSpan = $(element).find(COUNT_CONTAINER_REF);
-            if( countSpan.text() == '') {
-              countSpan.text(0);
-            }
-          }
-        })
-        .fail(function (object, error) {
-          console.log("Error: " + error.code + " " + error.message);
-        });
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
     }
 
     function addCount(Counter) {
-      var $visitors = $(".leancloud_visitors");
-      var url = $visitors.attr('id').trim();
-      var title = $visitors.attr('data-flag-title').trim();
-      var query = new AV.Query(Counter);
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
 
-      query.equalTo("url", url);
-      query.find({
-        success: function(results) {
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
           if (results.length > 0) {
             var counter = results[0];
-            counter.fetchWhenSave(true);
-            counter.increment("time");
-            counter.save(null, {
-              success: function(counter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(counter.get('time'));
-              },
-              error: function(counter, error) {
-                console.log('Failed to save Visitor num, with error message: ' + error.message);
-              }
-            });
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
           } else {
-            var newcounter = new Counter();
-            /* Set ACL */
-            var acl = new AV.ACL();
-            acl.setPublicReadAccess(true);
-            acl.setPublicWriteAccess(true);
-            newcounter.setACL(acl);
-            /* End Set ACL */
-            newcounter.set("title", title);
-            newcounter.set("url", url);
-            newcounter.set("time", 1);
-            newcounter.save(null, {
-              success: function(newcounter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
-              },
-              error: function(newcounter, error) {
-                console.log('Failed to create');
-              }
-            });
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
           }
-        },
-        error: function(error) {
-          console.log('Error:' + error.code + " " + error.message);
-        }
-      });
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
     }
 
-    $(function() {
-      var Counter = AV.Object.extend("Counter");
-      if ($('.leancloud_visitors').length == 1) {
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"ln2t4IqFJHxBwyPmvGIOSOq7-9Nh9j0Va","app_key":"KSRW7KXJo9vinkNUdDEkjaww","server_url":"https://ln2t4iqf.lc-cn-e1-shared.com","security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
         addCount(Counter);
-      } else if ($('.post-title-link').length > 1) {
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
         showTime(Counter);
       }
-    });
-  </script>
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1308,36 +918,36 @@ var jiathis_config={
 
   
 
-  
-  
-
-  
-  
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-        }
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://http-tomkklalala-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://kaiktang.github.io/2018/03/12/学习Solidity/";
+    this.page.identifier = "2018/03/12/学习Solidity/";
+    this.page.title = "学习Solidity";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
       });
-    </script>
-
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-  
-
-
-  
-
-  
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-tomkklalala-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
 
 </body>
 </html>
