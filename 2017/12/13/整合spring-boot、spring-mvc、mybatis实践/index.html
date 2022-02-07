@@ -21,7 +21,7 @@
   </script>
 
   <meta name="description" content="环境IDE：Intellij IDEA 2017.3 Java：1.8 创建工程目录结构工程为多模块结构，采用maven组织依赖关系：   目录结构解释 SSM：用于存放Controller文件和springboot启动类    SSM_Base：用于集中管理所有依赖的父模块    SSM_DAO：用于存放Mapper接口和sql映射文件，以及逆向工程的配置文件    SSM_Model：用于存放">
-<meta name="keywords" content="java,spring boot,spring mvc,mybatis">
+<meta name="keywords" content="java,spring mvc,spring boot,mybatis">
 <meta property="og:type" content="article">
 <meta property="og:title" content="整合spring boot、spring mvc、mybatis实践">
 <meta property="og:url" content="http://kaiktang.github.io/2017/12/13/整合spring-boot、spring-mvc、mybatis实践/index.html">
@@ -410,8 +410,8 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/java/" rel="tag"># java</a>
-              <a href="/tags/spring-boot/" rel="tag"># spring boot</a>
               <a href="/tags/spring-mvc/" rel="tag"># spring mvc</a>
+              <a href="/tags/spring-boot/" rel="tag"># spring boot</a>
               <a href="/tags/mybatis/" rel="tag"># mybatis</a>
           </div>
 
@@ -587,9 +587,14 @@
                 console.error('Failed to save visitor count', error);
               });
           } else {
-              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
-              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
-            
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
           }
         })
         .catch(error => {
@@ -616,7 +621,7 @@
         });
     }
 
-    let { app_id, app_key, server_url } = {"enable":true,"app_id":"ln2t4IqFJHxBwyPmvGIOSOq7-9Nh9j0Va","app_key":"KSRW7KXJo9vinkNUdDEkjaww","server_url":"https://ln2t4iqf.lc-cn-e1-shared.com","security":true};
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"ln2t4IqFJHxBwyPmvGIOSOq7-9Nh9j0Va","app_key":"KSRW7KXJo9vinkNUdDEkjaww","server_url":"ln2t4iqf.lc-cn-e1-shared.com","security":false};
     function fetchData(api_server) {
       var Counter = (method, url, data) => {
         return fetch(`${api_server}/1.1${url}`, {
