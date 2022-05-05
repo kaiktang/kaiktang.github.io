@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"kaiktang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":{"disqus":{"text":"Load Disqus","order":-1}},"activeClass":"disqus"},"algolia":{"appID":"FBQ33HXA0Q","apiKey":"5a256d1a0d5075a6a17b29fbae8cdbdc","indexName":"blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="AbstractQueuedSynchronizer是一个为其他同步工具提供基础设施的一个框架。 里面主要提供了三种能力：  原子的管理同步状态的能力 阻塞和解除线程阻塞的能力 维护一条线程队列的能力  管理同步状态的能力同步状态是在AQS的一个32位整数state变量中存储的 1private volatile int state; 该字段的含义是由子类进行按需赋予的，比如说：  在Reentr">
+  <meta name="description" content="AbstractQueuedSynchronizer是一个为其他同步工具提供基础设施的一个框架。 里面主要提供了三种能力：  原子的管理同步状态的能力 阻塞和解除线程阻塞的能力 维护一条线程队列的能力">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java AbstractQueuedSynchronizer">
 <meta property="og:url" content="http://kaiktang.github.io/2022/05/05/Java-AbstractQueuedSynchronizer/index.html">
 <meta property="og:site_name" content="kaiktang&#39;s blogs">
-<meta property="og:description" content="AbstractQueuedSynchronizer是一个为其他同步工具提供基础设施的一个框架。 里面主要提供了三种能力：  原子的管理同步状态的能力 阻塞和解除线程阻塞的能力 维护一条线程队列的能力  管理同步状态的能力同步状态是在AQS的一个32位整数state变量中存储的 1private volatile int state; 该字段的含义是由子类进行按需赋予的，比如说：  在Reentr">
+<meta property="og:description" content="AbstractQueuedSynchronizer是一个为其他同步工具提供基础设施的一个框架。 里面主要提供了三种能力：  原子的管理同步状态的能力 阻塞和解除线程阻塞的能力 维护一条线程队列的能力">
 <meta property="og:locale">
 <meta property="article:published_time" content="2022-05-05T12:27:16.000Z">
-<meta property="article:modified_time" content="2022-05-05T12:47:02.464Z">
+<meta property="article:modified_time" content="2022-05-05T13:55:20.601Z">
 <meta property="article:author" content="kaiktang">
 <meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
@@ -215,7 +215,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2022-05-05 20:27:16 / Modified: 20:47:02" itemprop="dateCreated datePublished" datetime="2022-05-05T20:27:16+08:00">2022-05-05</time>
+              <time title="Created: 2022-05-05 20:27:16 / Modified: 21:55:20" itemprop="dateCreated datePublished" datetime="2022-05-05T20:27:16+08:00">2022-05-05</time>
             </span>
 
           
@@ -250,6 +250,7 @@
 <li>阻塞和解除线程阻塞的能力</li>
 <li>维护一条线程队列的能力</li>
 </ol>
+<span id="more"></span>
 <h1 id="管理同步状态的能力"><a href="#管理同步状态的能力" class="headerlink" title="管理同步状态的能力"></a>管理同步状态的能力</h1><p>同步状态是在AQS的一个32位整数state变量中存储的</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="type">int</span> state;</span><br></pre></td></tr></table></figure>
 <p>该字段的含义是由子类进行按需赋予的，比如说：</p>
