@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaiktang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":{"disqus":{"text":"Load Disqus","order":-1}},"activeClass":"disqus"},"algolia":{"appID":"FBQ33HXA0Q","apiKey":"5a256d1a0d5075a6a17b29fbae8cdbdc","indexName":"blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文章主要用来记录一些平时不常用的命令，以期望自己能够在未来能够熟练自然的使用，提升开发效率。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vim实用技巧">
+<meta property="og:url" content="http://kaiktang.github.io/2019/07/28/Vim%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7/index.html">
+<meta property="og:site_name" content="kaiktang&#39;s blogs">
+<meta property="og:description" content="本文章主要用来记录一些平时不常用的命令，以期望自己能够在未来能够熟练自然的使用，提升开发效率。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-07-28T07:39:53.000Z">
+<meta property="article:modified_time" content="2022-02-07T12:11:39.000Z">
+<meta property="article:author" content="kaiktang">
+<meta property="article:tag" content="工具">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://kaiktang.github.io/2019/07/28/Vim%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Vim实用技巧 | kaiktang's blogs</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kaiktang's blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://kaiktang.github.io/2019/07/28/Vim%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaiktang">
+      <meta itemprop="description" content="学而后知不足">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kaiktang's blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vim实用技巧
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-07-28 15:39:53" itemprop="dateCreated datePublished" datetime="2019-07-28T15:39:53+08:00">2019-07-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-07 20:11:39" itemprop="dateModified" datetime="2022-02-07T20:11:39+08:00">2022-02-07</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2019/07/28/Vim%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/07/28/Vim实用技巧/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文章主要用来记录一些平时不常用的命令，以期望自己能够在未来能够熟练自然的使用，提升开发效率。</p>
+<a id="more"></a>
+<h2 id="光标移动"><a href="#光标移动" class="headerlink" title="光标移动"></a>光标移动</h2><p><code>g_</code>：到本行最后一个不是blank字符的位置。</p>
+<p><code>w</code>：移动到下个单词开头。</p>
+<p><code>e</code>：移动到下个单词词尾。</p>
+<p><code>%</code>：如果当前光标在<code>(</code>、<code>{</code>、<code>[</code>上，就可以移动到对应的括号上。</p>
+<p><code>*/#</code>：移动到下一个（上一个）当前光标对应的单词处。</p>
+<p><code>fa</code>：到下一个字母a处。F为反方向。</p>
+<p><code>t,</code>：到逗号前的第一个字符。T为反方向。</p>
+<h2 id="复制-粘贴"><a href="#复制-粘贴" class="headerlink" title="复制/粘贴"></a>复制/粘贴</h2><p><code>P</code>：复制到当前位置之前。</p>
+<p><code>yy</code>：复制当前行。</p>
+<h2 id="文件操作"><a href="#文件操作" class="headerlink" title="文件操作"></a>文件操作</h2><p><code>:e &lt;path/to/file&gt;</code>：打开文件</p>
+<p><code>:w</code>: 存盘</p>
+<p><code>:saveas &lt;path/to/file&gt;</code>：另存为</p>
+<p><code>:x</code>， <code>ZZ</code> 或 <code>:wq</code> ：保存并退出 (<code>:x</code> 表示仅在需要时保存，ZZ不需要输入冒号并回车)</p>
+<p><code>:n</code>：打开下一个文件</p>
+<h2 id="命令重复"><a href="#命令重复" class="headerlink" title="命令重复"></a>命令重复</h2><p><code>.</code>：重复上一个命令一次</p>
+<p><code>N&lt;command&gt;</code>：重复命令N次</p>
+<blockquote>
+<ul>
+<li><code>2dd</code> → 删除2行</li>
+<li><code>3p</code> → 粘贴文本3次</li>
+<li><code>100idesu [ESC]</code> → 会写下 “desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu desu “</li>
+<li><code>.</code> → 重复上一个命令—— 100 “desu “.</li>
+<li><code>3.</code> → 重复 3 次 “desu” (注意：不是 300，你看，VIM多聪明啊).</li>
+</ul>
+</blockquote>
+<h2 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h2><p><code>dt&quot;</code>：删除到下一次出现<code>&quot;</code>。</p>
+<h2 id="组合命令"><a href="#组合命令" class="headerlink" title="组合命令"></a>组合命令</h2><p><code>&lt;start-positon&gt;&lt;command&gt;&lt;end-postion&gt;</code>：比如，0y$，意思为拷贝整行。</p>
+<p><code>&lt;action&gt;a&lt;object&gt;</code> 和 <code>&lt;action&gt;i&lt;object&gt;</code>：比如，di”，代表删除引号内的所有东西（前一个命令会删除引号，后一个命令会保留引号）。</p>
+<p>假设你有一个字符串 <code>(map (+) (&quot;foo&quot;))</code>.而光标键在第一个 <code>o</code>的位置。</p>
+<blockquote>
+<ul>
+<li><code>vi&quot;</code> → 会选择 <code>foo</code>.</li>
+<li><code>va&quot;</code> → 会选择 <code>&quot;foo&quot;</code>.</li>
+<li><code>vi)</code> → 会选择 <code>&quot;foo&quot;</code>.</li>
+<li><code>va)</code> → 会选择<code>(&quot;foo&quot;)</code>.</li>
+<li><code>v2i)</code> → 会选择 <code>map (+) (&quot;foo&quot;)</code></li>
+<li><code>v2a)</code> → 会选择 <code>(map (+) (&quot;foo&quot;))</code></li>
+</ul>
+</blockquote>
+<h2 id="自动提示"><a href="#自动提示" class="headerlink" title="自动提示"></a>自动提示</h2><p><code>&lt;C-n&gt;</code> 和 <code>&lt;C-p&gt;</code>：多次重复会在多个选项之间重复。</p>
+<h2 id="分屏"><a href="#分屏" class="headerlink" title="分屏"></a>分屏</h2><p><code>:sp filename</code>：水平分屏。</p>
+<p><code>:vsp filename</code>：垂直分屏。</p>
+<p><code>&lt;C+w&gt; hjkl</code>：切换分屏。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="kaiktang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="kaiktang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag"># 工具</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/11/18/Go%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E6%AF%94%E8%BE%83%E8%BF%90%E7%AE%97%E7%AC%A6/" rel="prev" title="Go语言中的比较运算符">
+      <i class="fa fa-chevron-left"></i> Go语言中的比较运算符
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/11/27/csapp-libs-bomblib/" rel="next" title="csapp_libs: bomblib">
+      csapp_libs: bomblib <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%89%E6%A0%87%E7%A7%BB%E5%8A%A8"><span class="nav-number">1.</span> <span class="nav-text">光标移动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6-%E7%B2%98%E8%B4%B4"><span class="nav-number">2.</span> <span class="nav-text">复制&#x2F;粘贴</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">文件操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E9%87%8D%E5%A4%8D"><span class="nav-number">4.</span> <span class="nav-text">命令重复</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A0%E9%99%A4"><span class="nav-number">5.</span> <span class="nav-text">删除</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E5%90%88%E5%91%BD%E4%BB%A4"><span class="nav-number">6.</span> <span class="nav-text">组合命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E6%8F%90%E7%A4%BA"><span class="nav-number">7.</span> <span class="nav-text">自动提示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B1%8F"><span class="nav-number">8.</span> <span class="nav-text">分屏</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaiktang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaiktang</p>
+  <div class="site-description" itemprop="description">学而后知不足</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:tomkklalala@qq.com" title="E-Mail → mailto:tomkklalala@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaiktang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://kaiktang.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://kaiktang.github.io/2019/07/28/Vim%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7/";
+    this.page.identifier = "2019/07/28/Vim实用技巧/";
+    this.page.title = "Vim实用技巧";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://kaiktang.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaiktang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":{"disqus":{"text":"Load Disqus","order":-1}},"activeClass":"disqus"},"algolia":{"appID":"FBQ33HXA0Q","apiKey":"5a256d1a0d5075a6a17b29fbae8cdbdc","indexName":"blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="原文：https:&#x2F;&#x2F;github.com&#x2F;ethereum&#x2F;wiki&#x2F;wiki&#x2F;White-Paper  以太坊账户在以太坊中状态是由账户组成的，每个账户都有一个20字节的地址。一个以太坊账户包含4个字段：  nonce：一个计数器用来确保每笔交易只会被处理一次 balance：当前账户的以太币余额 合约代码 storage  一共分为两种账户：外部账户和合约账户。一个外部账户没有代码，但是可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习以太坊白皮书">
+<meta property="og:url" content="http://kaiktang.github.io/2018/02/09/%E5%AD%A6%E4%B9%A0%E4%BB%A5%E5%A4%AA%E5%9D%8A%E7%99%BD%E7%9A%AE%E4%B9%A6/index.html">
+<meta property="og:site_name" content="kaiktang&#39;s blogs">
+<meta property="og:description" content="原文：https:&#x2F;&#x2F;github.com&#x2F;ethereum&#x2F;wiki&#x2F;wiki&#x2F;White-Paper  以太坊账户在以太坊中状态是由账户组成的，每个账户都有一个20字节的地址。一个以太坊账户包含4个字段：  nonce：一个计数器用来确保每笔交易只会被处理一次 balance：当前账户的以太币余额 合约代码 storage  一共分为两种账户：外部账户和合约账户。一个外部账户没有代码，但是可">
+<meta property="og:locale">
+<meta property="og:image" content="https://raw.githubusercontent.com/ethereumbuilders/GitBook/master/en/vitalik-diagrams/ethertransition.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/ethereumbuilders/GitBook/master/en/vitalik-diagrams/apply_block_diagram.png">
+<meta property="article:published_time" content="2018-02-09T15:19:56.000Z">
+<meta property="article:modified_time" content="2018-02-11T06:17:45.000Z">
+<meta property="article:author" content="kaiktang">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="以太坊">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/ethereumbuilders/GitBook/master/en/vitalik-diagrams/ethertransition.png">
+
+<link rel="canonical" href="http://kaiktang.github.io/2018/02/09/%E5%AD%A6%E4%B9%A0%E4%BB%A5%E5%A4%AA%E5%9D%8A%E7%99%BD%E7%9A%AE%E4%B9%A6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>学习以太坊白皮书 | kaiktang's blogs</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kaiktang's blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://kaiktang.github.io/2018/02/09/%E5%AD%A6%E4%B9%A0%E4%BB%A5%E5%A4%AA%E5%9D%8A%E7%99%BD%E7%9A%AE%E4%B9%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaiktang">
+      <meta itemprop="description" content="学而后知不足">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kaiktang's blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          学习以太坊白皮书
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-02-09 23:19:56" itemprop="dateCreated datePublished" datetime="2018-02-09T23:19:56+08:00">2018-02-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-02-11 14:17:45" itemprop="dateModified" datetime="2018-02-11T14:17:45+08:00">2018-02-11</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2018/02/09/%E5%AD%A6%E4%B9%A0%E4%BB%A5%E5%A4%AA%E5%9D%8A%E7%99%BD%E7%9A%AE%E4%B9%A6/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/02/09/学习以太坊白皮书/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>原文：<a href="https://github.com/ethereum/wiki/wiki/White-Paper" target="_blank" rel="noopener">https://github.com/ethereum/wiki/wiki/White-Paper</a></p>
+</blockquote>
+<h1 id="以太坊账户"><a href="#以太坊账户" class="headerlink" title="以太坊账户"></a>以太坊账户</h1><p>在以太坊中状态是由账户组成的，每个账户都有一个20字节的地址。一个以太坊账户包含4个字段：</p>
+<ol>
+<li><code>nonce</code>：一个计数器用来确保每笔交易只会被处理一次</li>
+<li><code>balance</code>：当前账户的以太币余额</li>
+<li><code>合约代码</code></li>
+<li><code>storage</code></li>
+</ol>
+<p>一共分为两种账户：<code>外部账户</code>和<code>合约账户</code>。一个外部账户没有代码，但是可以通过发送信息来创建或签名一个交易。在合约账户中，每次其收到消息它的代码都会被执行，进行对内部<code>storage</code>的读写操作或者发送其他信息或者创建另一个合约。</p>
+<h1 id="消息和交易"><a href="#消息和交易" class="headerlink" title="消息和交易"></a>消息和交易</h1><p><code>交易</code>在以太坊中指代的是被前面的数据包，其中包含的是外部账户发送的消息。<code>交易</code>包含着：</p>
+<ul>
+<li>消息的接受者</li>
+<li>发送者签名</li>
+<li>发送的以太币数额</li>
+<li>可选的数据字段</li>
+<li><code>STARTGAS</code>，代表着此交易允许的最大计算步骤数</li>
+<li><code>GASPRICE</code>：代表发送者愿意为每个计算步骤支付的费用</li>
+</ul>
+<p>数据字段默认没有作用，但是虚拟机中的合约可以访问它。</p>
+<p>在以太坊中通常每步计算耗费 1 gas，但是更耗费资源的计算会耗费更多。存储方面，每字节收费 5 gas。</p>
+<p><img src="https://raw.githubusercontent.com/ethereumbuilders/GitBook/master/en/vitalik-diagrams/ethertransition.png" alt="以太坊状态转移"></p>
+<p>合约能够向其他合约发送<code>消息</code>。消息只存在于以太坊执行环境中。一个<code>消息</code>包含：</p>
+<ul>
+<li>消息的发送者（隐式）</li>
+<li>消息的接受者</li>
+<li>消息附带发送的以太币</li>
+<li>可选的数据字段</li>
+<li><code>STARTGAS</code></li>
+</ul>
+<p><code>消息</code>类似<code>交易</code>但是是由<code>合约</code>产生而非外部账户。当合约执行到<code>call</code>操作码的时候，将会产生一个消息，以此让接受者账户执行其代码。所以合约账户之间可以和外部账户一样交互。</p>
+<p>注意交易或者合约设置的<code>gas</code>应用于所有操作以及其他子操作。比如：一个外部账户A发给了B 1000 gas，然后自己消耗了600，向C发送消息，C消耗了300，此时B将只剩下 100 gas。</p>
+<p>以太坊的状态转移函数，<code>APPLY(S, TX) —&gt; S&#39;</code>定义如下：</p>
+<ol>
+<li>检查交易是否正确组织（各个字段是否正确），签名是否有效，<code>nonce</code>是否发送者账户的中的<code>nonce</code>。如果检查出错，返回错误。</li>
+<li>计算交易费用<code>STARTGAS × GASPRICE</code>，送发送者账户余额中减去费用，并增加发送者<code>nonce</code>值，如果余额不足，则返回错误。</li>
+<li>初始化<code>GAS = STARTGAS</code>，并减去因为交易存储消耗的费用。</li>
+<li>从发送者账户转账到接受者账户，如果接受账户还不存在，就创建。如果接受者账户是一个合约账户，那么将会执行合约代码，要么正常结束要么用尽gas而终止。</li>
+<li>如果因为发送者余额不足或者合约代码耗尽gas而终止，将导致所有状态回滚，但是交易收取的费用还是会被扣除加到矿工账户上。</li>
+<li>否则，退回剩余的gas到发送者，然后向矿工支付费用。</li>
+</ol>
+<h1 id="代码执行"><a href="#代码执行" class="headerlink" title="代码执行"></a>代码执行</h1><p>以太坊合约中的代码底层是一种基于栈的字节码语言，被称为<code>以太坊虚拟机码</code>或者<code>EVM code</code>。操作可以访问三种类型的存储数据的空间：</p>
+<ul>
+<li><code>stack</code>：后进先出的栈</li>
+<li><code>memory</code>：一个无限可拓展的字节数组</li>
+<li><code>storage</code>：一个键值存储。不像<code>stack</code>和<code>memory</code>每次计算结束都会被重置，<code>storage</code>会持久保存数据。</li>
+</ul>
+<p>代码可以访问消息中附带的以太币金额、发送者和数据字段，还有区块头部信息，也可以返回一个字节数组作为输出。</p>
+<p><code>EVM code</code>的执行模式相当简单。当以太坊虚拟机运行时，它的完整的计算状态可以被这样一个元素所定义（<code>block_state</code>, <code>transaction</code>, <code>message</code>, <code>code</code>, <code>memory</code>, <code>stack</code>, <code>pc</code>, <code>gas</code>），其中<code>block_state</code>是全局状态包含了所有的账户信息。在每轮执行的开始，通过<code>pc(program counter)</code>找到当前指令，然后每个指令都有他们各自的方式去影响这个元组。比如：<code>ADD</code>操作就会弹出栈中的两个元素然后将他们的和再压回栈中，消耗 1 gas，并且将<code>pc</code>加1。而<code>SSTORE操作的话会弹出栈中两个元素然后掺入第二个元素到合约的</code>storage`的第一个元素指定的位置。尽管通过即时编译来优化以太坊虚拟机执行的方法有很多，但以太坊的基本实现可以在几百行代码中完成。</p>
+<h1 id="区块链和挖矿"><a href="#区块链和挖矿" class="headerlink" title="区块链和挖矿"></a>区块链和挖矿</h1><p><img src="https://raw.githubusercontent.com/ethereumbuilders/GitBook/master/en/vitalik-diagrams/apply_block_diagram.png" alt="以太坊区块链"></p>
+<p>以太坊和比特币主要的不同在区块链结构上：不同于比特币，以太坊区块包含了一份交易列表以及最近状态的拷贝。除此之外，和比特币一样，区块号和难度值也存在。以太坊中的基本的区块验证算法如下：</p>
+<ol>
+<li>检查引用的上一个区块是否存在且合法</li>
+<li>检查当前区块的时间戳是否比上一个区块的更大并且在15分钟以内</li>
+<li>检查<code>block number</code>，<code>difficulty</code>，<code>transaction root</code>，<code>uncle root</code>和<code>gas limit</code>是否合法</li>
+<li>检查工作量证明是否有效</li>
+<li>让<code>S[0]</code>等于上一个区块的最后一个状态</li>
+<li>假设<code>TX</code>代表区块的交易列表，若有n个交易，那么对于所有的<code>i</code>到<code>n-1</code>，设置<code>S[i+1] = APPLY(S[i], TX[i])。如果任意一个应用返回了错误或者</code>gas<code>消耗总量超出了</code>GASLIMIT`，返回错误</li>
+<li>让<code>S_FINAL</code>等于<code>S[n]</code>，但是加入了向矿工支付的回报的状态</li>
+<li>检查<code>S_FINAL</code>的<code>merkle tree</code>的根是否等于最终被检验区块头部提供的<code>state root</code>。如果相等，那么当前区块验证有效，反之无效</li>
+</ol>
+<p>这种方法看起来很低效，因为每个区块都需要存储所有的状态，但是实际上与比特币相比还是相当高效的。这是因为状态是存储在树结构中的，并且相邻区块之间树上只有少部分需要被修改。因此数据可以一次存储而多次引用（通过子树的hash）一种特殊的被称作<code>Patricia tree</code>（关于MPT树，我的<a href="http://tomkklalala.github.io/2018/02/06/%E7%90%86%E8%A7%A3%E4%BB%A5%E5%A4%AA%E5%9D%8AMerkle%20Patricia%20Trie/" target="_blank" rel="noopener">另一篇文章</a>）被用来完成这个，<code>Patricia tree</code>在<code>merkle tree</code>的基础上除了修改外，还允许进行高效地插入和删除操作。另外因为当前块的状态链是在上一个块基础上的延续，所以用户并不需要存储所有的区块链历史。如果比特币采用这种策略的话，将会节省大概5-20倍的空间。</p>
+<blockquote>
+<p>注：相当于整个状态链s[i]存放的是MPT树的树根，然后底层的数据都共享的levelDB中存储的节点。曾经有疑问关于levelDB中如果删除或者修改某个节点MPT树的实现是向数据库中插入新的节点然后修改父节点的引用，那么那些老节点不就变成幽灵节点浪费了空间么？现在看来因为整个链条上保存了状态的变化历史，所以如果如果通过过去的state root还是可以访问到那些所谓的幽灵节点的。</p>
+</blockquote>
+<p>一个常见的问题是“那么合约代码在什么时候在硬件上被执行呢？”。答案很简单：执行合约代码的过程是状态转移函数的一部分（即上文的<code>APPLY</code>函数），而状态转移函数又是区块验证算法的一部分，所以如果一个交易被打包进了区块B，那么这笔交易催生的合约代码迟早将会被所有节点执行，因为它们迟早会去下载并验证区块B。</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h2 id="GHOST实现的修改"><a href="#GHOST实现的修改" class="headerlink" title="GHOST实现的修改"></a>GHOST实现的修改</h2><p><code>GHOST协议</code>（Greedy Heaviest Observed Subtree）背后的动机是：区块链拥有越少确认次数的将会导致安全性的降低，这是因为非常高的失效率——因为新生成的区块需要一定时间去向网络中广播，如果矿工A挖到了一个区块，而在这个区块传播到矿工B处之前，矿工B恰巧也挖到了一个新区块，那么最终矿工B的努力将浪费，并不会对网络的安全性做出贡献。另外，还存在一个集权的问题：非常容易出现因为算力的失衡造成超级矿场的出现，因为钱都被大矿场抢走了，而小矿场没有油水。</p>
+<p>而在以太坊中GHOST协议中在计算最长链工作量证明的时候不仅仅是当前块的父块和祖先块被计入其中，而且还包含了当前块祖先的失效块后代们（以太坊中称其为“叔叔”）。这解决了上文中的第一个问题。而对于第二个问题，GHOST协议规定失效块也将获得奖励：一个失效块将获得87.5%的基础回报，而将其打包进区块的“侄子”区块将获得剩下的12.5%的回报。当然，交易手续费轮不到叔块们。</p>
+<p>以太坊实现了一个简化的GHOST，它只有7个规则，如下：</p>
+<ul>
+<li>一个区块必须声明一个父区块，而且必须声明0个或者多个叔块</li>
+<li>一个被区块B打包进来的叔块必须满足以下几个属性：<ul>
+<li>它必须是区块B的前第K个祖先的直接孩子（其中，2&lt;=k&lt;=7）</li>
+<li>它不能是B的祖先</li>
+<li>它必须要有合法的区块头，但并不要求它之前被验证过</li>
+<li>同一个叔块不能被多个区块打包</li>
+</ul>
+</li>
+<li>区块B内的每个叔块，矿工得到额外的3.125%的矿工费，而叔块的矿工将获得93.75%的标准矿工费</li>
+</ul>
+<p>以太坊的规定中只有7代以内的叔块可以被打包进来，这样规定有这样两个原因：</p>
+<ol>
+<li>若不加限制，将会导致为验证叔块是否合法添加过多的复杂度。</li>
+<li>若不加限制，将会降低矿工们在主链上挖矿的积极性</li>
+</ol>
+<h2 id="交易费"><a href="#交易费" class="headerlink" title="交易费"></a>交易费</h2><p>因为交易将会消耗网络资源，所以需要监管机制来防止滥用，而典型方法就是加入交易费。对于比特币的缴费的收取采取的是发送者资源设置交易费，而矿工们则类似守门员来设置自己愿意接受的最低价格。这个方法在比特币中收效很好，因为这由“市场供需关系”决定的价格。然而在现实中因为每笔交易需要网络中所有的节点去处理，所以交易处理的大部分消费是由第三方所承担的，而不是矿工。</p>
+<blockquote>
+<p>这一小节还是比较迷惑，它是想说明基于市场的其实也不差但是以太坊的实现更加稳定？</p>
+</blockquote>
+<h2 id="计算和图灵完备"><a href="#计算和图灵完备" class="headerlink" title="计算和图灵完备"></a>计算和图灵完备</h2><p>因为以太坊支持图灵完备的编程语言，包含无限循环。因为在计算机科学中众所周知没有有一个特定的方法能够检测程序是否会停机，所以可能存在攻击者通过让矿工或者其他全节点们进入死循环而宕机的可能么？</p>
+<p>正如之前状态转换那节所说的，我们的解决方案是通过让一个交易事先设置一个其所被允许的最大的计算步骤，当实际执行超过了这个值，那么状态将会回滚，但是交易费还是需要缴纳。消息也是采用的同样的机制。以下是几个例子来说明：</p>
+<ul>
+<li>攻击者创建了一个拥有无限循环的合约，然后发起交易让矿工激活合约代码。矿工将会执行该无限循环直至其用光gas，然后收取交易费，回滚状态。</li>
+<li>攻击者试图通过创建一个长时间的循环以此来让矿工持续工作，而当其结束的时候可能已经产生了很多新的区块了，此时该块将会被丢弃，那么矿工也就不能收取交易费了。但是这种情况的前提是，攻击者先声明自己的<code>STARTGAS</code>，因此矿工可以事先预估将要耗费的时间。</li>
+<li>攻击者设置一个合约有类似这样的代码<code>send(A,contract.storage[A]);contract.storage[A] = 0;</code>但是发送合约的时候仅仅提供了只够执行第一步的gas，即他试图取钱但是不减少余额【不明白这样算什么攻击？他还是要付手续费的啊】这种情形下，也不用担心，因为当gas用完后，状态会回滚。</li>
+<li>略</li>
+</ul>
+<p>下面介绍了为什么不使用非图灵完备的语言，结论是因为非图灵完备语言比图灵完备语言更难管控。</p>
+<h2 id="货币和发行"><a href="#货币和发行" class="headerlink" title="货币和发行"></a>货币和发行</h2><p>以太币的面额如下：</p>
+<ul>
+<li>1：<code>wei</code></li>
+<li>$${10^{12}}$$：<code>szabo</code></li>
+<li>$${10^{15}}$$：<code>finney</code></li>
+<li>$$10^{18}$$：<code>ether</code></li>
+</ul>
+<h2 id="挖矿中心化"><a href="#挖矿中心化" class="headerlink" title="挖矿中心化"></a>挖矿中心化</h2><p>比特币的挖矿算法非常容易导致两种形式的中心化：</p>
+<ul>
+<li>首先，整个挖矿生态系统已经被专用挖矿集成芯片所支配，这意味着比特币挖矿不再是高度去中心化的，因为想要参与挖矿你必须先投入几百万美元买矿机。</li>
+</ul>
+<ul>
+<li>第二，大多数矿工依附于中心化的矿场，不需成为全节点。那么这个问题可以说更糟糕：目前算力最强的三个矿场控制了大约50%的算力，尽管51%攻击可以通过矿工迁移来避免。</li>
+</ul>
+<p>以太坊使用的挖矿算法需要矿工从状态中获取随机数据，计算从前N个区块中随机选取的一些交易，然后返回结果哈希。这样设计有两个好处：</p>
+<ul>
+<li>第一，以太坊合约可能包含任意种类的计算，所以只能通过CPU来计算，而不会出现专用挖矿集成芯片</li>
+<li>第二，挖矿需要能够访问整个区块链，所以强迫矿工存储整个区块链并且至少能够有能力验证每笔交易。这样就不必存在中心化的矿场。尽管矿场依旧可以起到让收入分配的随机型更平等的作用，但是这种功能在p2p矿场中也能被实现，而不需要中心化。</li>
+</ul>
+<p>这个算法最大的特点是允许任何人投入大量合约去针对特定的专用矿机。因为存在着矿机生产商们之间的利益竞争会驱使他们互相攻击。因此这种模式并非完全采用技术来解决问题，还有经济学上的考虑。</p>
+<h2 id="可拓展性"><a href="#可拓展性" class="headerlink" title="可拓展性"></a>可拓展性</h2><p>一个通常的担忧是关于可拓展新问题。像比特币一样，以太坊的每个交易都需要备每个网络中的节点所处理。对于比特币，目前整个区块链的大小大概在15GB，每小时增长1MB。如果比特币网络处理像Visa一样的2000笔交易每秒的话，那么增长速度将变为每3秒增长1MB（每小时1GB，每年8TB）。以太坊也会有这样的担忧，而且由于以太坊上除了货币外还有众多应用可能这样的担忧更加严重。但是，在以太坊中全节点是不需要存储所有的区块历史的，只需要保存状态即可。</p>
+<p>巨大的区块链大小将存在导致中心化的风险。假如说，区块链的大小增长到了100TB，那么就很可能只有少数大型企业能够运行全节点，而其他普通用户只能使用SPV轻钱包。在这种情况下，就存在着全节点们密谋一起作弊的可能（比如将所有的矿工费都修改为给他们）。而轻节点们无法快速的检测这种行为。</p>
+<p>以太坊采用两种策略来处理这个问题：</p>
+<ul>
+<li>第一，因为以太坊的挖矿算法要求所有节点都必须为全节点，所以这能够保证网络中全节点的数量。</li>
+<li>第二，更重要的是，我们把处理完每笔交易的中间状态也包含进了区块链。这样只要有一个诚实的节点存在，那么就能够通过s[0]到s[n]的推导验证最终的结果是否正确。</li>
+</ul>
+<p>如果恶意矿工发布不完全的区块信息，以至于没有足够的信息去验证区块的合法性，那么验证节点会对交易发起质疑，轻节点也将对相应区块取消信任，直到另一个矿工或者验证节点提供正确的证据。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="kaiktang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="kaiktang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"># 区块链</a>
+              <a href="/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/" rel="tag"># 以太坊</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/02/06/%E7%90%86%E8%A7%A3%E4%BB%A5%E5%A4%AA%E5%9D%8AMerkle%20Patricia%20Trie/" rel="prev" title="理解以太坊Merkle-patricia-tree">
+      <i class="fa fa-chevron-left"></i> 理解以太坊Merkle-patricia-tree
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/03/01/go%E8%AF%AD%E8%A8%80%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1%E5%AD%A6%E4%B9%A0/" rel="next" title="go语言线程通信学习">
+      go语言线程通信学习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A5%E5%A4%AA%E5%9D%8A%E8%B4%A6%E6%88%B7"><span class="nav-number">1.</span> <span class="nav-text">以太坊账户</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E5%92%8C%E4%BA%A4%E6%98%93"><span class="nav-number">2.</span> <span class="nav-text">消息和交易</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C"><span class="nav-number">3.</span> <span class="nav-text">代码执行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8C%BA%E5%9D%97%E9%93%BE%E5%92%8C%E6%8C%96%E7%9F%BF"><span class="nav-number">4.</span> <span class="nav-text">区块链和挖矿</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">4.1.</span> <span class="nav-text">其他</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GHOST%E5%AE%9E%E7%8E%B0%E7%9A%84%E4%BF%AE%E6%94%B9"><span class="nav-number">4.2.</span> <span class="nav-text">GHOST实现的修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%A4%E6%98%93%E8%B4%B9"><span class="nav-number">4.3.</span> <span class="nav-text">交易费</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E5%92%8C%E5%9B%BE%E7%81%B5%E5%AE%8C%E5%A4%87"><span class="nav-number">4.4.</span> <span class="nav-text">计算和图灵完备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A7%E5%B8%81%E5%92%8C%E5%8F%91%E8%A1%8C"><span class="nav-number">4.5.</span> <span class="nav-text">货币和发行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%96%E7%9F%BF%E4%B8%AD%E5%BF%83%E5%8C%96"><span class="nav-number">4.6.</span> <span class="nav-text">挖矿中心化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E6%8B%93%E5%B1%95%E6%80%A7"><span class="nav-number">4.7.</span> <span class="nav-text">可拓展性</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaiktang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaiktang</p>
+  <div class="site-description" itemprop="description">学而后知不足</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:tomkklalala@qq.com" title="E-Mail → mailto:tomkklalala@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaiktang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://kaiktang.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://kaiktang.github.io/2018/02/09/%E5%AD%A6%E4%B9%A0%E4%BB%A5%E5%A4%AA%E5%9D%8A%E7%99%BD%E7%9A%AE%E4%B9%A6/";
+    this.page.identifier = "2018/02/09/学习以太坊白皮书/";
+    this.page.title = "学习以太坊白皮书";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://kaiktang.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaiktang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":{"disqus":{"text":"Load Disqus","order":-1}},"activeClass":"disqus"},"algolia":{"appID":"FBQ33HXA0Q","apiKey":"5a256d1a0d5075a6a17b29fbae8cdbdc","indexName":"blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="MapReduce概念Hadoop会将MapReduce的任务的输入文件分隔成固定大小的碎片（input splits），并且每个split对应一个map任务。 为了避免无意识的覆盖，所以MapReduce的输出目录事先不能存在。 Hadoop会尽量让map任务在数据存储的节点上进行，因为这样不会占用珍贵的集群带宽，这被称作data locality optimization。为了让数据能够尽可能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《OReilly.Hadoop.The.Definitive.Guide.4th.Edition》读书笔记">
+<meta property="og:url" content="http://kaiktang.github.io/2017/12/26/%E3%80%8AOReilly-Hadoop-The-Definitive-Guide-4th-Edition%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="kaiktang&#39;s blogs">
+<meta property="og:description" content="MapReduce概念Hadoop会将MapReduce的任务的输入文件分隔成固定大小的碎片（input splits），并且每个split对应一个map任务。 为了避免无意识的覆盖，所以MapReduce的输出目录事先不能存在。 Hadoop会尽量让map任务在数据存储的节点上进行，因为这样不会占用珍贵的集群带宽，这被称作data locality optimization。为了让数据能够尽可能">
+<meta property="og:locale">
+<meta property="og:image" content="http://kaiktang.github.io/2017/12/26/%E3%80%8AOReilly-Hadoop-The-Definitive-Guide-4th-Edition%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017-12-27_20-51-19.png">
+<meta property="og:image" content="http://kaiktang.github.io/2017/12/26/%E3%80%8AOReilly-Hadoop-The-Definitive-Guide-4th-Edition%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017-12-29_14-02-13.png">
+<meta property="og:image" content="http://kaiktang.github.io/2017/12/26/%E3%80%8AOReilly-Hadoop-The-Definitive-Guide-4th-Edition%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017-12-29_14-12-40.png">
+<meta property="og:image" content="http://kaiktang.github.io/2017/12/26/%E3%80%8AOReilly-Hadoop-The-Definitive-Guide-4th-Edition%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2018-01-01_20-51-34.png">
+<meta property="og:image" content="http://kaiktang.github.io/2017/12/26/%E3%80%8AOReilly-Hadoop-The-Definitive-Guide-4th-Edition%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2018-01-02_20-47-50.png">
+<meta property="og:image" content="http://kaiktang.github.io/2017/12/26/%E3%80%8AOReilly-Hadoop-The-Definitive-Guide-4th-Edition%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2018-01-04_11-21-07.png">
+<meta property="og:image" content="http://kaiktang.github.io/2017/12/26/%E3%80%8AOReilly-Hadoop-The-Definitive-Guide-4th-Edition%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2018-01-04_14-00-05.png">
+<meta property="og:image" content="http://kaiktang.github.io/2017/12/26/%E3%80%8AOReilly-Hadoop-The-Definitive-Guide-4th-Edition%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2018-01-04_14-56-49.png">
+<meta property="article:published_time" content="2017-12-26T09:15:49.000Z">
+<meta property="article:modified_time" content="2019-01-07T09:21:53.000Z">
+<meta property="article:author" content="kaiktang">
+<meta property="article:tag" content="读书笔记">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://kaiktang.github.io/2017/12/26/%E3%80%8AOReilly-Hadoop-The-Definitive-Guide-4th-Edition%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2017-12-27_20-51-19.png">
+
+<link rel="canonical" href="http://kaiktang.github.io/2017/12/26/%E3%80%8AOReilly-Hadoop-The-Definitive-Guide-4th-Edition%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>《OReilly.Hadoop.The.Definitive.Guide.4th.Edition》读书笔记 | kaiktang's blogs</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kaiktang's blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://kaiktang.github.io/2017/12/26/%E3%80%8AOReilly-Hadoop-The-Definitive-Guide-4th-Edition%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaiktang">
+      <meta itemprop="description" content="学而后知不足">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kaiktang's blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《OReilly.Hadoop.The.Definitive.Guide.4th.Edition》读书笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-12-26 17:15:49" itemprop="dateCreated datePublished" datetime="2017-12-26T17:15:49+08:00">2017-12-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-01-07 17:21:53" itemprop="dateModified" datetime="2019-01-07T17:21:53+08:00">2019-01-07</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2017/12/26/%E3%80%8AOReilly-Hadoop-The-Definitive-Guide-4th-Edition%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/12/26/《OReilly-Hadoop-The-Definitive-Guide-4th-Edition》读书笔记/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="MapReduce"><a href="#MapReduce" class="headerlink" title="MapReduce"></a>MapReduce</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>Hadoop会将MapReduce的任务的输入文件分隔成固定大小的碎片（<code>input splits</code>），并且每个<code>split</code>对应一个map任务。</p>
+<p>为了避免无意识的覆盖，所以<code>MapReduce</code>的输出目录事先不能存在。</p>
+<p>Hadoop会尽量让map任务在数据存储的节点上进行，因为这样不会占用珍贵的集群带宽，这被称作<code>data locality optimization</code>。为了让数据能够尽可能在map任务所在的节点上，所以一个最优的<code>split</code>大小应该为一个<code>block</code>的大小，即<code>input</code>在一个节点上能存储的最大的大小。</p>
+<p>Map任务会将输出写到<strong>本地磁盘</strong>而不是HDFS。因为Map任务的输出仅仅是一个中间结果，当Reduce任务处理结束之后这些结果将会被丢弃，所以存放在HDFS并拥有多个副本是不划算的。</p>
+<p>一般来说一个Reduce的输入来自所有的Mapper，这意味着Mapper的输出需要通过网络传输到Reduce任务运行的机器上。</p>
+<p>Reduce的输出会存放在HDFS上，任务运行的节点上会存放一份副本，其他的副本会通过网络存放在其他<code>off-rack</code>的节点。</p>
+<h2 id="Data-Flow"><a href="#Data-Flow" class="headerlink" title="Data Flow"></a>Data Flow</h2><p><img src="2017-12-27_20-51-19.png" alt="单节点数据流"></p>
+<p>Reduce任务的数目并不取决于输入的大小，而是单独确定的。</p>
+<p>当有多个Reduce任务的时候，Map任务会<code>partition</code>他们的输出，而且每一个Map任务会为每一个Reduce任务提供一个<code>partition</code>。<code>partition</code>函数可以用户自定义，默认的<code>partition</code>函数采用的是<code>hash</code>。</p>
+<p><img src="2017-12-29_14-02-13.png" alt="多reduce数据流"></p>
+<p>有可能不存在reduce任务。</p>
+<p><img src="2017-12-29_14-12-40.png" alt="没有reduce任务数据流"></p>
+<hr>
+<h2 id="Combiner-function"><a href="#Combiner-function" class="headerlink" title="Combiner function"></a>Combiner function</h2><p>为了降低<code>MapReduce</code>任务过程中的集群带宽消耗，应该减少<code>map</code>和<code>reduce</code>任务之间的数据传输的大小。所以<code>Hadoop</code>允许用户去指定一个<code>combiner function</code>去处理<code>map</code>的输出，达到减少<code>reduce</code>的消耗的作用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//指定combiner function</span></span><br><span class="line">job.setCombinerClass(MaxTemperatureReducer.class);</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="Hadoop-Streaming"><a href="#Hadoop-Streaming" class="headerlink" title="Hadoop Streaming"></a>Hadoop Streaming</h2><p><code>Hadoop Streaming</code>使用<code>Unix standard streams</code>作为<code>Hadoop</code>和你的程序之间的接口，所以任何可以使用标准输入输出的编程语言都可以用来写<code>MapReduce</code>。</p>
+<p><code>Java MapReduce</code>和<code>Streaming</code>之间的区别：</p>
+<blockquote>
+<p><strong>The Java API is geared toward processing your map function one record at a time.</strong> The framework calls the map() method on your Mapper for each record in the input, whereas <strong>with Streaming the map program can decide how to process the input.</strong> for example, it could easily read and process multiple lines at a time since it’s in control of the reading. The user’s Java map implementation is “pushed” records, but it’s still possible to consider multiple lines at a time by accumulating previous lines in an instance variable in the Mapper. 4 In this case, you need to implement the cleanup() method so that you know when the last record has been read, so you can finish processing the last group of lines.</p>
+</blockquote>
+<p>使用<code>ruby</code>以<code>Streaming</code>的方式启动<code>MapReduce</code>任务。</p>
+<blockquote>
+<p>% hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \</p>
+<p> -files ch02-mr-intro/src/main/ruby/max_temperature_map.rb,\ ch02-mr-intro/src/main/ruby/max_temperature_reduce.rb \ -input input/ncdc/all \ </p>
+<p>-output output \ -mapper ch02-mr-intro/src/main/ruby/max_temperature_map.rb \ </p>
+<p>-combiner ch02-mr-intro/src/main/ruby/max_temperature_reduce.rb \ </p>
+<p>-reducer ch02-mr-intro/src/main/ruby/max_temperature_reduce.rb</p>
+</blockquote>
+<p>其中<code>-files</code>用来将脚本在集群间传输。</p>
+<h1 id="HDFS"><a href="#HDFS" class="headerlink" title="HDFS"></a>HDFS</h1><blockquote>
+<p>HDFS is a filesystem designed for storing very large files with streaming data access patterns, running on clusters of commodity hardware.</p>
+</blockquote>
+<h2 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h2><p><code>Very large files</code>：用来存放大文件</p>
+<p><code>Streaming data access</code>：一次写入，多次读取。各种分析使用大量数据，所以读取整个数据集的时间比读取第一个记录的时间更重要。</p>
+<p><code>Commodity hardware</code>：运行在普通的商用机器上，能够容忍集群中机器的宕机但不对用户产生很大的影响。</p>
+<h2 id="劣势"><a href="#劣势" class="headerlink" title="劣势"></a>劣势</h2><p><code>Low-latency data access</code>：需要访问文件具有低延迟的应用不适合使用HDFS。HBase将会是更好的选择。</p>
+<p><code>Lots of small files</code>：因为NameNode中存放了系统中文件的元信息，所以NameNode的内存大小是影响整个集群文件数量的瓶颈。根据经验，每个文件、目录、块将占用150字节NameNode的内存。</p>
+<p><code>Multiple writers, arbitrary file modifications</code>：暂时不支持随机修改和多个writer同时写。</p>
+<hr>
+<h2 id="概念-1"><a href="#概念-1" class="headerlink" title="概念"></a>概念</h2><h3 id="Blocks"><a href="#Blocks" class="headerlink" title="Blocks"></a>Blocks</h3><p>像单机的文件系统一样，HDFS也有文件块的概念，但是默认更大，为128Mb（一般的单机文件系统为512字节）。另外，特别的，和目前的单机文件系统不同的是，不满一个块大小的文件并不会占用整个块。</p>
+<h3 id="Namenodes-and-Datanodes"><a href="#Namenodes-and-Datanodes" class="headerlink" title="Namenodes and Datanodes"></a>Namenodes and Datanodes</h3><p>HDFS集群以“主从模式”工作，一个<code>Namenode</code>和多个<code>Datanodes</code>。</p>
+<p><code>Namenode</code>管理了文件系统的命名空间，维护了<code>filesystem tree</code>以及所有文件和目录的原信息。这些信息在存放在本地磁盘上，包含两个文件：<code>the namespace image</code>和<code>the edit log</code>。通过<code>Namenode</code>可以知道某个文件所有块所在的<code>Datanode</code>。</p>
+<p><code>Datanode</code>负责依据<code>Namenode</code>或者<code>client</code>的指令来存储或读取文件。并且会周期的向<code>Namenode</code>汇报它所存储的所有块。</p>
+<p>如果一个HDFS中的<code>Namenode</code>失效了，那么整个文件系统都将无法工作，所以<code>Namenode</code>需要有高可用性。Hadoop提供了两种机制：</p>
+<ol>
+<li>备份元数据。将元数据同时写入多个文件系统，比如同时写入本地磁盘和远程的NFS挂载。</li>
+<li>使用<code>secondary namenode</code>。它的主要作用是周期的将<code>the namespace image</code>和<code>the edit log</code>合并，以避免<code>the edit log</code>文件过大。通常其运行在一个单独的机器上，因为其需要大量的CPU和内存。虽然它和<code>Namenode</code>的状态之间存在延时，当系统崩溃的时候会存在数据丢失，所以一般会将备份的元数据复制到<code>secondary namenode</code>上作为新的<code>Namenode</code>。（也可以采用另一个<code>standby namenode</code>来实现高可用性）</li>
+</ol>
+<h3 id="块缓存"><a href="#块缓存" class="headerlink" title="块缓存"></a>块缓存</h3><p><code>datanode</code>的内存上可以缓存一些常用的文件块。默认一个文件块只在一个<code>datanode</code>上缓存，对每个文件这个数字是可以配置的。 任务调度器会充分利用来缓存来完成任务。</p>
+<p>用户或者应用可以通过添加一个<code>cache directive</code>到<code>cache pool</code>来操作<code>Namenode</code>去缓存哪些文件。</p>
+<h3 id="HDFS-Federation"><a href="#HDFS-Federation" class="headerlink" title="HDFS Federation"></a>HDFS Federation</h3><p>为了解决文件系统越来越大，导致单个<code>Namenode</code>的内存不够用的状况。</p>
+<p>建立多个<code>Namenode</code>每个负责部分文件系统的文件。每个存储着一个<code>namespace volume</code>和一个<code>block pool</code>。其中<code>namespace volume</code>是独立工作互不通信的，而<code>block pool</code>是不分区的。</p>
+<h3 id="HDFS-High-Availability"><a href="#HDFS-High-Availability" class="headerlink" title="HDFS High Availability"></a>HDFS High Availability</h3><p>当一个<code>Namenode</code>失效后，新的代替者需要经历一下几个步骤：</p>
+<ol>
+<li>loaded its namespace image into memory</li>
+<li>replayed its edit log</li>
+<li>received enough block reports from the datanodes to leave safe mode.</li>
+</ol>
+<p>整个集群才能恢复工作。</p>
+<p>所以为了集群中<code>Namenode</code>更高的可用性，可以配置一对<code>Namenode</code>一个为<code>active</code>一个为<code>standby</code>，当激活状态的<code>Namenode</code>失效，待机的那个将顶替。为此有以下特点：</p>
+<ol>
+<li><code>active</code>和<code>standby</code>共享<code>edit log</code>。以使得代替时能够同步前者的状态。</li>
+<li><code>Datanodes</code>需要向所有的<code>Namenode</code>汇报自己的块信息，因为块信息是存放在内存中的。</li>
+<li>整个故障转移过程应该对客户透明，应该有自动的映射工作。</li>
+<li><code>secondary namenode</code>的作用被<code>standby namenode</code>代替。</li>
+</ol>
+<p>有两种方式实现HA：<code>NFS filer</code>和<code>quorum journal manager (QJM)</code>。推荐后者。</p>
+<p>QJM方式通过运行一些<code>journal nodes</code>来实现，每个编辑日志必须写入大多数<code>journal nodes</code>才算数。所以日志结点的个数为奇数，一般为3个。</p>
+<p>从<code>active namenode</code>到<code>standby namenode</code>的转换是由<code>failover controller</code>控制的。有很多种<code>failover controller</code>，默认使用<code>ZooKeeper</code>。</p>
+<p>可以手动进行故障转移，比如在日常维护或者升级的时候。</p>
+<p>被动故障转移的时候，需要保证之前的<code>active namenode</code>不会对集群造成破坏，这通过<code>fencing</code>来实现。</p>
+<h3 id="Hadoop命令行"><a href="#Hadoop命令行" class="headerlink" title="Hadoop命令行"></a>Hadoop命令行</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">%</span><span class="bash"> hadoop fs -ls .</span></span><br><span class="line"></span><br><span class="line">Found 2 items</span><br><span class="line">drwxr-xr-x - tom supergroup 0 2014-10-04 13:22 books </span><br><span class="line">-rw-r--r-- 1 tom supergroup 119 2014-10-04 13:21 quangle.txt</span><br></pre></td></tr></table></figure>
+<p>第二列为备份因子。文件夹不会被<code>datanode</code>备份，而是由<code>namenode</code>存储。第三列为文件所属的用户。第四列为文件所属的用户组。第五列为文件的大小，单位为字节。第六列和第七列为最后修改的日期和时间。</p>
+<p>默认文件系统的权限校验机制没有开启，通过<code>dfs.permissions.enabled</code>属性设置。</p>
+<h3 id="HDFS文件系统"><a href="#HDFS文件系统" class="headerlink" title="HDFS文件系统"></a>HDFS文件系统</h3><h4 id="WebHDFS"><a href="#WebHDFS" class="headerlink" title="WebHDFS"></a>WebHDFS</h4><p>非java的应用使用HDFS可以通过使用<code>WebHDFS</code>暴露的HTTP RESTful API来访问。但是其效率比原生的java api要慢。</p>
+<h4 id="NFS"><a href="#NFS" class="headerlink" title="NFS"></a>NFS</h4><p>可以将HDFS通过<code>Hadoop’s NFSv3 gateway</code>挂载到用户本地系统上。</p>
+<h4 id="FUSE"><a href="#FUSE" class="headerlink" title="FUSE"></a>FUSE</h4><p>类似NFS，但是NFS更健壮。</p>
+<h3 id="Java接口"><a href="#Java接口" class="headerlink" title="Java接口"></a>Java接口</h3><p>通过<code>URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory())</code>让Java识别HDFS URL，这个方法每个JVM只能运行一次。</p>
+<h4 id="Reading-Data-from-a-Hadoop-URL"><a href="#Reading-Data-from-a-Hadoop-URL" class="headerlink" title="Reading Data from a Hadoop URL"></a>Reading Data from a Hadoop URL</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">URLCat</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        URL.setURLStreamHandlerFactory(<span class="keyword">new</span> FsUrlStreamHandlerFactory());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        InputStream in = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            in = <span class="keyword">new</span> URL(args[<span class="number">0</span>]).openStream();</span><br><span class="line">            IOUtils.copyBytes(in, System.out, <span class="number">4096</span>, <span class="keyword">false</span>);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            IOUtils.closeStream(in);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Reading-Data-Using-the-FileSystem-API"><a href="#Reading-Data-Using-the-FileSystem-API" class="headerlink" title="Reading Data Using the FileSystem API"></a>Reading Data Using the FileSystem API</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取文件系统实例，因为有多种文件系统实现</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//1. returns the default filesystem (as specified in core-site.xml, or the default local filesystem if not specified there)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> FileSystem <span class="title">get</span><span class="params">(Configuration conf)</span> <span class="keyword">throws</span> IOException</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">//2. uses the given URI’s scheme and authority to determine the filesystem to use, falling back to the default filesystem if no scheme is specified in the given URI.</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> FileSystem <span class="title">get</span><span class="params">(URI uri, Configuration conf)</span> <span class="keyword">throws</span> IOException</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">//3. retrieves the filesystem as the given user, which is important in the context of security</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> FileSystem <span class="title">get</span><span class="params">(URI uri, Configuration conf, String user)</span> <span class="keyword">throws</span> IOException</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">//4. retrieve a local filesystem instance</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LocalFileSystem <span class="title">getLocal</span><span class="params">(Configuration conf)</span> <span class="keyword">throws</span> IOException</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FSDataInputStream</span> <span class="keyword">extends</span> <span class="title">DataInputStream</span> <span class="keyword">implements</span> <span class="title">Seekable</span>, <span class="title">PositionedReadable</span> </span>&#123;</span><br><span class="line">    <span class="comment">// implementation elided </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Seekable</span> </span>&#123;</span><br><span class="line">  <span class="comment">//费时</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">seek</span><span class="params">(<span class="keyword">long</span> pos)</span> <span class="keyword">throws</span> IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">long</span> <span class="title">getPos</span><span class="params">()</span> <span class="keyword">throws</span> IOException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//线程安全</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PositionedReadable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(<span class="keyword">long</span> position, <span class="keyword">byte</span>[] buffer, <span class="keyword">int</span> offset, <span class="keyword">int</span> length)</span> <span class="keyword">throws</span> IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">readFully</span><span class="params">(<span class="keyword">long</span> position, <span class="keyword">byte</span>[] buffer, <span class="keyword">int</span> offset, <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">readFully</span><span class="params">(<span class="keyword">long</span> position, <span class="keyword">byte</span>[] buffer)</span> <span class="keyword">throws</span> IOException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FileSystemDoubleCat</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        String uri = args[<span class="number">0</span>];</span><br><span class="line">        Configuration conf = <span class="keyword">new</span> Configuration();</span><br><span class="line">        FileSystem fs = FileSystem.get(URI.create(uri), conf);</span><br><span class="line">        FSDataInputStream in = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            in = fs.open(<span class="keyword">new</span> Path(uri));</span><br><span class="line">            IOUtils.copyBytes(in, System.out, <span class="number">4096</span>, <span class="keyword">false</span>);</span><br><span class="line">            in.seek(<span class="number">0</span>); <span class="comment">// go back to the start of the file </span></span><br><span class="line">            IOUtils.copyBytes(in, System.out, <span class="number">4096</span>, <span class="keyword">false</span>);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            IOUtils.closeStream(in);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="write-data"><a href="#write-data" class="headerlink" title="write data"></a>write data</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//create any parent directories of the file to be written that don’t already exist</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> FSDataOutputStream <span class="title">create</span><span class="params">(Path f)</span> <span class="keyword">throws</span> IOException</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FileCopyWithProgress</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        String localSrc = args[<span class="number">0</span>];</span><br><span class="line">        String dst = args[<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">        InputStream in = <span class="keyword">new</span> BufferedInputStream(<span class="keyword">new</span> FileInputStream(localSrc));</span><br><span class="line"></span><br><span class="line">        Configuration conf = <span class="keyword">new</span> Configuration();</span><br><span class="line">        FileSystem fs = FileSystem.get(URI.create(dst), conf);</span><br><span class="line">        OutputStream out = fs.create(<span class="keyword">new</span> Path(dst), <span class="keyword">new</span> Progressable() &#123;</span><br><span class="line">			<span class="comment">//每64字节写入就调用一次</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">progress</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                System.out.print(<span class="string">"."</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        IOUtils.copyBytes(in, out, <span class="number">4096</span>, <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Querying-the-Filesystem"><a href="#Querying-the-Filesystem" class="headerlink" title="Querying the Filesystem"></a>Querying the Filesystem</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShowFileStatusTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> MiniDFSCluster cluster; <span class="comment">// use an in-process HDFS cluster for testing private FileSystem fs;</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Before</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUp</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">        Configuration conf = <span class="keyword">new</span> Configuration();</span><br><span class="line">        <span class="keyword">if</span> (System.getProperty(<span class="string">"test.build.data"</span>) == <span class="keyword">null</span>) &#123;</span><br><span class="line">            System.setProperty(<span class="string">"test.build.data"</span>, <span class="string">"/tmp"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        cluster = <span class="keyword">new</span> MiniDFSCluster.Builder(conf).build();</span><br><span class="line">        fs = cluster.getFileSystem();</span><br><span class="line">        OutputStream out = fs.create(<span class="keyword">new</span> Path(<span class="string">"/dir/file"</span>));</span><br><span class="line">        out.write(<span class="string">"content"</span>.getBytes(<span class="string">"UTF-8"</span>));</span><br><span class="line">        out.close();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@After</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">tearDown</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (fs != <span class="keyword">null</span>) &#123;</span><br><span class="line">            fs.close();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (cluster != <span class="keyword">null</span>) &#123;</span><br><span class="line">            cluster.shutdown();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span>(expected = FileNotFoundException.class)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">throwsFileNotFoundForNonExistentFile</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        fs.getFileStatus(<span class="keyword">new</span> Path(<span class="string">"no-such-file"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fileStatusForFile</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">        Path file = <span class="keyword">new</span> Path(<span class="string">"/dir/file"</span>);</span><br><span class="line">        FileStatus stat = fs.getFileStatus(file);</span><br><span class="line">        assertThat(stat.getPath().toUri().getPath(), is(<span class="string">"/dir/file"</span>));</span><br><span class="line">        assertThat(stat.isDirectory(), is(<span class="keyword">false</span>));</span><br><span class="line">        assertThat(stat.getLen(), is(<span class="number">7L</span>));</span><br><span class="line">        assertThat(stat.getModificationTime(), is(lessThanOrEqualTo(System.currentTimeMillis())));</span><br><span class="line">        assertThat(stat.getReplication(), is((<span class="keyword">short</span>) <span class="number">1</span>));</span><br><span class="line">        assertThat(stat.getBlockSize(), is(<span class="number">128</span> * <span class="number">1024</span> * <span class="number">1024L</span>));</span><br><span class="line">        assertThat(stat.getOwner(), is(System.getProperty(<span class="string">"user.name"</span>)));</span><br><span class="line">        assertThat(stat.getGroup(), is(<span class="string">"supergroup"</span>));</span><br><span class="line">        assertThat(stat.getPermission().toString(), is(<span class="string">"rw-r--r--"</span>));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fileStatusForDirectory</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">        Path dir = <span class="keyword">new</span> Path(<span class="string">"/dir"</span>);</span><br><span class="line">        FileStatus stat = fs.getFileStatus(dir);</span><br><span class="line">        assertThat(stat.getPath().toUri().getPath(), is(<span class="string">"/dir"</span>));</span><br><span class="line">        assertThat(stat.isDirectory(), is(<span class="keyword">true</span>));</span><br><span class="line">        assertThat(stat.getLen(), is(<span class="number">0L</span>));</span><br><span class="line">        assertThat(stat.getModificationTime(), is(lessThanOrEqualTo(System.currentTimeMillis())));</span><br><span class="line">        assertThat(stat.getReplication(), is((<span class="keyword">short</span>) <span class="number">0</span>));</span><br><span class="line">        assertThat(stat.getBlockSize(), is(<span class="number">0L</span>));</span><br><span class="line">        assertThat(stat.getOwner(), is(System.getProperty(<span class="string">"user.name"</span>)));</span><br><span class="line">        assertThat(stat.getGroup(), is(<span class="string">"supergroup"</span>));</span><br><span class="line">        assertThat(stat.getPermission().toString(), is(<span class="string">"rwxr-xr-x"</span>));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="读取文件过程"><a href="#读取文件过程" class="headerlink" title="读取文件过程"></a>读取文件过程</h2><p><img src="2018-01-01_20-51-34.png" alt="读取过程"></p>
+<p><code>namenode</code>返回的<code>datanodes</code>会有一个选择的过程，根据用户的网络拓扑来选出最优的节点返回，因为同一个文件有多个副本。</p>
+<ul>
+<li>step 1：客户端调用<code>DistributedFileSystem</code>的<code>open( )。</code></li>
+<li>step 2：<code>DistributedFileSystem</code>通过远程调用<code>namenode</code>去获取文件前部分块的地址。对文件的每一块，<code>namenode</code>会返回其所在的节点们，并且根据其与客户端的距离来进行排序。</li>
+<li>step 3：客户端调用<code>DistributedFileSystem</code>的<code>read( )</code>方法。</li>
+<li>step 4：首先会连接文件第一块中最近的那个节点，数据不断传输到客户端，遇到错误则用第二近的代替。</li>
+<li>step 5：读完第一块读下一块。</li>
+</ul>
+<h2 id="创建并写文件的过程"><a href="#创建并写文件的过程" class="headerlink" title="创建并写文件的过程"></a>创建并写文件的过程</h2><p><img src="2018-01-02_20-47-50.png" alt="写文件过程"></p>
+<ul>
+<li>step 1：客户端调用<code>DistributedFileSystem</code>的<code>create()</code>方法。</li>
+<li>step 2：<code>DistributedFileSystem</code>通过远程调用在<code>namenode</code>中文件系统的创建一个新文件，此时并没有任何块与其相关。</li>
+<li>step 3：当写入数据的时候，<code>DFSOutputStream</code>会将数据分成小的数据包，并放入<code>data queue</code>。</li>
+<li>step 4：<code>Datastreamer</code>作为消费者，负责向<code>namenode</code>询问存放每一块的数据节点列表（列表是因为存在副本）。这个数据节点列表组成了一个管道，数据会依次向下一个节点传递。</li>
+<li>step 5：所有待确认的数据包会在一个<code>ack queue</code>中，仅当列表中所有的数据节点都进行了确认之后才会从队列中移除。</li>
+<li>step 6：关闭流，同时<code>flush</code>所有剩余的数据包到管道中。</li>
+<li>step 7：向<code>namenode</code>汇报完成。</li>
+</ul>
+<blockquote>
+<p>此处注意：默认情况下，当前正在被写的块对其他读者不可见。HDFS提供了<code>FSDataOutputStream</code>对象的<code>hflush</code>方法来保证将所有缓冲区内的数据写入<code>datanodes</code>的<strong>内存</strong>，但是并不保证写入磁盘，所以如果此时发生事故将会造成数据流失。如果要保证写入磁盘，应该采用<code>hsync()</code>。关闭流默认会执行<code>hflush()</code>。</p>
+</blockquote>
+<h2 id="Hadoop选择备份节点的原则"><a href="#Hadoop选择备份节点的原则" class="headerlink" title="Hadoop选择备份节点的原则"></a>Hadoop选择备份节点的原则</h2><p>两个极端：</p>
+<ol>
+<li>如果将数据块备份都放在同一块上的话，那么写时带宽最小，但是对于<code>off-rack</code>的节点的读带宽将会很高。并且这样可用性并不高。</li>
+<li>将所有的数据块备份放入不同的数据中心，将会获得最高的安全性，但是牺牲了带宽。</li>
+</ol>
+<blockquote>
+<p>Hadoop默认：第一份写入客户端本地（如果客户端运行在<code>datanode</code>节点上，如果不在，那么将会随机的选取一个不是很忙的数据节点）。第二份，随机选择一个<code>off-rack</code>节点。第三份写入和第二份同一个<code>rack</code>中的不同节点上(在满足这些条件的节点中随机选取)。</p>
+</blockquote>
+<h1 id="YARN"><a href="#YARN" class="headerlink" title="YARN"></a>YARN</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><blockquote>
+<p>Apache YARN (Yet Another Resource Negotiator) is Hadoop’s cluster resource management system. YARN was introduced in Hadoop 2 to improve the MapReduce implementation, but it is general enough to support other distributed computing paradigms as well.</p>
+</blockquote>
+<p><img src="2018-01-04_11-21-07.png" alt="YARN架构"></p>
+<p>YARN上通过两个长时间运行的守护进程来提供其核心服务：</p>
+<p><code>resource manager</code>：每个集群上运行一个，用来管理集群的资源的使用。</p>
+<p><code>node manager</code>：运行在集群所有节点上，用来启动和监控<code>container</code>（container是在特定资源下运行应用程序进程的）。</p>
+<p><img src="2018-01-04_14-00-05.png" alt="YARN运行程序"></p>
+<p>在YARN上运行一个程序，需要经历以下步骤：</p>
+<ol>
+<li>step 1：客户端联系<code>resource manager</code>并让其运行一个<code>application master</code>的进程。</li>
+<li>step 2a 2b：<code>resource manager</code>找到一个可以为运行<code>appliation master</code>进行启动<code>container</code>的<code>node manager</code>。<code>appliation master</code>运行后会做什么取决于应用程序。</li>
+<li>step 3：<code>appliation master</code>可以直接在自己运行的<code>container</code>内完成计算任务，也可以向<code>resource manager</code>申请更多的资源。</li>
+<li>step 4a 4b：使用申请来的<code>container</code>来进行分布式计算任务。</li>
+</ol>
+<p>申请资源的时候可以声明需要的CPU、内存以及局部性要求。</p>
+<p>运行在YARN上的应用可以随时申请自己需要的资源。</p>
+<h2 id="构建YARN上的应用"><a href="#构建YARN上的应用" class="headerlink" title="构建YARN上的应用"></a>构建YARN上的应用</h2><p><code>Apache Slider</code>：Apache Slider is a application to deploy existing distributed applications on an Apache Hadoop YARN cluster, monitor them and make them larger or smaller as desired -even while the application is running.</p>
+<p><code>Apache Twill</code>：Apache Twill is similar to Slider, but in addition provides a simple programming model for developing distributed applications on YARN. Twill allows you to define cluster processes as an extension of a Java Runnable, then runs them in YARN containers on the cluster. Twill also provides support for, among other things, real-time logging (log events from runnables are streamed back to the client) and command messages (sent from the client to runnables).</p>
+<h2 id="YARN与MapReduce-1对比"><a href="#YARN与MapReduce-1对比" class="headerlink" title="YARN与MapReduce 1对比"></a>YARN与MapReduce 1对比</h2><p>新旧API和MR1和MR2的四种组合均兼容。</p>
+<p>在<code>MapReduce 1</code>中，存在两种常驻守护进程，<code>jobtracker</code>和<code>tasktrakers</code>。</p>
+<p><code>jobtracker</code>用来协调调度任务在<code>tasktracker</code>上运行。</p>
+<p><code>tasktracker</code>用来运行任务并且向<code>jobtracker</code>发送任务进度。</p>
+<p><img src="2018-01-04_14-56-49.png" alt="对比"></p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="kaiktang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="kaiktang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag"># 读书笔记</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/26/Java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E2%80%94%E2%80%94%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/" rel="prev" title="Java设计模式——工厂、单例、多例模式">
+      <i class="fa fa-chevron-left"></i> Java设计模式——工厂、单例、多例模式
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/01/02/Oozie%E5%AD%A6%E4%B9%A0/" rel="next" title="Oozie学习">
+      Oozie学习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MapReduce"><span class="nav-number">1.</span> <span class="nav-text">MapReduce</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-Flow"><span class="nav-number">1.2.</span> <span class="nav-text">Data Flow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Combiner-function"><span class="nav-number">1.3.</span> <span class="nav-text">Combiner function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hadoop-Streaming"><span class="nav-number">1.4.</span> <span class="nav-text">Hadoop Streaming</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HDFS"><span class="nav-number">2.</span> <span class="nav-text">HDFS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E5%8A%BF"><span class="nav-number">2.1.</span> <span class="nav-text">优势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A3%E5%8A%BF"><span class="nav-number">2.2.</span> <span class="nav-text">劣势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-1"><span class="nav-number">2.3.</span> <span class="nav-text">概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Blocks"><span class="nav-number">2.3.1.</span> <span class="nav-text">Blocks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Namenodes-and-Datanodes"><span class="nav-number">2.3.2.</span> <span class="nav-text">Namenodes and Datanodes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%97%E7%BC%93%E5%AD%98"><span class="nav-number">2.3.3.</span> <span class="nav-text">块缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HDFS-Federation"><span class="nav-number">2.3.4.</span> <span class="nav-text">HDFS Federation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HDFS-High-Availability"><span class="nav-number">2.3.5.</span> <span class="nav-text">HDFS High Availability</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hadoop%E5%91%BD%E4%BB%A4%E8%A1%8C"><span class="nav-number">2.3.6.</span> <span class="nav-text">Hadoop命令行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HDFS%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="nav-number">2.3.7.</span> <span class="nav-text">HDFS文件系统</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#WebHDFS"><span class="nav-number">2.3.7.1.</span> <span class="nav-text">WebHDFS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NFS"><span class="nav-number">2.3.7.2.</span> <span class="nav-text">NFS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FUSE"><span class="nav-number">2.3.7.3.</span> <span class="nav-text">FUSE</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.3.8.</span> <span class="nav-text">Java接口</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Reading-Data-from-a-Hadoop-URL"><span class="nav-number">2.3.8.1.</span> <span class="nav-text">Reading Data from a Hadoop URL</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Reading-Data-Using-the-FileSystem-API"><span class="nav-number">2.3.8.2.</span> <span class="nav-text">Reading Data Using the FileSystem API</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#write-data"><span class="nav-number">2.3.8.3.</span> <span class="nav-text">write data</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Querying-the-Filesystem"><span class="nav-number">2.3.8.4.</span> <span class="nav-text">Querying the Filesystem</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%BB%E5%8F%96%E6%96%87%E4%BB%B6%E8%BF%87%E7%A8%8B"><span class="nav-number">2.4.</span> <span class="nav-text">读取文件过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%B9%B6%E5%86%99%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-number">2.5.</span> <span class="nav-text">创建并写文件的过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hadoop%E9%80%89%E6%8B%A9%E5%A4%87%E4%BB%BD%E8%8A%82%E7%82%B9%E7%9A%84%E5%8E%9F%E5%88%99"><span class="nav-number">2.6.</span> <span class="nav-text">Hadoop选择备份节点的原则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#YARN"><span class="nav-number">3.</span> <span class="nav-text">YARN</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E5%BB%BAYARN%E4%B8%8A%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">3.2.</span> <span class="nav-text">构建YARN上的应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#YARN%E4%B8%8EMapReduce-1%E5%AF%B9%E6%AF%94"><span class="nav-number">3.3.</span> <span class="nav-text">YARN与MapReduce 1对比</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaiktang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaiktang</p>
+  <div class="site-description" itemprop="description">学而后知不足</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:tomkklalala@qq.com" title="E-Mail → mailto:tomkklalala@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaiktang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://kaiktang.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://kaiktang.github.io/2017/12/26/%E3%80%8AOReilly-Hadoop-The-Definitive-Guide-4th-Edition%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/";
+    this.page.identifier = "2017/12/26/《OReilly-Hadoop-The-Definitive-Guide-4th-Edition》读书笔记/";
+    this.page.title = "《OReilly.Hadoop.The.Definitive.Guide.4th.Edition》读书笔记";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://kaiktang.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

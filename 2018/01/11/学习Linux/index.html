@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaiktang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":{"disqus":{"text":"Load Disqus","order":-1}},"activeClass":"disqus"},"algolia":{"appID":"FBQ33HXA0Q","apiKey":"5a256d1a0d5075a6a17b29fbae8cdbdc","indexName":"blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="文件权限与目录配置 第一栏 所有者（owner）、群组（group）、其他（others）概念 一个用户可以加入多个群组 进入一个目录需要x执行权限 用数字表示权限：r:4   w:2   x:1 第二栏 表示有多少文件名连接到此i-node 修改文件属性与权限 chgrp chown chmod | chmod | u g o a | +（加入） -（除去） &#x3D;（设置） | r w x | 文件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习Linux">
+<meta property="og:url" content="http://kaiktang.github.io/2018/01/11/%E5%AD%A6%E4%B9%A0Linux/index.html">
+<meta property="og:site_name" content="kaiktang&#39;s blogs">
+<meta property="og:description" content="文件权限与目录配置 第一栏 所有者（owner）、群组（group）、其他（others）概念 一个用户可以加入多个群组 进入一个目录需要x执行权限 用数字表示权限：r:4   w:2   x:1 第二栏 表示有多少文件名连接到此i-node 修改文件属性与权限 chgrp chown chmod | chmod | u g o a | +（加入） -（除去） &#x3D;（设置） | r w x | 文件">
+<meta property="og:locale">
+<meta property="og:image" content="https://wizardforcel.gitbooks.io/vbird-linux-basic-4e/content/img/centos7_0210filepermission_2.gif">
+<meta property="article:published_time" content="2018-01-11T09:08:40.000Z">
+<meta property="article:modified_time" content="2018-01-28T14:10:48.000Z">
+<meta property="article:author" content="kaiktang">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wizardforcel.gitbooks.io/vbird-linux-basic-4e/content/img/centos7_0210filepermission_2.gif">
+
+<link rel="canonical" href="http://kaiktang.github.io/2018/01/11/%E5%AD%A6%E4%B9%A0Linux/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>学习Linux | kaiktang's blogs</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kaiktang's blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://kaiktang.github.io/2018/01/11/%E5%AD%A6%E4%B9%A0Linux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaiktang">
+      <meta itemprop="description" content="学而后知不足">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kaiktang's blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          学习Linux
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-01-11 17:08:40" itemprop="dateCreated datePublished" datetime="2018-01-11T17:08:40+08:00">2018-01-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-01-28 22:10:48" itemprop="dateModified" datetime="2018-01-28T22:10:48+08:00">2018-01-28</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2018/01/11/%E5%AD%A6%E4%B9%A0Linux/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/01/11/学习Linux/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="文件权限与目录配置"><a href="#文件权限与目录配置" class="headerlink" title="文件权限与目录配置"></a>文件权限与目录配置</h1><p><img src="https://wizardforcel.gitbooks.io/vbird-linux-basic-4e/content/img/centos7_0210filepermission_2.gif" alt="文件属性"></p>
+<p><strong>第一栏</strong></p>
+<p><code>所有者（owner）</code>、<code>群组（group）</code>、<code>其他（others）</code>概念</p>
+<p>一个用户可以加入多个群组</p>
+<p>进入一个目录需要<code>x</code>执行权限</p>
+<p>用数字表示权限：<code>r:4   w:2   x:1</code></p>
+<p><strong>第二栏</strong></p>
+<p>表示有多少文件名连接到此<code>i-node</code></p>
+<h2 id="修改文件属性与权限"><a href="#修改文件属性与权限" class="headerlink" title="修改文件属性与权限"></a>修改文件属性与权限</h2><ul>
+<li><code>chgrp</code></li>
+<li><code>chown</code></li>
+<li><code>chmod</code><ul>
+<li><code>| chmod | u g o a | +（加入） -（除去） =（设置） | r w x | 文件或目录 |</code></li>
+<li><code>o</code>：other</li>
+<li><code>a</code>：all</li>
+<li>如：<code># chmod  u=rwx,go=rx  .bashrc</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="目录配置"><a href="#目录配置" class="headerlink" title="目录配置"></a>目录配置</h2><p><code>/usr</code>：放置可分享与不可变动的数据。所有系统的默认的软件都会放置在此</p>
+<p><code>/usr/local</code>：系统管理员在本机自行安装自己下载的软件，建议安装到此目录，便于管理。</p>
+<p><code>/var</code>：主要针对常态性变动的文件，包括高速缓存（cache）、登录文件（log file）以及某些软件运行所产生的文件， 包括程序文件（lock file, run file），或者例如MySQL数据库的文件等等</p>
+<h2 id="文件目录管理"><a href="#文件目录管理" class="headerlink" title="文件目录管理"></a>文件目录管理</h2><h3 id="ls"><a href="#ls" class="headerlink" title="ls"></a>ls</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">[root@study ~]# ls [-aAdfFhilnrRSt] 文件名或目录名称..</span><br><span class="line">[root@study ~]# ls [--color=&#123;never,auto,always&#125;] 文件名或目录名称..</span><br><span class="line">[root@study ~]# ls [--full-time] 文件名或目录名称..</span><br><span class="line">选项与参数：</span><br><span class="line">-a  ：全部的文件，连同隐藏文件（ 开头为 . 的文件） 一起列出来（常用）</span><br><span class="line">-A  ：全部的文件，连同隐藏文件，但不包括 . 与 .. 这两个目录</span><br><span class="line">-d  ：仅列出目录本身，而不是列出目录内的文件数据（常用）</span><br><span class="line">-f  ：直接列出结果，而不进行排序 （ls 默认会以文件名排序！）</span><br><span class="line">-F  ：根据文件、目录等信息，给予附加数据结构，例如：</span><br><span class="line">      *:代表可可执行文件； /:代表目录； =:代表 socket 文件； &amp;#124;:代表 FIFO 文件；</span><br><span class="line">-h  ：将文件大小以人类较易读的方式（例如 GB, KB 等等）列出来；</span><br><span class="line">-i  ：列出 inode 号码，inode 的意义下一章将会介绍；</span><br><span class="line">-l  ：长数据串行出，包含文件的属性与权限等等数据；（常用）</span><br><span class="line">-n  ：列出 UID 与 GID 而非使用者与群组的名称 （UID与GID会在帐号管理提到！）</span><br><span class="line">-r  ：将排序结果反向输出，例如：原本文件名由小到大，反向则为由大到小；</span><br><span class="line">-R  ：连同子目录内容一起列出来，等于该目录下的所有文件都会显示出来；</span><br><span class="line">-S  ：以文件大小大小排序，而不是用文件名排序；</span><br><span class="line">-t  ：依时间排序，而不是用文件名。</span><br><span class="line">--color=never  ：不要依据文件特性给予颜色显示；</span><br><span class="line">--color=always ：显示颜色</span><br><span class="line">--color=auto   ：让系统自行依据设置来判断是否给予颜色</span><br><span class="line">--full-time    ：以完整时间模式 （包含年、月、日、时、分） 输出</span><br><span class="line">--time=&#123;atime,ctime&#125; ：输出 access 时间或改变权限属性时间 （ctime）</span><br><span class="line">                       而非内容变更时间 （modification time）</span><br></pre></td></tr></table></figure>
+<h3 id="cp"><a href="#cp" class="headerlink" title="cp"></a>cp</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@study ~]# cp [-adfilprsu] 来源文件（source） 目标文件（destination）</span><br><span class="line">[root@study ~]# cp [options] source1 source2 source3 .... directory</span><br><span class="line">选项与参数：</span><br><span class="line">-a  ：相当于 -dr --preserve=all 的意思，至于 dr 请参考下列说明；（常用）</span><br><span class="line">-d  ：若来源文件为链接文件的属性（link file），则复制链接文件属性而非文件本身；</span><br><span class="line">-f  ：为强制（force）的意思，若目标文件已经存在且无法打开，则移除后再尝试一次；</span><br><span class="line">-i  ：若目标文件（destination）已经存在时，在覆盖时会先询问动作的进行（常用）</span><br><span class="line">-l  ：进行硬式链接（hard link）的链接文件创建，而非复制文件本身；</span><br><span class="line">-p  ：连同文件的属性（权限、用户、时间）一起复制过去，而非使用默认属性（备份常用）；</span><br><span class="line">-r  ：递回持续复制，用于目录的复制行为；（常用）</span><br><span class="line">-s  ：复制成为符号链接文件 （symbolic link），亦即“捷径”文件；</span><br><span class="line">-u  ：destination 比 source 旧才更新 destination，或 destination 不存在的情况下才复制。</span><br><span class="line">--preserve=all ：除了 -p 的权限相关参数外，还加入 SELinux 的属性, links, xattr 等也复制了。</span><br><span class="line">最后需要注意的，如果来源文件有两个以上，则最后一个目的文件一定要是“目录”才行！</span><br></pre></td></tr></table></figure>
+<h3 id="rm"><a href="#rm" class="headerlink" title="rm"></a>rm</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@study ~]# rm [-fir] 文件或目录</span><br><span class="line">选项与参数：</span><br><span class="line">-f  ：就是 force 的意思，忽略不存在的文件，不会出现警告讯息；</span><br><span class="line">-i  ：互动模式，在删除前会询问使用者是否动作</span><br><span class="line">-r  ：递回删除啊！最常用在目录的删除了！这是非常危险的选项！！！</span><br></pre></td></tr></table></figure>
+<h3 id="mv"><a href="#mv" class="headerlink" title="mv"></a>mv</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@study ~]# mv [-fiu] source destination</span><br><span class="line">[root@study ~]# mv [options] source1 source2 source3 .... directory</span><br><span class="line">选项与参数：</span><br><span class="line">-f  ：force 强制的意思，如果目标文件已经存在，不会询问而直接覆盖；</span><br><span class="line">-i  ：若目标文件 （destination） 已经存在时，就会询问是否覆盖！</span><br><span class="line">-u  ：若目标文件已经存在，且 source 比较新，才会更新 （update）</span><br></pre></td></tr></table></figure>
+<h2 id="文件内容查阅"><a href="#文件内容查阅" class="headerlink" title="文件内容查阅"></a>文件内容查阅</h2><h3 id="cat"><a href="#cat" class="headerlink" title="cat"></a>cat</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@study ~]# cat [-AbEnTv]</span><br><span class="line">选项与参数：</span><br><span class="line">-A  ：相当于 -vET 的整合选项，可列出一些特殊字符而不是空白而已；</span><br><span class="line">-b  ：列出行号，仅针对非空白行做行号显示，空白行不标行号！</span><br><span class="line">-E  ：将结尾的断行字符 $ 显示出来；</span><br><span class="line">-n  ：打印出行号，连同空白行也会有行号，与 -b 的选项不同；</span><br><span class="line">-T  ：将 [tab] 按键以 ^I 显示出来；</span><br><span class="line">-v  ：列出一些看不出来的特殊字符</span><br></pre></td></tr></table></figure>
+<h3 id="tac"><a href="#tac" class="headerlink" title="tac"></a>tac</h3><p>与<code>cat</code>相反，反向显示</p>
+<h3 id="nl"><a href="#nl" class="headerlink" title="nl"></a>nl</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@study ~]# nl [-bnw] 文件</span><br><span class="line">选项与参数：</span><br><span class="line">-b  ：指定行号指定的方式，主要有两种：</span><br><span class="line">      -b a ：表示不论是否为空行，也同样列出行号（类似 cat -n）；</span><br><span class="line">      -b t ：如果有空行，空的那一行不要列出行号（默认值）；</span><br><span class="line">-n  ：列出行号表示的方法，主要有三种：</span><br><span class="line">      -n ln ：行号在屏幕的最左方显示；</span><br><span class="line">      -n rn ：行号在自己字段的最右方显示，且不加 0 ；</span><br><span class="line">      -n rz ：行号在自己字段的最右方显示，且加 0 ；</span><br><span class="line">-w  ：行号字段的占用的字符数。</span><br></pre></td></tr></table></figure>
+<h3 id="more"><a href="#more" class="headerlink" title="more"></a>more</h3><ul>
+<li>空白键 （space）：代表向下翻一页；</li>
+<li>Enter ：代表向下翻“一行”；</li>
+<li>/字串 ：代表在这个显示的内容当中，向下搜寻“字串”这个关键字；</li>
+<li>:f ：立刻显示出文件名以及目前显示的行数；</li>
+<li>q ：代表立刻离开 more ，不再显示该文件内容。</li>
+<li>b 或 [ctrl]-b ：代表往回翻页，不过这动作只对文件有用，对管线无用。</li>
+</ul>
+<h3 id="less"><a href="#less" class="headerlink" title="less"></a>less</h3><ul>
+<li>空白键 ：向下翻动一页；</li>
+<li>[pagedown]：向下翻动一页；</li>
+<li>[pageup] ：向上翻动一页；</li>
+<li>/字串 ：向下搜寻“字串”的功能；</li>
+<li>?字串 ：向上搜寻“字串”的功能；</li>
+<li>n ：重复前一个搜寻 （与 / 或 ? 有关！）</li>
+<li>N ：反向的重复前一个搜寻 （与 / 或 ? 有关！）</li>
+<li>g ：前进到这个数据的第一行去；</li>
+<li>G ：前进到这个数据的最后一行去 （注意大小写）；</li>
+<li>q ：离开 less 这个程序；</li>
+</ul>
+<h3 id="head"><a href="#head" class="headerlink" title="head"></a>head</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@study ~]# head [-n number] 文件</span><br><span class="line">选项与参数：</span><br><span class="line">-n  ：后面接数字，代表显示几行的意思</span><br></pre></td></tr></table></figure>
+<h3 id="tail"><a href="#tail" class="headerlink" title="tail"></a>tail</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@study ~]# tail [-n number] 文件</span><br><span class="line">选项与参数：</span><br><span class="line">-n  ：后面接数字，代表显示几行的意思</span><br><span class="line">-f  ：表示持续侦测后面所接的文件名，要等到按下[ctrl]-c才会结束tail的侦测</span><br></pre></td></tr></table></figure>
+<h1 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h1><p><code>$变量名</code>或者<code>${变量名}</code>用来引用变量</p>
+<p><code>$(命令)</code>返回命令执行结果</p>
+<p>给变量赋值：变量名=值【后面的值中如果使用双引号包裹那么将会解引用其中出现的变量，如果单引号包裹那么将原样引用】</p>
+<p>给变量追加值：变量名=$变量名+追加的内容</p>
+<p>$RANDOM：返回0~32767 的一个随机数</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="kaiktang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="kaiktang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/linux/" rel="tag"># linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/01/10/%E5%AD%A6%E4%B9%A0GoLang/" rel="prev" title="学习GoLang">
+      <i class="fa fa-chevron-left"></i> 学习GoLang
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/01/21/%E5%AD%A6%E4%B9%A0%E6%AF%94%E7%89%B9%E5%B8%81/" rel="next" title="学习比特币">
+      学习比特币 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8E%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">文件权限与目录配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E6%96%87%E4%BB%B6%E5%B1%9E%E6%80%A7%E4%B8%8E%E6%9D%83%E9%99%90"><span class="nav-number">1.1.</span> <span class="nav-text">修改文件属性与权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.</span> <span class="nav-text">目录配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95%E7%AE%A1%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">文件目录管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ls"><span class="nav-number">1.3.1.</span> <span class="nav-text">ls</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cp"><span class="nav-number">1.3.2.</span> <span class="nav-text">cp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rm"><span class="nav-number">1.3.3.</span> <span class="nav-text">rm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mv"><span class="nav-number">1.3.4.</span> <span class="nav-text">mv</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9%E6%9F%A5%E9%98%85"><span class="nav-number">1.4.</span> <span class="nav-text">文件内容查阅</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cat"><span class="nav-number">1.4.1.</span> <span class="nav-text">cat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tac"><span class="nav-number">1.4.2.</span> <span class="nav-text">tac</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nl"><span class="nav-number">1.4.3.</span> <span class="nav-text">nl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#more"><span class="nav-number">1.4.4.</span> <span class="nav-text">more</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#less"><span class="nav-number">1.4.5.</span> <span class="nav-text">less</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#head"><span class="nav-number">1.4.6.</span> <span class="nav-text">head</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tail"><span class="nav-number">1.4.7.</span> <span class="nav-text">tail</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Shell"><span class="nav-number">2.</span> <span class="nav-text">Shell</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaiktang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaiktang</p>
+  <div class="site-description" itemprop="description">学而后知不足</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:tomkklalala@qq.com" title="E-Mail → mailto:tomkklalala@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaiktang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://kaiktang.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://kaiktang.github.io/2018/01/11/%E5%AD%A6%E4%B9%A0Linux/";
+    this.page.identifier = "2018/01/11/学习Linux/";
+    this.page.title = "学习Linux";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://kaiktang.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

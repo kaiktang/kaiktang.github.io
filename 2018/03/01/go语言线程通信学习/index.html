@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaiktang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":{"disqus":{"text":"Load Disqus","order":-1}},"activeClass":"disqus"},"algolia":{"appID":"FBQ33HXA0Q","apiKey":"5a256d1a0d5075a6a17b29fbae8cdbdc","indexName":"blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Concurrency goroutine只是由官方实现的超级“线程池”而已。每个实例4-5KB的栈内存占用和由于实现机制而大幅减少的创建和销毁开销，是制造Go号称的高并发的根本原因。另外goroutine的简单易用，也在语言层面上给予了开发者巨大的便利。 goroutine奉行通过通信来共享内存，而不是共享内存来通信。  Goroutine通过go关键字调用。 用来启动这个协程的函数不会得到任何">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go语言线程通信学习">
+<meta property="og:url" content="http://kaiktang.github.io/2018/03/01/go%E8%AF%AD%E8%A8%80%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="kaiktang&#39;s blogs">
+<meta property="og:description" content="Concurrency goroutine只是由官方实现的超级“线程池”而已。每个实例4-5KB的栈内存占用和由于实现机制而大幅减少的创建和销毁开销，是制造Go号称的高并发的根本原因。另外goroutine的简单易用，也在语言层面上给予了开发者巨大的便利。 goroutine奉行通过通信来共享内存，而不是共享内存来通信。  Goroutine通过go关键字调用。 用来启动这个协程的函数不会得到任何">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-03-01T05:53:46.000Z">
+<meta property="article:modified_time" content="2019-01-06T07:08:36.000Z">
+<meta property="article:author" content="kaiktang">
+<meta property="article:tag" content="go">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://kaiktang.github.io/2018/03/01/go%E8%AF%AD%E8%A8%80%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1%E5%AD%A6%E4%B9%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>go语言线程通信学习 | kaiktang's blogs</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kaiktang's blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://kaiktang.github.io/2018/03/01/go%E8%AF%AD%E8%A8%80%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaiktang">
+      <meta itemprop="description" content="学而后知不足">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kaiktang's blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          go语言线程通信学习
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-03-01 13:53:46" itemprop="dateCreated datePublished" datetime="2018-03-01T13:53:46+08:00">2018-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-01-06 15:08:36" itemprop="dateModified" datetime="2019-01-06T15:08:36+08:00">2019-01-06</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2018/03/01/go%E8%AF%AD%E8%A8%80%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1%E5%AD%A6%E4%B9%A0/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/01/go语言线程通信学习/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Concurrency"><a href="#Concurrency" class="headerlink" title="Concurrency"></a>Concurrency</h1><blockquote>
+<p><code>goroutine</code>只是由官方实现的超级“线程池”而已。每个实例4-5KB的栈内存占用和由于实现机制而大幅减少的创建和销毁开销，是制造Go号称的高并发的根本原因。另外<code>goroutine</code>的简单易用，也在语言层面上给予了开发者巨大的便利。</p>
+<p><code>goroutine</code>奉行通过通信来共享内存，而不是共享内存来通信。</p>
+</blockquote>
+<h2 id="Goroutine"><a href="#Goroutine" class="headerlink" title="Goroutine"></a>Goroutine</h2><p>通过<code>go</code>关键字调用。</p>
+<p>用来启动这个协程的函数不会得到任何的返回值。</p>
+<p>所有的协程都会共享同一个线程除非将 GOMAXPROCS 设置为一个大于 1 的数。当 GOMAXPROCS 大于 1 时，会有一个线程池管理许多的线程。</p>
+<h3 id="Channel"><a href="#Channel" class="headerlink" title="Channel"></a>Channel</h3><p><code>Channel</code>是<code>goroutine</code>沟通的桥梁，通道的发送/接收操作在对方准备好之前是阻塞的</p>
+<p>通过<code>make</code>创建，<code>close</code>关闭</p>
+<p><code>Channel</code>是引用类型</p>
+<p>发送者可以 <code>close</code> 一个 channel 来表示再没有值会被发送了。接收者可以通过赋值语句的第二参数来测试 channel 是否被关闭：当没有值可以接收并且 <code>channel</code>已经被关闭，那么经过</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v, ok := &lt;-ch</span><br></pre></td></tr></table></figure>
+<p>之后 <code>ok</code> 会被设置为 <code>false</code>。</p>
+<p>可以使用<code>for range</code>来迭代不断操作<code>channel</code>，直到显式调用<code>close</code>关闭通道</p>
+<p>可以设置单向或双向通道</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> send_only <span class="keyword">chan</span>&lt;- <span class="keyword">int</span>        <span class="comment">// channel can only send data</span></span><br><span class="line"><span class="keyword">var</span> recv_only &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>        <span class="comment">// channel can only receive data</span></span><br></pre></td></tr></table></figure>
+<p>可以设置缓存大小，在未被填满前不会发生阻塞，变为异步，元素会按照发送的顺序被接收，即：在缓冲满载（缓冲被全部使用）之前，给一个带缓冲的通道发送数据是不会阻塞的，而从通道读取数据也不会阻塞，直到缓冲空了。</p>
+<h3 id="Select"><a href="#Select" class="headerlink" title="Select"></a>Select</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> &#123;</span><br><span class="line"><span class="keyword">case</span> u:= &lt;- ch1:</span><br><span class="line">        ...</span><br><span class="line"><span class="keyword">case</span> v:= &lt;- ch2:</span><br><span class="line">        ...</span><br><span class="line">        ...</span><br><span class="line"><span class="keyword">default</span>: <span class="comment">// no value ready to be received</span></span><br><span class="line">        ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可处理一个或多个<code>channel</code>的发送与接收</p>
+<p><code>default</code>语句可选。</p>
+<p>没有<code>fallthrough</code>行为。</p>
+<ul>
+<li>如果都阻塞了，会等待直到其中一个可以处理</li>
+<li>如果多个可以处理，随机选择一个</li>
+<li>如果没有通道操作可以处理并且写了 <code>default</code> 语句，它就会执行：<code>default</code> 永远是可运行的（这就是准备好了，可以执行）</li>
+<li>如果没有 case，select 就会一直阻塞</li>
+</ul>
+<p>在任何一个case中执行<code>break</code>或者<code>return</code>将会终止整个<code>select</code></p>
+<p>可以设置超时，比如</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> &#123;</span><br><span class="line"><span class="keyword">case</span> resp := &lt;-ch</span><br><span class="line">    <span class="comment">// use resp and reply</span></span><br><span class="line"><span class="keyword">case</span> &lt;-time.After(timeoutNs):</span><br><span class="line">    <span class="comment">// call timed out</span></span><br><span class="line">    <span class="keyword">break</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="疑问1"><a href="#疑问1" class="headerlink" title="疑问1"></a>疑问1</h4><blockquote>
+<p>管道设了缓存之后，有什么区别？</p>
+</blockquote>
+<p>向带缓存的<code>channel</code>中发送数据的时候，只有在缓冲区满的时候写者才会阻塞。而当缓冲区的为空的时候，读者才会阻塞。联想到了《计算机网络》里面的“滑动窗口协议”，窗口值（缓冲区）为1的时候，能够保证数据流的有序性，当窗口值（缓冲区）大于1时，就变成了异步操作，吞吐量会增加</p>
+<h4 id="疑问2"><a href="#疑问2" class="headerlink" title="疑问2"></a>疑问2</h4><blockquote>
+<p>select有什么用？是怎样使用的？</p>
+</blockquote>
+<p><code>select</code> 语句使得一个 <code>goroutine</code> 在多个通讯操作上等待。</p>
+<p><code>select</code> 会阻塞，直到条件分支中的某个可以继续执行，这时就会执行那个条件分支。当多个都准备好的时候，会随机选择一个。如</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fibonacci</span><span class="params">(c, quit <span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	x, y := <span class="number">0</span>, <span class="number">1</span></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		<span class="keyword">select</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> c &lt;- x: <span class="comment">//写入后等待读取</span></span><br><span class="line">			x, y = y, x+y</span><br><span class="line">		<span class="keyword">case</span> &lt;-quit:</span><br><span class="line">			fmt.Println(<span class="string">"quit"</span>)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	c := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	quit := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">			fmt.Println(&lt;-c) <span class="comment">//不断读取</span></span><br><span class="line">		&#125;</span><br><span class="line">		quit &lt;- <span class="number">0</span></span><br><span class="line">	&#125;()</span><br><span class="line">	fibonacci(c, quit)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="疑问3"><a href="#疑问3" class="headerlink" title="疑问3"></a>疑问3</h4><blockquote>
+<p>不设置缓冲的channel和设置缓冲为1的channel有区别么？</p>
+</blockquote>
+<p>有区别，区别在于向放入第一个元素之后，不设置缓冲的channel将被阻塞无法继续进行，而设置缓冲为1的channel将可以继续执行剩下的操作，直到试图将channel中的元素扩增为2时，会发生阻塞</p>
+<h2 id="sync"><a href="#sync" class="headerlink" title="sync"></a>sync</h2><blockquote>
+<p>提供了一些基本的同步原语，用于并发控制</p>
+<p>参考链接：<a href="http://www.cnblogs.com/golove/p/5918082.html" target="_blank" rel="noopener">http://www.cnblogs.com/golove/p/5918082.html</a></p>
+</blockquote>
+<p><code>sync.Once</code>：实现多次调用一次执行。只有第一次调用才会执行，之后如果要再次执行需要重新创建一个新的对象</p>
+<p><code>sync.WaitGroup</code>：直到所有注册的并发任务都执行结束了，才继续执行。通过<code>sync.Add(n)</code>来增加计数器的值，通过<code>sync.Done()</code>将计数器的值减一</p>
+<p><code>sync.Mutex</code>：信号量。提供<code>Lock</code>和<code>Unlock</code>两个方法，分别对应加锁和解锁。可以用 <code>defer</code> 语句来保证互斥锁一定会被解锁</p>
+<p><code>sync.RWMutex</code>：读写锁。在互斥锁的基础上，还能够提供写锁定，但是不锁定读的功能</p>
+<p><code>sync.Cond</code>：条件等待。通过<code>Wait</code>让协程等待，通过<code>Signal</code>让一个等待的协程恢复，通过<code>Broadcast</code>让所有等待的协程恢复</p>
+<h2 id="runtime"><a href="#runtime" class="headerlink" title="runtime"></a>runtime</h2><ul>
+<li><p><code>Goexit</code></p>
+<p>退出当前执行的goroutine，但是<code>defer</code>函数还会继续调用</p>
+</li>
+<li><p><code>Gosched</code></p>
+<p>让出当前goroutine的执行权限，调度器安排其他等待的任务运行，并在下次某个时候从该位置恢复执行。</p>
+</li>
+<li><p><code>NumCPU</code></p>
+<p>返回 CPU 核数量</p>
+</li>
+<li><p><code>NumGoroutine</code></p>
+<p>返回正在执行和排队的任务总数</p>
+</li>
+<li><p><code>GOMAXPROCS</code></p>
+<p>用来设置可以并行计算的CPU核数的最大值，并返回之前的值。</p>
+</li>
+</ul>
+<h1 id="GoLang特色"><a href="#GoLang特色" class="headerlink" title="GoLang特色"></a>GoLang特色</h1><ul>
+<li>部署简单，仅仅依赖glibc，不用考虑各种包和库的依赖关系。目标机器上只需要有一个基本的操作系统就能够部署。</li>
+<li>天生支持高并发，通过<code>goroutine</code>和<code>channel</code>能够让书写并发程序更简单，大多数情况不需要考虑上锁</li>
+<li>提供了丰富的内置工具，比如<code>gofmt</code></li>
+<li>可以直接包含C代码，能够调用丰富的C库</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="kaiktang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="kaiktang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/go/" rel="tag"># go</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/02/09/%E5%AD%A6%E4%B9%A0%E4%BB%A5%E5%A4%AA%E5%9D%8A%E7%99%BD%E7%9A%AE%E4%B9%A6/" rel="prev" title="学习以太坊白皮书">
+      <i class="fa fa-chevron-left"></i> 学习以太坊白皮书
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/03/05/p2p%E7%BD%91%E7%BB%9C%E5%AD%A6%E4%B9%A0/" rel="next" title="p2p网络学习">
+      p2p网络学习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Concurrency"><span class="nav-number">1.</span> <span class="nav-text">Concurrency</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Goroutine"><span class="nav-number">1.1.</span> <span class="nav-text">Goroutine</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Channel"><span class="nav-number">1.1.1.</span> <span class="nav-text">Channel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Select"><span class="nav-number">1.1.2.</span> <span class="nav-text">Select</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%96%91%E9%97%AE1"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">疑问1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%96%91%E9%97%AE2"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">疑问2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%96%91%E9%97%AE3"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">疑问3</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sync"><span class="nav-number">1.2.</span> <span class="nav-text">sync</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#runtime"><span class="nav-number">1.3.</span> <span class="nav-text">runtime</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GoLang%E7%89%B9%E8%89%B2"><span class="nav-number">2.</span> <span class="nav-text">GoLang特色</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaiktang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaiktang</p>
+  <div class="site-description" itemprop="description">学而后知不足</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:tomkklalala@qq.com" title="E-Mail → mailto:tomkklalala@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaiktang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://kaiktang.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://kaiktang.github.io/2018/03/01/go%E8%AF%AD%E8%A8%80%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1%E5%AD%A6%E4%B9%A0/";
+    this.page.identifier = "2018/03/01/go语言线程通信学习/";
+    this.page.title = "go语言线程通信学习";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://kaiktang.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

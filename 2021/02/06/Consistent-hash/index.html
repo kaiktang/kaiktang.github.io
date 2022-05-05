@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaiktang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":{"disqus":{"text":"Load Disqus","order":-1}},"activeClass":"disqus"},"algolia":{"appID":"FBQ33HXA0Q","apiKey":"5a256d1a0d5075a6a17b29fbae8cdbdc","indexName":"blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="简介考虑一个web系统，系统中存在客户端、以及多个web服务器。设置多个web服务器是为了避免单个服务器承受太大的压力，所以用户的请求会通过某种方式负载均衡到各个服务器之上。 其中分配负载的策略应该需要能够保证如下特性：  假设所有服务器性能都相同，那么一般来说我们希望用户的请求能够均匀落到各个服务器之上，即服务器负载均衡，避免某个服务器过载。 假设服务器之间性能不同，那么一般来说希望能够根据权重">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Consistent hash">
+<meta property="og:url" content="http://kaiktang.github.io/2021/02/06/Consistent-hash/index.html">
+<meta property="og:site_name" content="kaiktang&#39;s blogs">
+<meta property="og:description" content="简介考虑一个web系统，系统中存在客户端、以及多个web服务器。设置多个web服务器是为了避免单个服务器承受太大的压力，所以用户的请求会通过某种方式负载均衡到各个服务器之上。 其中分配负载的策略应该需要能够保证如下特性：  假设所有服务器性能都相同，那么一般来说我们希望用户的请求能够均匀落到各个服务器之上，即服务器负载均衡，避免某个服务器过载。 假设服务器之间性能不同，那么一般来说希望能够根据权重">
+<meta property="og:locale">
+<meta property="og:image" content="http://kaiktang.github.io/2021/02/06/Consistent-hash/Untitled.png">
+<meta property="og:image" content="http://kaiktang.github.io/2021/02/06/Consistent-hash/Untitled%201.png">
+<meta property="og:image" content="http://kaiktang.github.io/2021/02/06/Consistent-hash/Untitled%202.png">
+<meta property="article:published_time" content="2021-02-06T15:08:04.000Z">
+<meta property="article:modified_time" content="2022-02-07T12:22:32.000Z">
+<meta property="article:author" content="kaiktang">
+<meta property="article:tag" content="分布式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://kaiktang.github.io/2021/02/06/Consistent-hash/Untitled.png">
+
+<link rel="canonical" href="http://kaiktang.github.io/2021/02/06/Consistent-hash/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Consistent hash | kaiktang's blogs</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kaiktang's blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://kaiktang.github.io/2021/02/06/Consistent-hash/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaiktang">
+      <meta itemprop="description" content="学而后知不足">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kaiktang's blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Consistent hash
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-02-06 23:08:04" itemprop="dateCreated datePublished" datetime="2021-02-06T23:08:04+08:00">2021-02-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-07 20:22:32" itemprop="dateModified" datetime="2022-02-07T20:22:32+08:00">2022-02-07</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/02/06/Consistent-hash/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/02/06/Consistent-hash/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>考虑一个web系统，系统中存在客户端、以及多个web服务器。设置多个web服务器是为了避免单个服务器承受太大的压力，所以用户的请求会通过某种方式负载均衡到各个服务器之上。</p>
+<p>其中分配负载的策略应该需要能够保证如下特性：</p>
+<ol>
+<li>假设所有服务器性能都相同，那么一般来说我们希望用户的请求能够均匀落到各个服务器之上，即服务器负载均衡，避免某个服务器过载。</li>
+<li>假设服务器之间性能不同，那么一般来说希望能够根据权重来处理相应比重的请求数量。</li>
+<li>根据用户请求的时间局部性，同一个用户的请求最好能够被同一个机器处理，来提高缓存命中率。</li>
+<li>在服务器数量变更时，能够尽可能小的影响客户端和服务器。</li>
+</ol>
+<a id="more"></a>
+<h2 id="hash-table"><a href="#hash-table" class="headerlink" title="hash table"></a>hash table</h2><p>对于特性1和特性2，可以使用的常见的散列表，散列表能够将通过使用哈希算法，理论上能够将数据均匀的散列在数组中。</p>
+<p><img src="Untitled.png" alt="Consistent%20hash%20962755a35fb04231959064b304fe915b/Untitled.png"></p>
+<p>考虑如果使用上述哈希表来实现我们的需求的话，我们把服务器按顺序编号，并将服务器和数组元素进行一对多或者一对一的映射，至于映射关系可以根据需要进行权重的设置。</p>
+<p>那么，假设有M=4台服务器并和数组元素一对一映射，一个编号为0客户端的请求会先计算0的哈希，假设得到10，然后将结果除以M，得到余数2，所以该客户端的请求就应该被2号服务器所处理，因为哈希函数良好的性质，可以保证在大请求量下所有服务器负载均衡。</p>
+<p>但是如果在后期网站维护时，需要移除一台服务器，那么M就变为了3，之前的0号请求，此时会被1号服务器所处理，同样的可以看到其他大量的用户请求会被和之前不同的服务器所处理，可以想象缓存命中率会下降，影响性能。</p>
+<p>新增一个服务器同理，也会影响大量的客户端请求。</p>
+<h1 id="consistent-hash"><a href="#consistent-hash" class="headerlink" title="consistent hash"></a>consistent hash</h1><h2 id="尝试"><a href="#尝试" class="headerlink" title="尝试"></a>尝试</h2><p>基于哈希表做一些修改，将数组以如下环的方式进行组织。</p>
+<p><img src="Untitled 1.png" alt="Consistent%20hash%20962755a35fb04231959064b304fe915b/Untitled%201.png"></p>
+<p>如上图所示，我们先尝试将底层数组通过环状进行组织，并且为每个服务器（本例4个）分别命名为S0，S1，S2，S3，然后使用哈希函数将S0到S4散列到环中。</p>
+<p>当一个请求到来时，还是使用之前类似的方式进行散列，比如依旧是编号为0的请求，此处M取100，所以该请求会被散列到10号元素。此时我们约定每个请求由其顺时针碰到的第一个服务器进行处理，在此例子中即为S0，所以请求0会被S0所处理。</p>
+<p>如果后面S0被移除了，在这种设计下，R0请求会被S2所处理，换句话来说是原来S0的负载被转移到了S2之上，而整个集群中的其他节点不受影响。</p>
+<p>这是一个很大的进步！</p>
+<p>同理，如果新增一个服务器，会导致原先某一个服务器的负载被分担走一部分。</p>
+<h2 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h2><p>但是可以看到这种设计下，很可能会导致各个机器负载的不均衡。主要的原因就是服务器所映射的底层数组元素太少了，不能足以充分发挥哈希函数的特性，不能保证分布均匀。</p>
+<p>所以一种方案是增加服务器数量，这样理论上只要有足够多的服务器，最终它们都会被均匀的散列在环中。但是这种方案的一个缺点显而易见，就是成本太高了，过多的服务器也会导致资源的利用率下降造成浪费，另一个缺点就是当有服务器被移除时，还是会有一个服务器的负载瞬间变为两倍（如果假设之前所有服务器的负载是均衡的），这样还是会导致一定程度的负载不均衡。</p>
+<p>为了解决上述的问题，一致性哈希引入了虚拟节点，多个虚拟节点会被映射到同一个服务器上。一种方案是使用K个不同的哈希函数，对于S0而言，通过使用K个不同的哈希函数来生成哈希，可以将S0散列到环中的多个元素中，通过选择合适的K，根据哈希函数的性质，可以近似认为均匀分布于数组之中。另外不同的服务器可以选用不同的K，来进行配置负载权重。</p>
+<p><img src="Untitled 2.png" alt="Consistent%20hash%20962755a35fb04231959064b304fe915b/Untitled%202.png"></p>
+<p>如上图所示，同样的R0请求会被S4_1也就是S4处理。</p>
+<p>假设需要新增一个服务器S5，那么通过在数组中（均匀）新增K个虚拟S5节点，这能够让S5均匀的从其他4个已存在服务器的负载中各分走一部分，使得整个服务器集群依旧负载均衡。</p>
+<p>考虑移除节点S4，那么S4对应的所有虚拟节点都会被删除，这样能够让被移除节点的负载也均匀的分摊到其他剩余服务器之上，整个服务器集群依旧负载均衡。</p>
+<p>实际使用中，可以不通过使用K个哈希函数来生成虚拟节点，而是使用给每个节点取K个名字，这样会更加方便。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="kaiktang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="kaiktang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag"># 分布式</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/19/Certificate-Transparency/" rel="prev" title="Certificate Transparency">
+      <i class="fa fa-chevron-left"></i> Certificate Transparency
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02/20/Raft%E8%A1%A5%E5%85%85/" rel="next" title="Raft补充">
+      Raft补充 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#hash-table"><span class="nav-number">1.1.</span> <span class="nav-text">hash table</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#consistent-hash"><span class="nav-number">2.</span> <span class="nav-text">consistent hash</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%9D%E8%AF%95"><span class="nav-number">2.1.</span> <span class="nav-text">尝试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E8%BF%9B"><span class="nav-number">2.2.</span> <span class="nav-text">改进</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaiktang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaiktang</p>
+  <div class="site-description" itemprop="description">学而后知不足</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:tomkklalala@qq.com" title="E-Mail → mailto:tomkklalala@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaiktang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://kaiktang.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://kaiktang.github.io/2021/02/06/Consistent-hash/";
+    this.page.identifier = "2021/02/06/Consistent-hash/";
+    this.page.title = "Consistent hash";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://kaiktang.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

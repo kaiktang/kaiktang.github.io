@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaiktang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":{"disqus":{"text":"Load Disqus","order":-1}},"activeClass":"disqus"},"algolia":{"appID":"FBQ33HXA0Q","apiKey":"5a256d1a0d5075a6a17b29fbae8cdbdc","indexName":"blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文主要是对于GFS论文的一些笔记，并穿插了一些自己的思考。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Google File System论文阅读笔记">
+<meta property="og:url" content="http://kaiktang.github.io/2020/03/29/Google-File-System/index.html">
+<meta property="og:site_name" content="kaiktang&#39;s blogs">
+<meta property="og:description" content="本文主要是对于GFS论文的一些笔记，并穿插了一些自己的思考。">
+<meta property="og:locale">
+<meta property="og:image" content="http://kaiktang.github.io/2020/03/29/Google-File-System/Untitled.png">
+<meta property="og:image" content="http://kaiktang.github.io/2020/03/29/Google-File-System/Untitled1.png">
+<meta property="article:published_time" content="2020-03-29T13:07:47.000Z">
+<meta property="article:modified_time" content="2022-02-07T12:09:23.000Z">
+<meta property="article:author" content="kaiktang">
+<meta property="article:tag" content="读书笔记">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://kaiktang.github.io/2020/03/29/Google-File-System/Untitled.png">
+
+<link rel="canonical" href="http://kaiktang.github.io/2020/03/29/Google-File-System/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Google File System论文阅读笔记 | kaiktang's blogs</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kaiktang's blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://kaiktang.github.io/2020/03/29/Google-File-System/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaiktang">
+      <meta itemprop="description" content="学而后知不足">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kaiktang's blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Google File System论文阅读笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-29 21:07:47" itemprop="dateCreated datePublished" datetime="2020-03-29T21:07:47+08:00">2020-03-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-07 20:09:23" itemprop="dateModified" datetime="2022-02-07T20:09:23+08:00">2022-02-07</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/03/29/Google-File-System/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/03/29/Google-File-System/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文主要是对于<a href="https://pdos.csail.mit.edu/6.824/papers/gfs.pdf" target="_blank" rel="noopener">GFS论文</a>的一些笔记，并穿插了一些自己的思考。</p>
+<a id="more"></a>
+<h1 id="设计概览"><a href="#设计概览" class="headerlink" title="设计概览"></a>设计概览</h1><h2 id="一些假设"><a href="#一些假设" class="headerlink" title="一些假设"></a>一些假设</h2><p>GFS在设计时根据观察，总结出了一些他们数据访问的一些特征，根据这些特征做出了以下假设：</p>
+<ul>
+<li>该文件系统是有很多廉价的商业机器组成的，所以应该认为系统中发生错误是常态。文件系统需要能够进行自我监控并自我恢复。</li>
+<li>该文件系统存储了适中数量的大型文件，并支持小文件操作（相对少量）。</li>
+<li>读操作的特征：<strong>大型流式读取</strong>和<strong>小型随机读取</strong>。应该避免小范围来回随机反复访问。</li>
+<li>写操作的特征：<strong>大型顺序写，即append操作</strong>。</li>
+<li>需要高效实现并发写操作。</li>
+<li>需要大量的可持续的带宽。</li>
+</ul>
+<h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><p>文件是由层次化的文件路径来定位。</p>
+<p>GFS提供<code>create</code>、<code>delete</code>、<code>open</code>、<code>close</code>、<code>read</code>、和<code>write</code>接口。</p>
+<p>另外，提供<code>snapshot</code>和<code>record append</code>操作。前者提供高效拷贝一个文件或者一个文件夹的功能。record append操作允许多个客户端并发对同一个文件进行，在无需加锁的情况下每个操作保证原子性。</p>
+<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p>一个GFS集群是包含一个<code>master</code>和多个<code>chunkserver</code>的主从架构。</p>
+<p>文件会被切分为固定大小（64MB）的<code>chunk</code>后存储到<code>chunkserver</code>上。每个<code>chunk</code>在创建的时候会由<code>master</code>指定全局唯一不可变的64位整数<code>chunk handle</code>作为id。</p>
+<p>在每个<code>chunkserver</code>上是以普通linux文件的形式存储的<code>chunk</code>。可以通过声明<code>chunk handle</code>以及要访问的字节范围来进行读取或者修改<code>chunk</code>。</p>
+<p>默认情况下，每个<code>chunk</code>会存储三份副本。但是用户可以自定义副本数量。</p>
+<p><code>master</code>的存储了整个文件系统的元信息，包括：</p>
+<ul>
+<li>访问控制信息。（内存）</li>
+<li>映射关系表：文件路径 ⇒ chunk handle（内存）</li>
+<li>映射关系表：chunk handle ⇒ 储存该<code>chunk</code>的<code>chunkserver</code>列表。（内存）</li>
+<li>各个<code>chunkserver</code>的位置信息。（内存）</li>
+<li>选中为<code>primary</code>的<code>chunk</code>的<code>lease</code>信息，比如过期时间。（磁盘）</li>
+<li>各个<code>chunk</code>的<code>version number</code>信息。（磁盘）</li>
+<li>等等。</li>
+</ul>
+<p><code>master</code>会周期性的和<code>chunkserver</code>通过心跳包进行通信检测。</p>
+<p><code>master</code>只负责为客户端的请求提供文件元信息，客户端获得原信息后，真正的I/O操作是客户端和<code>chunkserver</code>之间进行的，<code>master</code>不参与。</p>
+<p>客户端并没有提供对文件内容的缓存功能，因为读写操作都是大数据量，所以缓存并不能帮助多少，却增加了实现的难度，因为需要考虑缓存一致性问题，得不偿失。</p>
+<p>但是客户端会缓存关于文件的元信息，以此避免频繁的叨扰<code>master</code>。</p>
+<h2 id="single-master"><a href="#single-master" class="headerlink" title="single master"></a>single master</h2><p>为了不让<code>master</code>成为读写的瓶颈，所以<code>master</code>尽量少的参与读写的过程，所有读写的数据流都不经过master。</p>
+<p>以简单第一个读操作为例：</p>
+<ol>
+<li>客户端声明想要访问的文件名称，和字节偏移量，然后通过偏移量除以64MB得到chunk的下标。</li>
+<li>发送以上信息（可能包含多个chunk）给master后，master会回复相应的chunk handle以及对应的副本的位置。</li>
+<li>客户端缓存这些元信息后，会从其中选择<strong>最近</strong>（文章中通过IP地址选择）的一个副本发起读请求，请求包含chunk handle和字节范围。</li>
+</ol>
+<h2 id="Chunk大小"><a href="#Chunk大小" class="headerlink" title="Chunk大小"></a>Chunk大小</h2><p>Chunk的大小固定为64MB。</p>
+<p>一个较大的chunk大小的优势：</p>
+<ol>
+<li>减少客户端与master的通讯次数。</li>
+<li>客户端很大可能会对同一个块进行多次操作，故可以通过建立长连接，减少网络开销。</li>
+<li>让元信息更少，减少master的存储压力。</li>
+</ol>
+<p>较大的chunk大小的缺点：</p>
+<ol>
+<li>如果有多个客户端访问某个小文件，小文件的chunk会变成访问热点（概率问题）。</li>
+</ol>
+<p>比如一个小型可执行文件写入GFS，然后想要在多台机器上同时执行，那么组成该文件的chunk就会瞬间成为访问热点。</p>
+<p>该问题可以通过增加相应文件的备份数量来解决，或者通过类似消息队列来削峰请求。</p>
+<p>长远的解决方案可以考虑让客户端从另一个客户端读取文件内容。</p>
+<h2 id="元信息"><a href="#元信息" class="headerlink" title="元信息"></a>元信息</h2><p>master会通过<code>operation log</code>的方式在磁盘上存储对元信息的变更记录。但是并不会存储chunkserver的位置，这个信息是在每次master启动的时候向chunkserver询问的。</p>
+<p>master会周期性的扫描内存内的元信息以此实现：</p>
+<ol>
+<li>垃圾回收。</li>
+<li>某个chunkserver宕机后的进行重备份。</li>
+<li>对chunk进行迁移达到平衡负载。</li>
+</ol>
+<p><img src="Untitled.png" alt="Google-File-System/Untitled.png"></p>
+<p>master并不持久化chunkserver和文件之间的映射关系，而是不断轮训chunkserver来保持最新数据。</p>
+<p>master不持久化chunkserver的位置信息，因为这样会让实现上要考虑频繁节点的退出，加入，重启，改名等等，太过复杂，得不偿失。</p>
+<p>所以关于文件存储的元信息以chunkserver上的最新信息为准，master不进行额外持久化存储。</p>
+<p>对于元信息的更改请求，比如对文件、chunk的信息的更改会先在当前master的磁盘以及远程的master副本的磁盘中成功落盘后，才会响应客户端请求。为了避免频繁刷盘，master会批量进行。</p>
+<p>master通过重放日志的形式进行恢复。为了不让恢复时间较长，master会定期设置检查点（checkpoint），这样从日志恢复的过程能够从最近的一个检查点开始，大大减少恢复耗时。检查点是一个紧凑的B树形态的结构，能够直接载入到内存中。</p>
+<p>因为创建检查点的过程耗时较长，为了不影响master接受请求，master会先切换到一个新的log文件，然后创建一个新的线程来构建检查点。这个创建的检查点会包含在切换log文件前的所有变动。</p>
+<h2 id="一致性模型"><a href="#一致性模型" class="headerlink" title="一致性模型"></a>一致性模型</h2><p>GFS采用的是一种弱一致性模型。master通过加锁来保证正确性和原子性，且根据写入log的顺序为准来定义全局的操作顺序。</p>
+<p>在修改操作之后，如果读者不论在哪个服务器上进行读取，都看到的是相同的数据，那么我们称之为一致的，即consistant。如果一个文件所有客户端都还能看到所有的更改操作的结果，那么我们称之为defined。</p>
+<p>在一系列的成功修改操作之后，GFS保证被修改的文件区域为defined：</p>
+<ol>
+<li>对所有副本按照相同的顺序执行对chunk的修改操作。</li>
+<li>通过chunk版本号来检测，那些因为宕机而错过某些修改操作的过期的chunk。这些过期的块不会再接受新的修改操作，或者返回给用户。他们会很快被垃圾回收掉。</li>
+</ol>
+<p>对于那些缓存了过期chunk location的客户端，在读到比预期早的EOF后会再次向master索要一个最新的chunk。</p>
+<p>因为长期的运行，难免会存在数据受损的情况，GFS通过周期性利用校验和来检测这种情况。一旦发现错误，master会很快利用其他正确的副本来修复受损的数据。</p>
+<p>为了适应这种弱一致性，客户端需要做一些适配：</p>
+<ol>
+<li>更多的依赖append，而不是随机写。</li>
+<li>检查点。</li>
+<li>写入自验证，自标识的数据。即在数据中加入校验和和id。</li>
+<li>如果读到了padding（通过校验和来鉴别），丢弃。</li>
+<li>如果读到了重复的记录（通过校验和来鉴别），那么用数据中写入的唯一id，来进行过滤。</li>
+</ol>
+<h1 id="系统交互"><a href="#系统交互" class="headerlink" title="系统交互"></a>系统交互</h1><h2 id="leases和修改顺序"><a href="#leases和修改顺序" class="headerlink" title="leases和修改顺序"></a>leases和修改顺序</h2><p>对某个chunk的修改操作会对该chunk所有的副本进行。为了避免在并发操作的情况下，因为各个副本收到的请求的顺序不同，而导致不一致，GFS通过以下措施避免：</p>
+<ol>
+<li>客户端发起写入请求给master，指明要操作的文件的路径，以及偏移量。</li>
+<li>master确定副本所在位置，并且选择其中一个副本设置为primary，该身份默认有60秒有效期。master向客户端返回相应chunk副本的信息：包含哪个是primary，哪些是seconary的身份信息。客户端缓存收到的信息。除非primary不再接受服务或已经无法访问，客户端在缓存过期前不会再叨扰master。</li>
+<li>接下来就是将数据传输到所有的副本服务器上。为了充分利用每台服务器的上行和下行带宽，客户端会先选择最近的一个副本服务器发送数据，在收到部分数据后该副本服务器会立刻选择离他最近的一个副本服务器进行转发，如此往复流水线工作。所有的服务器收到数据后会先将数据放到内部的LRU缓冲区。</li>
+<li>当所有的副本服务器都收到了数据，客户端发送一个写请求给primary，该请求中会指明之前发送的数据集。而primary会将这些可能来自多个客户端的写请求定序，然后先在本机执行。</li>
+<li>在本机执行成后，primary会转发写请求到所有的seconary节点，所有的secondary节点在收到请求后会按照相同的顺序去执行请求。</li>
+<li>所有的secondary执行结束之后会向parimary返回执行结果。</li>
+<li>如果所有的secondary都成功执行，那么primary会向客户端返回执行成功。如果在这个过程中有执行错误的情况发生（部分机器成功，部分失败），那么会向客户端返回操作失败，客户端会自动重新发送请求进行重试（3-7步）。再次失败几次后，最后会回退到步骤1重试。</li>
+</ol>
+<p><img src="Untitled1.png" alt="Google-File-System/Untitled1.png"></p>
+<p>对于那些试图修改跨越多个chunk边界的请求，客户端会自动将他们拆分为多个请求，让每个请求只修改一个chunk。</p>
+<h2 id="原子的record-append操作"><a href="#原子的record-append操作" class="headerlink" title="原子的record append操作"></a>原子的record append操作</h2><p>根据描述，我认为该操作的接口应该是这样的：</p>
+<pre><code>bool record_append(string filename);
+</code></pre><p>该接口会导致数据在副本间的不一致，但是在该系统的下能够很好的工作。</p>
+<p>该接口的操作流程大致和3.1描述的流程相似。不同的是一些细节：</p>
+<ol>
+<li>primary在收到请求后，会先判断本次append请求是否会导致当前chunk超出64MB。如果是，那么它会直接将该chunk进行padding到64MB。然后让所有secondary一起这样做，然后通知客户端对下一个chunk重发一次请求。（单次append操作的大小限制在16MB以内）。</li>
+<li>如果本次append不会超过限制，那么primary会先在自己本地写入，然后让所有的seconary在<strong>相同的文件位置</strong>也写入。</li>
+</ol>
+<p>成功执行的append接口，只能保证数据至少会被每个chunkserver成功原子的执行一次（因为可能因为重试而多次执行）。</p>
+<h2 id="Snopshot快照"><a href="#Snopshot快照" class="headerlink" title="Snopshot快照"></a>Snopshot快照</h2><p>根据描述，我认为该操作的接口应该是这样的：</p>
+<pre><code>bool snapshot(string srcpath, string tgtpath);
+</code></pre><p>该接口是用来对某个文件或者目录结构，在尽可能减少其他任何进行中的修改的情况下，做一个拷贝。</p>
+<p>当master收到snapshot请求的时候，会收回目标文件对应块的所有的lease，这样就可以保证快照时无写操作。</p>
+<p>当所有的对应的lease都已经被收回或者过期，那么mater会通过WAL先记录操作，然后在内存中复制对应文件的元信息，新的元信息和老的元信息会先共享相同的chunk，后面对chunk的修改操作会通过使用引用计数，write-on-copy来进行，一般拷贝操作会在相同机器上进行，以此来避免网络消耗。</p>
+<h1 id="Master操作"><a href="#Master操作" class="headerlink" title="Master操作"></a>Master操作</h1><h2 id="namespace管理和加锁"><a href="#namespace管理和加锁" class="headerlink" title="namespace管理和加锁"></a>namespace管理和加锁</h2><p>和传统的文件系统不同，GFS不能通过父目录的内容直接得到其所有的子文件（目录），而为了得到某个目录下的所有的子文件只能通过路径前缀匹配来做。</p>
+<p>每个目录或者文件都有一个懒加载的读写锁（并且用完即删）。每个master的操作都会先获取一系列的锁，比如对于文件/d1/d2/d3/f的写操作会对/d1，/d1/d2和/d1/d2/d3加上读锁，对/d1/d2/d3/f加上写锁。正是因为前面所说的，父目录不记录子文件信息，的特性，所以这里写操作不用对父目录进行加写锁，加读锁已经足够保护父目录不被删除，重命名或者快照。</p>
+<p>这种加锁的方式能够让GFS在同一目录下进行并发操作。</p>
+<p>通过规定获取锁的顺序，来避免死锁。</p>
+<h2 id="副本放置"><a href="#副本放置" class="headerlink" title="副本放置"></a>副本放置</h2><p>副本放置策略主要为了达到两个目标：最大提高数据可靠性，可用性，以及，最大提高网络带宽利用率。</p>
+<p>所以GFS会尽量将副本放置在不同的机架上，但是这也会让写入请求需要转发到多个机架上。</p>
+<h2 id="Creation-Re-replication-Rebalancing"><a href="#Creation-Re-replication-Rebalancing" class="headerlink" title="Creation, Re-replication, Rebalancing"></a>Creation, Re-replication, Rebalancing</h2><p>一个chunk只可能因为如下三个原因被创建：</p>
+<ol>
+<li>chunk的新建。</li>
+<li>重备份。</li>
+<li>重平衡。</li>
+</ol>
+<p>当master要创建一个新的chunk的时候，主要有以下考虑：</p>
+<ul>
+<li>希望新的副本能够创建在一个磁盘空间利用率低于集群平均利用率的机器上。</li>
+<li>限制目标机器短期内的创建操作数量，以为往往创建操作之后紧跟的是就是大量的写入请求。</li>
+<li>尽可能将副本分散在不同的机架上。</li>
+</ul>
+<p>master会在某个chunk的副本数低于配置要求后，立即进行重备份。会导致这种情况发生的原因有：</p>
+<ul>
+<li>一个副本服务器下线。</li>
+<li>某个副本服务器上的某个chunk数据损坏。或者该chunk所在的磁盘坏了。</li>
+<li>备份的配置要求提高了。</li>
+</ul>
+<p>重备份的优先级根据以下因素确定：</p>
+<ul>
+<li>离目标副本数差的越远的越先进行重备份。</li>
+<li>优先重备份那些没有被删除的文件。</li>
+<li>优先备份那些不会阻塞对客户端服务的chunk。</li>
+</ul>
+<p>重备份的位置的选择的考虑因素类似的有：</p>
+<ul>
+<li>将集群磁盘利用率平均化。</li>
+<li>限制同一chunkserver上活跃的拷贝操作数量。</li>
+<li>控制副本分散在不同的机架上。</li>
+</ul>
+<p>另外每个chunkserver会通过限制，向源chunk所在chunkserver发送读请求的频率，来限制其上进行的拷贝操作的带宽。</p>
+<p>对于master的重平衡，master会周期的进行。</p>
+<ul>
+<li>检查当前副本分布情况，并将副本移到更好的磁盘空间上。</li>
+<li>通过这种方式能够将新增的chunkserver慢慢的填充上数据，而不是瞬间大量的拷贝，因为大量拷贝很可能会导致接下来的大量的写入请求。</li>
+<li>会优先选择那些剩余磁盘空间低于平均的chunkserver上的chunk进行删除，然后移动到新的位置。</li>
+</ul>
+<h2 id="垃圾回收"><a href="#垃圾回收" class="headerlink" title="垃圾回收"></a>垃圾回收</h2><p>GFS对于删除操作的空间回收操作是惰性执行的。</p>
+<p>master收到删除请求后：</p>
+<ol>
+<li>WAL</li>
+<li>将文件名改成一个包含删除时间戳的隐藏文件名。</li>
+<li>在master的周期性扫描中，如果发现有某个隐藏文件名的文件存在已经超过3天（时间可配置）了，则进行实质删除。</li>
+<li>在实质删除前，客户端还是可以用新的隐藏文件名进行读取操作，或者恢复这些被删除的文件。</li>
+</ol>
+<p>在周期扫描中，还会清理那些orphaned chunks（比如没有任何文件引用的chunk）的元信息。至于回收磁盘空间，因为master和chunkserver之间的心跳包中会包含每个chunkserver上存储的chunk的一个子集。master则会回复那些在master的记录中不存在的chunk的信息，之后chunkserver就可以删除这些chunk了。</p>
+<p>下面是关于GC和直接删除相比的优势：</p>
+<ol>
+<li>因为每次操作都有可能发生错误。发送的每条指令都可能丢失。所以实时的处理错误很复杂。通过GC是一个简单的方式处理所有的错误。</li>
+<li>GC可以和日常扫描任务一起实现，故代价可以被分摊。</li>
+<li>master可以选择在空闲的时间进行GC。</li>
+<li>避免误删，给了用户反悔的时间。</li>
+</ol>
+<p>在特殊情形下，比如磁盘空间紧张，为了加速空间回收的过程，用户可以通过再次尝试删除同一个文件来加速空间回收过程。</p>
+<h2 id="过期副本检测"><a href="#过期副本检测" class="headerlink" title="过期副本检测"></a>过期副本检测</h2><p>当一个chunkserver宕机过，那么可能会漏掉一些修改操作，那么当该chunkserver再次上线，上面存储的chunk将有可能已经是过期的了。</p>
+<p>为了甄别过期chunk，master维护了一个chunk version number。</p>
+<p>当master为一个chunk赋予一个lease的时候，会将该chunk的版本号增加一。master和存储该chunk的副本服务器都会在磁盘上存储该版本号。这个版本号变更的过程是在客户端进行实质写入操作之前通知到客户端。</p>
+<p>如果某个服务器在宕机后又重新上线，会向master报告自己所存储的chunk以及对应的版本号，这样master就能检测到过期的副本。</p>
+<p>master会在垃圾回收中回收这些过期的块。</p>
+<p>另外为了保证客户端不读写到过期的信息，master在客户端询问chunk所在副本服务器的阶段时，就会返回该chunk对应的版本号，然后客户端或者副本服务器就可以通过这个版本号来验证，保证客户端不会访问到过期的数据。</p>
+<h1 id="容错以及诊断"><a href="#容错以及诊断" class="headerlink" title="容错以及诊断"></a>容错以及诊断</h1><h2 id="高可用性"><a href="#高可用性" class="headerlink" title="高可用性"></a>高可用性</h2><p>为保证整个系统的高可用性，主要依靠两个机制：快恢复fast recovery以及块备份chunk replication。</p>
+<p>对于快恢复：master和副本服务器都可以在宕机后几秒内重启并恢复。并且客户端方面如果请求超时了会进行重试。</p>
+<p>对于文件块的备份技术，已经在前面讨论过了。这里讨论master的备份。</p>
+<p>为了可靠性，master的状态也会被备份。master的日志和检查点信息会被备份到多台机器上。一个操作真正被执行之前，日志会被写入本地以及到多台副本的磁盘上。</p>
+<p>为了简化，GFS让一个master进程管理所有的变更以及后台任务。所以在该master退出之后，能够很快的被重启。如果整个机器或者磁盘损坏了，那么通过外部的监控程序，能够很快在另一个master副本上启动一个master进程。</p>
+<p>为了不影响客户端，客户端使用类似域名一样的名称，当master变更了机器，可以通过修改域名解析来让客户端无感切换。</p>
+<p>非primary master和primary master之间往往有一些延迟，故一般会提供一些对不被活跃修改的文件的读取服务，或者允许让那些时效性不敏感的应用访问读取。因为master中存在延迟的只有元信息部分。</p>
+<p>master的副本（shadow master）会重放primary master上的请求到自己上面，并且在启动的时候轮训所有的副本服务器来定位chunk副本，并且在之后通过握手消息来监控他们的状态。master副本仅仅需要从primary master获取副本位置更新，比如创建或者删除了某个副本。</p>
+<h2 id="数据完整性"><a href="#数据完整性" class="headerlink" title="数据完整性"></a>数据完整性</h2><p>因为前面讨论的append操作的错误重试机制可能会让文件在不同的服务器上不一样，所以对于文件完整性的验证只能在每个副本服务器上独立进行。所以每个副本服务器会各自的维护一份校验和。</p>
+<p>一个chunk会被拆分成64KB大小的block，每个block都会有一个相应的32位的校验和。和其他的元信息相同，校验和和操作日志一样在内存和硬盘中存储，但是和用户数据区分存储。</p>
+<p>对于读操作，副本服务器会在回复请求数据前，验证涉及到的block的数据完整性，以此保证不会传播错误的数据。如果校验结果为数据损坏了，那么会返回一个错误并且向master报告。在收到错误后，请求者会向别的副本进行请求，而master会着手从存有正确的副本服务器克隆一份新的chunk，并在新chunk就绪后要求删除原来的损坏chunk。</p>
+<h1 id="附录：阅读过程的问题"><a href="#附录：阅读过程的问题" class="headerlink" title="附录：阅读过程的问题"></a>附录：阅读过程的问题</h1><ul>
+<li><p>如果在mater指定一个replica为primary之后，primary和所有secondary增加了version number之后，mater在增加自己的version number之前宕机了，怎么办？</p>
+<p>  这样的情况下master的版本号会落后于其他副本服务器，在重启后，通过周期性的询问，如果发现收到比自己存的version number要大的回复，那么他会选用接收更大的那个version number。</p>
+</li>
+<li><p>如果在master选完primary之后，可能因为网络分区之类的原因导致primary不再回复master心跳包，这时候master会怎么办？</p>
+<p>  master会指定一个新的primary，但是如果是立刻执行一个新的primary的话，因为客户端存在缓存，那么对于一个trunk可能会同时存在两个在接受写服务的primary了，这会导致数据产生不一致。所以master在执行一个新的primary之前，会先等一段时间，等待之前那个lease过期之后，再指定一个新的primary，这样保证同时只能存在一个primary。</p>
+</li>
+<li><p>对于append record的操作，如果某些secondary节点没有append成功怎么办？</p>
+<p>  如果有至少一个secondary节点返回了执行失败，那么primary会返回给客户端执行错误，然后客户端会再次发起一次请求。</p>
+</li>
+<li><p>对于因为错误而重发的append请求，对于在上一次请求中成功append的那些secondary节点的话，不就重复append了数据了吗，这样节点间的数据不一致了吗？会不会造成trunk数据大小不一致？</p>
+<p>  因为对于primary转发的append操作是要求在指定的offset上执行的，而那些因为某些错误导致没有append成功的节点，在接受到重发的请求后，会先用padding占位到请求要求的offset处，然后再执行append操作。所以GFS是允许trunk的副本间存在不一致的数据的。</p>
+</li>
+<li><p>如果client在重发请求之前宕机了，再也没能重发出请求，怎么办？</p>
+<p>  那么意味着之前失败请求造成的数据不一致性无法再被修复。所以应该是没办法解决的？只能要求client在append请求没有回复success之前，对涉及该请求的数据的读取都不能信任。</p>
+</li>
+<li><p>对于这些不一致的数据，客户端在读取的时候，如果分辨？</p>
+<p>  对于padding，就直接忽略去读另一块就好了。对于有数据错误的块，通过校验和来甄别。对于，有重复数据的块，通过筛选来去重（通过在数据头部中加唯一标识）。对顺序比较敏感的程序可以通过在数据中写入sequnce number之类的单调值来帮助排序。或者干脆不要进行并发append。</p>
+</li>
+<li><p>为了将GFS改造成一个强一致性的文件系统？可以有哪些优化的点？</p>
+<ul>
+<li>primary可能需要具备能够检测重发请求的能力。</li>
+<li>primary能够具有立即将某个下线节点移除secondary列表。</li>
+<li>在数据确定成功写入之前不要将数据暴露给客户端。</li>
+<li>如果在primary给其他secondary发送消息后还未收到回复就宕机了，那么此时可能已经造成了数据的不一致，新上任的primary应该显式启动一个重新同步的过程。</li>
+<li>所有的读请求要么也都发给primary，因为primary是清楚哪些请求执行成功，哪些没有的。或者也为读请求设计一个lease系统。</li>
+</ul>
+</li>
+<li><p>GFS是如何判断某个副本是最近的那个？</p>
+</li>
+</ul>
+<p>论文中提到是通过IP地址。所以可以想象当时谷歌应该是将地理位置的较近的两个机器分配了两个很近的IP地址。</p>
+<ul>
+<li>谷歌还在使用GFS吗？</li>
+</ul>
+<p>根据消息说谷歌使用Colossus代替了GFS，提升了master的性能和容错性。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="kaiktang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="kaiktang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag"># 读书笔记</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/11/27/csapp-libs-attacklib/" rel="prev" title="csapp_libs: attacklib">
+      <i class="fa fa-chevron-left"></i> csapp_libs: attacklib
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/01/VMWare-FT/" rel="next" title="VMWare FT论文阅读笔记">
+      VMWare FT论文阅读笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E6%A6%82%E8%A7%88"><span class="nav-number">1.</span> <span class="nav-text">设计概览</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%81%87%E8%AE%BE"><span class="nav-number">1.1.</span> <span class="nav-text">一些假设</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.2.</span> <span class="nav-text">接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84"><span class="nav-number">1.3.</span> <span class="nav-text">架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#single-master"><span class="nav-number">1.4.</span> <span class="nav-text">single master</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Chunk%E5%A4%A7%E5%B0%8F"><span class="nav-number">1.5.</span> <span class="nav-text">Chunk大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%83%E4%BF%A1%E6%81%AF"><span class="nav-number">1.6.</span> <span class="nav-text">元信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.7.</span> <span class="nav-text">一致性模型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E4%BA%A4%E4%BA%92"><span class="nav-number">2.</span> <span class="nav-text">系统交互</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#leases%E5%92%8C%E4%BF%AE%E6%94%B9%E9%A1%BA%E5%BA%8F"><span class="nav-number">2.1.</span> <span class="nav-text">leases和修改顺序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%AD%90%E7%9A%84record-append%E6%93%8D%E4%BD%9C"><span class="nav-number">2.2.</span> <span class="nav-text">原子的record append操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Snopshot%E5%BF%AB%E7%85%A7"><span class="nav-number">2.3.</span> <span class="nav-text">Snopshot快照</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Master%E6%93%8D%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">Master操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#namespace%E7%AE%A1%E7%90%86%E5%92%8C%E5%8A%A0%E9%94%81"><span class="nav-number">3.1.</span> <span class="nav-text">namespace管理和加锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%AF%E6%9C%AC%E6%94%BE%E7%BD%AE"><span class="nav-number">3.2.</span> <span class="nav-text">副本放置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Creation-Re-replication-Rebalancing"><span class="nav-number">3.3.</span> <span class="nav-text">Creation, Re-replication, Rebalancing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6"><span class="nav-number">3.4.</span> <span class="nav-text">垃圾回收</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E5%89%AF%E6%9C%AC%E6%A3%80%E6%B5%8B"><span class="nav-number">3.5.</span> <span class="nav-text">过期副本检测</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%B9%E9%94%99%E4%BB%A5%E5%8F%8A%E8%AF%8A%E6%96%AD"><span class="nav-number">4.</span> <span class="nav-text">容错以及诊断</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7"><span class="nav-number">4.1.</span> <span class="nav-text">高可用性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%AE%8C%E6%95%B4%E6%80%A7"><span class="nav-number">4.2.</span> <span class="nav-text">数据完整性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%84%E5%BD%95%EF%BC%9A%E9%98%85%E8%AF%BB%E8%BF%87%E7%A8%8B%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text">附录：阅读过程的问题</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaiktang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaiktang</p>
+  <div class="site-description" itemprop="description">学而后知不足</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:tomkklalala@qq.com" title="E-Mail → mailto:tomkklalala@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaiktang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://kaiktang.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://kaiktang.github.io/2020/03/29/Google-File-System/";
+    this.page.identifier = "2020/03/29/Google-File-System/";
+    this.page.title = "Google File System论文阅读笔记";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://kaiktang.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

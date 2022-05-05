@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaiktang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":{"disqus":{"text":"Load Disqus","order":-1}},"activeClass":"disqus"},"algolia":{"appID":"FBQ33HXA0Q","apiKey":"5a256d1a0d5075a6a17b29fbae8cdbdc","indexName":"blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="这篇文章是我阅读这篇论文过程中做的笔记，以及一些自己的思考。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark论文阅读笔记">
+<meta property="og:url" content="http://kaiktang.github.io/2020/05/11/Spark%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="kaiktang&#39;s blogs">
+<meta property="og:description" content="这篇文章是我阅读这篇论文过程中做的笔记，以及一些自己的思考。">
+<meta property="og:locale">
+<meta property="og:image" content="http://kaiktang.github.io/2020/05/11/Spark%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/Untitled.png">
+<meta property="og:image" content="http://kaiktang.github.io/2020/05/11/Spark%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/Untitled%201.png">
+<meta property="og:image" content="http://kaiktang.github.io/2020/05/11/Spark%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/Untitled%202.png">
+<meta property="og:image" content="http://kaiktang.github.io/2020/05/11/Spark%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/Untitled%203.png">
+<meta property="og:image" content="http://kaiktang.github.io/2020/05/11/Spark%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/Untitled%204.png">
+<meta property="og:image" content="http://kaiktang.github.io/2020/05/11/Spark%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/Untitled%205.png">
+<meta property="og:image" content="http://kaiktang.github.io/2020/05/11/Spark%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/Untitled%206.png">
+<meta property="article:published_time" content="2020-05-11T13:52:33.000Z">
+<meta property="article:modified_time" content="2022-02-07T12:07:20.000Z">
+<meta property="article:author" content="kaiktang">
+<meta property="article:tag" content="读书笔记">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://kaiktang.github.io/2020/05/11/Spark%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/Untitled.png">
+
+<link rel="canonical" href="http://kaiktang.github.io/2020/05/11/Spark%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Spark论文阅读笔记 | kaiktang's blogs</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kaiktang's blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://kaiktang.github.io/2020/05/11/Spark%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaiktang">
+      <meta itemprop="description" content="学而后知不足">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kaiktang's blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spark论文阅读笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-05-11 21:52:33" itemprop="dateCreated datePublished" datetime="2020-05-11T21:52:33+08:00">2020-05-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-07 20:07:20" itemprop="dateModified" datetime="2022-02-07T20:07:20+08:00">2022-02-07</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/05/11/Spark%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/05/11/Spark论文阅读笔记/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>这篇文章是我阅读<a href="https://pdos.csail.mit.edu/6.824/papers/zaharia-spark.pdf" target="_blank" rel="noopener">这篇论文</a>过程中做的笔记，以及一些自己的思考。</p>
+<a id="more"></a>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Spark是由当时计算框架无法高效处理的两个问题所驱动设计：迭代算法和交互式数据挖掘工具。</p>
+<p>相比于很有名的MapReduce，Spark有如下优势：</p>
+<ol>
+<li>由于计算过程会尽可能的利用内存，性能上会有大大提升，即使在内存放不下数据的情况下也至少不会比MapReduce慢。</li>
+<li>对于MapReduce，只能通过将数据写入一个外部可靠存储系统来在两个MapReduce任务之间重用数据，只会造成巨大的的I/O消耗。而Spark能够让程序员控制将数据在内存中缓存（或者写入存储系统）来在任务间共享，避免了冗余I/O消耗。</li>
+<li>Spark能够更高效表达更多的计算模式，换句话说是Spark能解决的问题是MapReduce能处理的问题的超集。</li>
+<li>Spark对计算过程提供了（可控的）容错性，能够通过缓存中间结果避免任务失效时从头重算整个计算过程，而MapReduce则往往需要更多计算和IO来进行恢复。</li>
+</ol>
+<p>Spark使用Resilient Distributed Datasets（RDDs）来抽象内存中的是数据（目前已经转向DataFrame）实现以上特性。</p>
+<p>和其他分布式全局共享内存、key-value存储，数据库等应用提供的细粒度的操作相比，RDDs提供的是更粗粒度的操作（transformation），比如map、fileter和join等，这些操作会同时对大量数据应用相同的操作。这使得Spark能够通过写log的方式只将这些操作（而非像上述系统需要在log中记录数据）保存下来，以此构建一个操作序列来高效的提供容错性。当计算过程中一个RDD丢失时，只需要根据log重放该RDD对应的操作历史即可重新得到。当然Spark的默认前提是输入是来自于可靠高容错的存储服务比如HDFS。</p>
+<h1 id="Resilient-Distributed-Datasets-RDDs"><a href="#Resilient-Distributed-Datasets-RDDs" class="headerlink" title="Resilient Distributed Datasets (RDDs)"></a>Resilient Distributed Datasets (RDDs)</h1><p>RDD是一个只读的，分片的数据集合，只能通过对：</p>
+<ol>
+<li>可靠存储服务</li>
+<li>或者，其他RDD</li>
+</ol>
+<p>进行一些确定操作而得到。</p>
+<h1 id="Spark-API"><a href="#Spark-API" class="headerlink" title="Spark API"></a>Spark API</h1><p>这些返回值为RDD的操作被称为转换（transformation），转换被调用时，并不是立即执行的，而是仅仅在操作序列中log一条。</p>
+<p>积累的转换只有每次在遇到action的时候才会一起执行，action是一些应用于RDD的操作，但是返回值确实一个数值或者一些导出到存储系统的数据。</p>
+<p>正是因为转换的这种惰性执行策略，使得Spark能够对操作序列进行分析和优化，比如可以让部分操作流水线执行，这样后面的操作不用等待前面操作完全结束再开始。</p>
+<p><img src="Untitled.png" alt="Spark%200f4f442d718e442fb1fef8c271fb6c43/Untitled.png"></p>
+<p>上图是Spark提供的接口：</p>
+<ul>
+<li><p>Transformation：</p>
+<ul>
+<li><code>map</code>：对RDD每个数据执行指定函数，该函数的返回值替换原来数据。</li>
+<li><code>filter</code>：对所有数据对执行指定函数，仅保留返回true的RDD子集。</li>
+<li><code>flatMap</code>：map的函数是返回一个数据，但是<code>flatMap</code>的函数可以返回多个数据，这使得RDD内条目的数量往往会变多。</li>
+<li><code>sample</code>：类似于map，但是会随机从父数据集中得到一个子集。虽然是随机操作，但是RDD会存储生成随机数用的种子，这使得未来恢复数据再次执行时会得到相同的输出。</li>
+<li><code>groupByKey</code>：只能使用于kv数据对类型的RDD。将RDD中的数据对根据相同的key进行整合，得到的RDD的key将是无重复的。</li>
+<li><code>reduceByKey</code>：只能使用于kv数据对类型的RDD。遍历RDD中key相同的数据对，指定的函数接收两个参数，第一个参数为上一次执行的返回值，第二个参数为本轮执行的数据对的value。</li>
+<li><code>union</code>：将两个RDD合并为一个RDD。注意并不去重。</li>
+<li><code>join</code>：类似mysql中的left join，将两个RDD根据某个关联函数合并。</li>
+<li><code>cogroup</code>：将两个RDD各自groupByKey之后的结果再进行一次groupByKey。</li>
+<li><code>crossProduct</code>：RDD的笛卡尔积</li>
+<li><code>mapValues</code>：只能使用于kv数据对类型的RDD。等价于对所有的值的集合使用map。</li>
+<li><code>sort</code>：略</li>
+<li><code>partitionBy</code>：根据用户指定函数进行数据分片。默认使用hash。</li>
+</ul>
+</li>
+<li><p>Actions：</p>
+<ul>
+<li><code>count</code>：返回元素数量。</li>
+<li><code>collect</code>：返回RDD对应的元素。</li>
+<li><code>reduce</code>：遍历RDD中所有数据，指定的函数接收两个参数，第一个参数为上一次执行的返回值，第二个参数为本轮执行的数据对的value。</li>
+<li><code>lookup</code>：返回RDD中某个key对应的数据。</li>
+<li><code>save</code>：将RDD输出到存储系统的指定路径。</li>
+</ul>
+<h2 id="表示RDD"><a href="#表示RDD" class="headerlink" title="表示RDD"></a>表示RDD</h2><p>RDD的表示方式需要能够支持将各种操作进行任意组合，并且还需要能够表示出RDD之间的依赖关系。</p>
+<p>Spark使用如下信息来表示一个RDD：</p>
+<ul>
+<li>一组组成当前RDD的分片数据</li>
+<li>当前RDD对父RDD的一组依赖。</li>
+<li>一个基于父RDD来计算得到当前RDD的函数。</li>
+<li>关于分片模式的元数据。</li>
+<li>关于分片存放信息的元数据。</li>
+</ul>
+<p><img src="Untitled 1.png" alt="Spark%200f4f442d718e442fb1fef8c271fb6c43/Untitled%201.png"></p>
+<p>比如，RDD会将HDFS上一个文件的每个文件块作为一个分片，并且记录各个文件块的位置。同时如果对该RDD执行map转换的话，那么新生成的RDD会是相同的分区，且其分区的信息是本地父分区map执行的结果。</p>
+<p>Spark将RDD的依赖分为两种：</p>
+<ul>
+<li><code>narrow dependency</code>：父RDD的每个分片仅仅被最多一个子RDD的分片使用。</li>
+<li><code>wide dependency</code>：父RDD的部分分片可能被多个子RDD的分片所依赖。</li>
+</ul>
+<p>例如，<code>map</code>将导致一个<code>narrow dependency</code>，而<code>join</code>将导致一个<code>wide dependency</code>（除非父RDD都事先经过hash-partition）。</p>
+<p>其实本质上，这个依赖描述的就是一个操作是否会导致父分片在网络上传输进行数据重组（shuffle）。<code>wide dependency</code>需要进行shuffle，而<code>narrow dependency</code>则是往往在本地执行。</p>
+<p>之所以RDD要分类依赖关系是因为以下两个原因：</p>
+<ul>
+<li><code>narrow dependency</code>允许在本地对所有的父分片进行流水线执行。比如一个先执行map再执行filter的操作序列，可以在map计算完一个元素后直接将结果传给filter，而不用等待map任务完全结束后再开始filter任务。而与之相反，<code>wide dependency</code>则需要所有的父分片都准备就绪以后，在节点间进行数据重组。</li>
+<li>当一个节点失效后，<code>narrow dependency</code>可以更高效的恢复。因为对于<code>narrow dependency</code>，只需要依赖更少数量的父分片就可以重新计算得出。而对于<code>wide dependency</code>则可能需要依赖整个父RDD。这种差异在考虑到内存管理中的驱逐（evict）时会被放大，因为每个节点上内存资源是有限的，极端情况下，丢失的分片所有依赖的父分片都已经被驱逐出内存，那么<code>wide dependency</code>可能会需要将所有父分片全部从源头计算一遍（可以利用<code>persist</code>缓解）。</li>
+</ul>
+<h2 id="RDD-vs-DSM"><a href="#RDD-vs-DSM" class="headerlink" title="RDD vs DSM"></a>RDD vs DSM</h2><p>在DSM（Distributed Shared Memory）系统中，应用允许在一个全局的地址空间内读写任意位置。</p>
+<p>RDD和DSM的主要区别在于：</p>
+<ul>
+<li>RDD只允许通过粗粒度的转换操作来创建。而DSM则允许随机细粒度读写。RDD的这种限制使得RDD在失效恢复时更加高效，因为他仅仅需要操作序列历史就可以进行恢复，而DSM为了容错一般会提供检查点机制（checkpoint），这种机制会消耗大量的存储空间。另外，RDD只需要重计算部分分区，且可以通过将各个分片恢复任务分派给不同机器，从而进行并行恢复。</li>
+<li>因为所有的RDD一旦创建就不可再更改，所以对于那些计算较慢的节点，可以同时启用备用任务且不需要考虑并发控制的问题。而DSM如果要同时执行备用任务的话，会有并发控制的问题，因为他们修改的是同一块内存空间。</li>
+<li>RDD的粗粒度操作能够让调度器基于数据局部性来调用任务，以此来提升性能。</li>
+<li>RDD在系统没有足够内存的时候，能够自动降级，将数据存储到磁盘上，此时性能将和MapReduce的之类计算系统类似。</li>
+</ul>
+<p><img src="Untitled 2.png" alt="Spark%200f4f442d718e442fb1fef8c271fb6c43/Untitled%202.png"></p>
+<h2 id="例子：pageRank"><a href="#例子：pageRank" class="headerlink" title="例子：pageRank"></a>例子：pageRank</h2><p>驱动（driver）代码。</p>
+<p><img src="Untitled 3.png" alt="Spark%200f4f442d718e442fb1fef8c271fb6c43/Untitled%203.png"></p>
+<p>RDD操作序列（lineage）图。</p>
+<p><img src="Untitled 4.png" alt="Spark%200f4f442d718e442fb1fef8c271fb6c43/Untitled%204.png"></p>
+<p>可以看到Spark会将循环迭代操作变成一个很长很长的操作系列图。</p>
+<p>为了避免发生失效时，因为过长的操作系列图而导致长时间的重计算，Spark提供了一个接口<code>persist</code>，能够让用户选择将一个RDD存储到存储服务中，比如这个例子中，如果迭代次数提高可以考虑将ranks每隔几轮迭代就<code>persist</code>一次。</p>
+<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><p>论文作者通过大概14000行Scala代码实现的Spark。Spark能够使用Hadoop现有的数据插件API从任何Hadoop输入源中读取数据（比如HDFS，HBase等）。</p>
+<h2 id="任务调度"><a href="#任务调度" class="headerlink" title="任务调度"></a>任务调度</h2><p>每当用户调用一个action时，调度器会通过该RDD的操作序列图构建一个有向无环图（DAG），图中的节点为一个个需要执行的阶段（stage）。</p>
+<p><img src="Untitled 5.png" alt="Spark%200f4f442d718e442fb1fef8c271fb6c43/Untitled%205.png"></p>
+<p>每个执行阶段会包含尽可能多的可以流水线执行的操作，即互相是<code>narrow dependency</code>的分片计算任务。每个阶段的边界为<code>wide dependency</code>导致的数据重组操作（shuffle）。</p>
+<p>调度器会根据数据的局部性来进行分配任务。如果一个计算任务需要的分片已经在某个节点的内存中了，那么就将任务分配给该节点。另外，如果一个任务显式声明了期望的执行位置（比如，一个HDFS文件），那么就将任务分配给指定节点。</p>
+<p>对于<code>wide dependency</code>，Spark目前会在持有父分区的节点上将中间结果持久化，以此来简化失效恢复过程。</p>
+<h2 id="解释器集成"><a href="#解释器集成" class="headerlink" title="解释器集成"></a>解释器集成</h2><p>Spark基于Sacala的交互式shell也提供了一个交互式的shell。</p>
+<p>Scala解释器一般来说对用户输入的每行输入都会创建一个类并编译加载进JVM，并且执行该类的函数。这个生成的类包含了一个单例的对象，该对象包含了该行中所包含的变量或者函数。</p>
+<p>比如，用户输入了如下两行代码：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> x = <span class="number">5</span></span><br><span class="line">println(x)</span><br></pre></td></tr></table></figure>
+<p>第一行执行结束之后，会生成一个Line1的类，并且导致第二行编译成<code>println(Line1.getInstance().x)</code>。</p>
+<p>Spark修改Scala的解释器的以下两点：</p>
+<ol>
+<li>Class shipping：在用户输入一行代码之后，将生成的类的字节码通过HTTP发送给worker。</li>
+<li>Modified code generation：一般来说每行代码创建的单例对象是通过调用其类的静态方法来访问的。这使得当未来序列化一个对象时该引用了之前的变量，java不会把将对应的实例也一起发送过去。所以Spark将其修改了代码的生成，将其变为了直接访问对象实例，而非通过静态方法来间接访问。</li>
+</ol>
+<p><img src="Untitled 6.png" alt="Spark%200f4f442d718e442fb1fef8c271fb6c43/Untitled%206.png"></p>
+<h2 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h2><p>Spark提供了三种选项来存储需要持久存在的RDD：</p>
+<ol>
+<li>以java对象的方式存在内存。</li>
+<li>以序列化后的java对象的方式存在内存。</li>
+<li>存在磁盘上。</li>
+</ol>
+<p>因为JVM能够直接访问，所以第一种方式性能最快，第二种则更加节省内存，第三种则在数据量大到内存放不下的时候可以使用，避免重新计算花费太大的代价。</p>
+<p>为了管理有限的内存资源，Spark采用LRU策略来管理内存。</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="kaiktang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="kaiktang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag"># 读书笔记</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/05/09/FaRM%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/" rel="prev" title="FaRM论文阅读笔记">
+      <i class="fa fa-chevron-left"></i> FaRM论文阅读笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/05/15/Scaling-Memcache-at-Facebook%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/" rel="next" title="Scaling Memcache at Facebook论文阅读笔记">
+      Scaling Memcache at Facebook论文阅读笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Resilient-Distributed-Datasets-RDDs"><span class="nav-number">2.</span> <span class="nav-text">Resilient Distributed Datasets (RDDs)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spark-API"><span class="nav-number">3.</span> <span class="nav-text">Spark API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8%E7%A4%BARDD"><span class="nav-number">3.1.</span> <span class="nav-text">表示RDD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RDD-vs-DSM"><span class="nav-number">3.2.</span> <span class="nav-text">RDD vs DSM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90%EF%BC%9ApageRank"><span class="nav-number">3.3.</span> <span class="nav-text">例子：pageRank</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6"><span class="nav-number">4.1.</span> <span class="nav-text">任务调度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E9%87%8A%E5%99%A8%E9%9B%86%E6%88%90"><span class="nav-number">4.2.</span> <span class="nav-text">解释器集成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">4.3.</span> <span class="nav-text">内存管理</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaiktang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaiktang</p>
+  <div class="site-description" itemprop="description">学而后知不足</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:tomkklalala@qq.com" title="E-Mail → mailto:tomkklalala@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaiktang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://kaiktang.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://kaiktang.github.io/2020/05/11/Spark%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/";
+    this.page.identifier = "2020/05/11/Spark论文阅读笔记/";
+    this.page.title = "Spark论文阅读笔记";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://kaiktang.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

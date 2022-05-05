@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaiktang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":{"disqus":{"text":"Load Disqus","order":-1}},"activeClass":"disqus"},"algolia":{"appID":"FBQ33HXA0Q","apiKey":"5a256d1a0d5075a6a17b29fbae8cdbdc","indexName":"blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="学习protobuf简介 ProtoBuf： 是一套完整的 IDL（接口描述语言），出自Google，基于 C++ 进行的实现，开发人员可以根据 ProtoBuf 的语言规范生成多种编程语言（Golang、Python、Java 等）的接口代码，本篇只讲述 Golang 的基础操作。据说 ProtoBuf 所生成的二进制文件在存储效率上比 XML 高 3~10 倍，并且处理性能高 1~2 个数量级">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习protobuf">
+<meta property="og:url" content="http://kaiktang.github.io/2018/05/23/%E5%AD%A6%E4%B9%A0protobuf/index.html">
+<meta property="og:site_name" content="kaiktang&#39;s blogs">
+<meta property="og:description" content="学习protobuf简介 ProtoBuf： 是一套完整的 IDL（接口描述语言），出自Google，基于 C++ 进行的实现，开发人员可以根据 ProtoBuf 的语言规范生成多种编程语言（Golang、Python、Java 等）的接口代码，本篇只讲述 Golang 的基础操作。据说 ProtoBuf 所生成的二进制文件在存储效率上比 XML 高 3~10 倍，并且处理性能高 1~2 个数量级">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-05-23T13:52:15.000Z">
+<meta property="article:modified_time" content="2019-01-13T13:59:11.000Z">
+<meta property="article:author" content="kaiktang">
+<meta property="article:tag" content="go">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://kaiktang.github.io/2018/05/23/%E5%AD%A6%E4%B9%A0protobuf/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>学习protobuf | kaiktang's blogs</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kaiktang's blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://kaiktang.github.io/2018/05/23/%E5%AD%A6%E4%B9%A0protobuf/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaiktang">
+      <meta itemprop="description" content="学而后知不足">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kaiktang's blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          学习protobuf
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-05-23 21:52:15" itemprop="dateCreated datePublished" datetime="2018-05-23T21:52:15+08:00">2018-05-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-01-13 21:59:11" itemprop="dateModified" datetime="2019-01-13T21:59:11+08:00">2019-01-13</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2018/05/23/%E5%AD%A6%E4%B9%A0protobuf/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/05/23/学习protobuf/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="学习protobuf"><a href="#学习protobuf" class="headerlink" title="学习protobuf"></a>学习protobuf</h1><h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><blockquote>
+<p><strong>ProtoBuf：</strong> 是一套完整的 IDL（接口描述语言），出自Google，基于 C++ 进行的实现，开发人员可以根据 ProtoBuf 的语言规范生成多种编程语言（Golang、Python、Java 等）的接口代码，本篇只讲述 Golang 的基础操作。据说 ProtoBuf 所生成的二进制文件在存储效率上比 XML 高 3~10 倍，并且处理性能高 1~2 个数量级，这也是选择 ProtoBuf 作为序列化方案的一个重要因素之一。</p>
+<p><a href="https://developers.google.com/protocol-buffers/docs/javatutorial" target="_blank" rel="noopener">https://developers.google.com/protocol-buffers/docs/javatutorial</a></p>
+</blockquote>
+<p>简单来说使用protobuf，可以将代码序列化为较小的二进制文件，且处理效率高，适合网络传输之类的操作。</p>
+<h2 id="Java版本"><a href="#Java版本" class="headerlink" title="Java版本"></a>Java版本</h2><h3 id="定义语法"><a href="#定义语法" class="headerlink" title="定义语法"></a>定义语法</h3><blockquote>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">&gt; syntax = &quot;proto2&quot;;</span><br><span class="line">&gt; </span><br><span class="line">&gt; package tutorial;</span><br><span class="line">&gt; </span><br><span class="line">&gt; option java_package = &quot;com.example.tutorial&quot;;</span><br><span class="line">&gt; option java_outer_classname = &quot;AddressBookProtos&quot;;</span><br><span class="line">&gt; </span><br><span class="line">&gt; message Person &#123;</span><br><span class="line">&gt;   required string name = 1;</span><br><span class="line">&gt;   required int32 id = 2;</span><br><span class="line">&gt;   optional string email = 3;</span><br><span class="line">&gt; </span><br><span class="line">&gt;   enum PhoneType &#123;</span><br><span class="line">&gt;     MOBILE = 0;</span><br><span class="line">&gt;     HOME = 1;</span><br><span class="line">&gt;     WORK = 2;</span><br><span class="line">&gt;   &#125;</span><br><span class="line">&gt; </span><br><span class="line">&gt;   message PhoneNumber &#123;</span><br><span class="line">&gt;     required string number = 1;</span><br><span class="line">&gt;     optional PhoneType type = 2 [default = HOME];</span><br><span class="line">&gt;   &#125;</span><br><span class="line">&gt; </span><br><span class="line">&gt;   repeated PhoneNumber phones = 4;</span><br><span class="line">&gt; &#125;</span><br><span class="line">&gt; </span><br><span class="line">&gt; message AddressBook &#123;</span><br><span class="line">&gt;   repeated Person people = 1;</span><br><span class="line">&gt; &#125;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ul>
+<li><code>package</code>用来防止命名冲突。</li>
+<li><code>java_package</code>用来指定生成的类所在的包，如果不指定，那么将会使用<code>package</code>字段指定的。</li>
+<li><code>java_outer_classname</code>用来定义包含本文件中所有类的类名。如果不指定，那么会使用该文件名转换为驼峰形式作为其名称，例如”my_proto.proto”将会被转换成“MyProto”。</li>
+<li>基本常见类型都有包含，如<code>bool</code>，<code>int32</code>，<code>float</code>，<code>double</code>，<code>string</code>，支持嵌套结构体。如在<code>Person</code>里面定义了<code>PhoneType</code>，意味着<code>PhoneType</code>只能是MOBILE，HOME，WORK中的其中一个。</li>
+<li>像<code>=1</code>，<code>=2</code>这样的标记，代表了该字段在二进制编码中使用的唯一标记。标记从<code>1-15</code>相比于更高的数字使用了更少的字节去编码。所以作为一种优化，你可以将它们使用在那些经常被使用的或者重复的元素，而将16或者更高的数字使用在不常用的可选元素。</li>
+<li>每个字段必须要被以下几个选项修饰：<ul>
+<li><code>required</code>：该字段必须提供，否则该message将被视为“未初始化”。而构建一个“未初始化”状态的message将会导致抛出<code>RuntimeException</code>。解析一个“未初始化”的message将会抛出一个<code>IOException</code>。除此之外必填字段和可选字段表现一致。</li>
+<li><code>optional</code>：该字段非必须。如果一个可选字段没有被设置，那么一个默认值将被使用。对于简单类型，你可以自定义默认值，正如例子中的“type”字段。如果没有自定义，那么系统默认值将被使用：对于数值类型将使用0，字符串将使用空字符串，布尔值使用false。对于嵌入的message，默认值将会是默认实例，即所有字段都没有设置。</li>
+<li><code>repeated</code>：表示该字段将重复任意次数（包括0）。重复数值的顺序将会在protocol buffer中保存。可以类比动态长度的数组。</li>
+</ul>
+</li>
+<li>使用<code>require</code>的话，将来想要修改可能造成兼容性问题。</li>
+</ul>
+<h2 id="API"><a href="#API" class="headerlink" title="API"></a>API</h2><p>每一个在<code>AddressBookProtos</code>类中，每个类都有它自己的<code>Builder</code>类，它是用来创建这个类的实例的。message和builder的每个字段都有自动生成的访问方法，不同的是message只有getter而builder有getter和setter。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// required string name = 1;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasName</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// required int32 id = 2;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasId</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getId</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// optional string email = 3;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasEmail</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">getEmail</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// repeated .tutorial.Person.PhoneNumber phones = 4;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;PhoneNumber&gt; <span class="title">getPhonesList</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPhonesCount</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> PhoneNumber <span class="title">getPhones</span><span class="params">(<span class="keyword">int</span> index)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>与此同时，<code>Person.Builder</code>有相同的getter加上另外的setter</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// required string name = 1;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasName</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">public</span> java.lang.<span class="function">String <span class="title">getName</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">setName</span><span class="params">(String value)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">clearName</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// required int32 id = 2;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasId</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getId</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">setId</span><span class="params">(<span class="keyword">int</span> value)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">clearId</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// optional string email = 3;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasEmail</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">getEmail</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">setEmail</span><span class="params">(String value)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">clearEmail</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// repeated .tutorial.Person.PhoneNumber phones = 4;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;PhoneNumber&gt; <span class="title">getPhonesList</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPhonesCount</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> PhoneNumber <span class="title">getPhones</span><span class="params">(<span class="keyword">int</span> index)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">setPhones</span><span class="params">(<span class="keyword">int</span> index, PhoneNumber value)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">addPhones</span><span class="params">(PhoneNumber value)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">addAllPhones</span><span class="params">(Iterable&lt;PhoneNumber&gt; value)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">clearPhones</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+<p>可以看到，对于那种单个的字段，都有<code>has</code>之类的方法，该方法当该字段而被设置过时返回true。每个字段都有一个<code>clear</code>方法，用来将该字段设置为其空状态。</p>
+<p>重复字段具有<code>count</code>方法。</p>
+<h3 id="Builder-VS-Messages"><a href="#Builder-VS-Messages" class="headerlink" title="Builder VS Messages"></a>Builder VS Messages</h3><p>被protocol buffer编译器创建的message都是不可修改的。为了创建一个message，首先需要构建一个builder，然后设置对应的值，然后调用<code>build()</code>方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Person john =</span><br><span class="line">  Person.newBuilder()</span><br><span class="line">    .setId(<span class="number">1234</span>)</span><br><span class="line">    .setName(<span class="string">"John Doe"</span>)</span><br><span class="line">    .setEmail(<span class="string">"jdoe@example.com"</span>)</span><br><span class="line">    .addPhones(</span><br><span class="line">      Person.PhoneNumber.newBuilder()</span><br><span class="line">        .setNumber(<span class="string">"555-4321"</span>)</span><br><span class="line">        .setType(Person.PhoneType.HOME))</span><br><span class="line">    .build();</span><br></pre></td></tr></table></figure>
+<h3 id="标准message方法"><a href="#标准message方法" class="headerlink" title="标准message方法"></a>标准message方法</h3><p>每个message和Builder都包含一个一系列的方法让你检查或者控制整个message：</p>
+<ol>
+<li><code>isInitialized()</code>：是否所有的必须字段都被设置了。</li>
+<li><code>toString()</code>：输出可读的字符串。</li>
+<li><code>mergeFrom(Message other)</code>：（仅限builder）该方法会将other变量合并到该message中，覆盖单个变量，合并复合字段以及连接重复字段。</li>
+<li><code>clear()</code>：(仅限builder)清空。</li>
+</ol>
+<h3 id="解析和序列化"><a href="#解析和序列化" class="headerlink" title="解析和序列化"></a>解析和序列化</h3><p>每个protocol buffer类都有读写指定类型二进制的方法。</p>
+<ul>
+<li><code>byte[] toByteArray()</code>：序列化对象为原来的字节数组。</li>
+<li><code>static Person parseFrom(byte[] data)</code>：将一个message从二进制解析出来。</li>
+<li><code>void writeTo(OutputStream output)</code>：序列化message并且将它写入一个<code>OutputStream</code>。</li>
+<li><code>static Person parseFrom(InputStream input)</code>：从一个<code>InputStream</code>读取和解析一个message。</li>
+</ul>
+<blockquote>
+<p>注意：如果想要增加更丰富的功能，最好的方式是将自动生成的类包裹进一个应用程序特定的类。</p>
+</blockquote>
+<h3 id="写一个message"><a href="#写一个message" class="headerlink" title="写一个message"></a>写一个message</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.example.tutorial.AddressBookProtos.AddressBook;</span><br><span class="line"><span class="keyword">import</span> com.example.tutorial.AddressBookProtos.Person;</span><br><span class="line"><span class="keyword">import</span> java.io.BufferedReader;</span><br><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.FileNotFoundException;</span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStreamReader;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintStream;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AddPerson</span> </span>&#123;</span><br><span class="line">  <span class="comment">// This function fills in a Person message based on user input.</span></span><br><span class="line">  <span class="function"><span class="keyword">static</span> Person <span class="title">PromptForAddress</span><span class="params">(BufferedReader stdin,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 PrintStream stdout)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    Person.Builder person = Person.newBuilder();</span><br><span class="line"></span><br><span class="line">    stdout.print(<span class="string">"Enter person ID: "</span>);</span><br><span class="line">    person.setId(Integer.valueOf(stdin.readLine()));</span><br><span class="line"></span><br><span class="line">    stdout.print(<span class="string">"Enter name: "</span>);</span><br><span class="line">    person.setName(stdin.readLine());</span><br><span class="line"></span><br><span class="line">    stdout.print(<span class="string">"Enter email address (blank for none): "</span>);</span><br><span class="line">    String email = stdin.readLine();</span><br><span class="line">    <span class="keyword">if</span> (email.length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      person.setEmail(email);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">      stdout.print(<span class="string">"Enter a phone number (or leave blank to finish): "</span>);</span><br><span class="line">      String number = stdin.readLine();</span><br><span class="line">      <span class="keyword">if</span> (number.length() == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      Person.PhoneNumber.Builder phoneNumber =</span><br><span class="line">        Person.PhoneNumber.newBuilder().setNumber(number);</span><br><span class="line"></span><br><span class="line">      stdout.print(<span class="string">"Is this a mobile, home, or work phone? "</span>);</span><br><span class="line">      String type = stdin.readLine();</span><br><span class="line">      <span class="keyword">if</span> (type.equals(<span class="string">"mobile"</span>)) &#123;</span><br><span class="line">        phoneNumber.setType(Person.PhoneType.MOBILE);</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type.equals(<span class="string">"home"</span>)) &#123;</span><br><span class="line">        phoneNumber.setType(Person.PhoneType.HOME);</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type.equals(<span class="string">"work"</span>)) &#123;</span><br><span class="line">        phoneNumber.setType(Person.PhoneType.WORK);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        stdout.println(<span class="string">"Unknown phone type.  Using default."</span>);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      person.addPhones(phoneNumber);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> person.build();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Main function:  Reads the entire address book from a file,</span></span><br><span class="line">  <span class="comment">//   adds one person based on user input, then writes it back out to the same</span></span><br><span class="line">  <span class="comment">//   file.</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (args.length != <span class="number">1</span>) &#123;</span><br><span class="line">      System.err.println(<span class="string">"Usage:  AddPerson ADDRESS_BOOK_FILE"</span>);</span><br><span class="line">      System.exit(-<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    AddressBook.Builder addressBook = AddressBook.newBuilder();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Read the existing address book.</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      addressBook.mergeFrom(<span class="keyword">new</span> FileInputStream(args[<span class="number">0</span>]));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">      System.out.println(args[<span class="number">0</span>] + <span class="string">": File not found.  Creating a new file."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add an address.</span></span><br><span class="line">    addressBook.addPeople(</span><br><span class="line">      PromptForAddress(<span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(System.in)),</span><br><span class="line">                       System.out));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Write the new address book back to disk.</span></span><br><span class="line">    FileOutputStream output = <span class="keyword">new</span> FileOutputStream(args[<span class="number">0</span>]);</span><br><span class="line">    addressBook.build().writeTo(output);</span><br><span class="line">    output.close();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="读取一个message"><a href="#读取一个message" class="headerlink" title="读取一个message"></a>读取一个message</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.example.tutorial.AddressBookProtos.AddressBook;</span><br><span class="line"><span class="keyword">import</span> com.example.tutorial.AddressBookProtos.Person;</span><br><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintStream;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ListPeople</span> </span>&#123;</span><br><span class="line">  <span class="comment">// Iterates though all people in the AddressBook and prints info about them.</span></span><br><span class="line">  <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Print</span><span class="params">(AddressBook addressBook)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (Person person: addressBook.getPeopleList()) &#123;</span><br><span class="line">      System.out.println(<span class="string">"Person ID: "</span> + person.getId());</span><br><span class="line">      System.out.println(<span class="string">"  Name: "</span> + person.getName());</span><br><span class="line">      <span class="keyword">if</span> (person.hasEmail()) &#123;</span><br><span class="line">        System.out.println(<span class="string">"  E-mail address: "</span> + person.getEmail());</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">for</span> (Person.PhoneNumber phoneNumber : person.getPhonesList()) &#123;</span><br><span class="line">        <span class="keyword">switch</span> (phoneNumber.getType()) &#123;</span><br><span class="line">          <span class="keyword">case</span> MOBILE:</span><br><span class="line">            System.out.print(<span class="string">"  Mobile phone #: "</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">          <span class="keyword">case</span> HOME:</span><br><span class="line">            System.out.print(<span class="string">"  Home phone #: "</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">          <span class="keyword">case</span> WORK:</span><br><span class="line">            System.out.print(<span class="string">"  Work phone #: "</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(phoneNumber.getNumber());</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Main function:  Reads the entire address book from a file and prints all</span></span><br><span class="line">  <span class="comment">//   the information inside.</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (args.length != <span class="number">1</span>) &#123;</span><br><span class="line">      System.err.println(<span class="string">"Usage:  ListPeople ADDRESS_BOOK_FILE"</span>);</span><br><span class="line">      System.exit(-<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Read the existing address book.</span></span><br><span class="line">    AddressBook addressBook =</span><br><span class="line">      AddressBook.parseFrom(<span class="keyword">new</span> FileInputStream(args[<span class="number">0</span>]));</span><br><span class="line"></span><br><span class="line">    Print(addressBook);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="拓展protocol-buffer"><a href="#拓展protocol-buffer" class="headerlink" title="拓展protocol buffer"></a>拓展protocol buffer</h3><p>迟早当你想要拓展protocol buffer的定义的时候，如果你想要你的新的buffers向后兼容，然后你的老的buffers向前兼容，那么你需要遵循如下几个规则：</p>
+<ul>
+<li>你不能修改任何已经存在的字段的tag number</li>
+<li>不能删除和增加任何必须字段</li>
+<li>可以删除可选或者重复字段</li>
+<li>你可以新增可选或者重复字段，但是你必须使用新的tag number（指从未被用过的数字，即使对于被删除的字段）</li>
+</ul>
+<p>如果你遵循了这些规则，老代码将会能够读取新的消息并且忽略新字段。对于老代码，那些被删除的可选字段将会被设置为他们的默认值，而那些重复字段将会变为空。新的代码将会透明的读取老message。但是，记住，新增的可选字段将不会出现在老的message中，所以你将需要使用<code>hasXXX</code>来判断他们是否被设置，或者在.proto文件中加上一个合理的[default = value]。如果你新增了一个重复字段，你的新代码将不能分辨它是因为新代码没有设置导致的，还是因为老代码中没有这个字段，因为它并没有<code>hasXXX</code>方法。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="kaiktang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="kaiktang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/go/" rel="tag"># go</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/04/28/EVM%E5%AD%A6%E4%B9%A0/" rel="prev" title="EVM学习">
+      <i class="fa fa-chevron-left"></i> EVM学习
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/05/26/%E5%AD%A6%E4%B9%A0progit/" rel="next" title="学习progit">
+      学习progit <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0protobuf"><span class="nav-number">1.</span> <span class="nav-text">学习protobuf</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java%E7%89%88%E6%9C%AC"><span class="nav-number">2.1.</span> <span class="nav-text">Java版本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E8%AF%AD%E6%B3%95"><span class="nav-number">2.1.1.</span> <span class="nav-text">定义语法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#API"><span class="nav-number">2.2.</span> <span class="nav-text">API</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Builder-VS-Messages"><span class="nav-number">2.2.1.</span> <span class="nav-text">Builder VS Messages</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E5%87%86message%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.2.</span> <span class="nav-text">标准message方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90%E5%92%8C%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-number">2.2.3.</span> <span class="nav-text">解析和序列化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%99%E4%B8%80%E4%B8%AAmessage"><span class="nav-number">2.2.4.</span> <span class="nav-text">写一个message</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%8F%96%E4%B8%80%E4%B8%AAmessage"><span class="nav-number">2.2.5.</span> <span class="nav-text">读取一个message</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%93%E5%B1%95protocol-buffer"><span class="nav-number">2.2.6.</span> <span class="nav-text">拓展protocol buffer</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaiktang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaiktang</p>
+  <div class="site-description" itemprop="description">学而后知不足</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:tomkklalala@qq.com" title="E-Mail → mailto:tomkklalala@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaiktang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://kaiktang.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://kaiktang.github.io/2018/05/23/%E5%AD%A6%E4%B9%A0protobuf/";
+    this.page.identifier = "2018/05/23/学习protobuf/";
+    this.page.title = "学习protobuf";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://kaiktang.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

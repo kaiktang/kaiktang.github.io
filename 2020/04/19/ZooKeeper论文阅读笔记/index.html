@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaiktang.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":false,"nav":{"disqus":{"text":"Load Disqus","order":-1}},"activeClass":"disqus"},"algolia":{"appID":"FBQ33HXA0Q","apiKey":"5a256d1a0d5075a6a17b29fbae8cdbdc","indexName":"blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文是我阅读这篇论文过程中的笔记，以及一些自己的思考。 之前的Raft文章中，介绍了一个读写操作都是linearizable的系统。这类系统能够让集群提供的服务在用户看来仿佛在和单机系统交互。仿佛这种化零为整的效果应该就已经是完美的解决方法没有任何问题？ 但是这样的系统有一个致命的问题是：如果你为集群购置了N台机器，那么理想情况下你应该得到N倍的性能，再不济至少能提升一些性能吧。但是遗憾的是，如果">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ZooKeeper论文阅读笔记">
+<meta property="og:url" content="http://kaiktang.github.io/2020/04/19/ZooKeeper%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="kaiktang&#39;s blogs">
+<meta property="og:description" content="本文是我阅读这篇论文过程中的笔记，以及一些自己的思考。 之前的Raft文章中，介绍了一个读写操作都是linearizable的系统。这类系统能够让集群提供的服务在用户看来仿佛在和单机系统交互。仿佛这种化零为整的效果应该就已经是完美的解决方法没有任何问题？ 但是这样的系统有一个致命的问题是：如果你为集群购置了N台机器，那么理想情况下你应该得到N倍的性能，再不济至少能提升一些性能吧。但是遗憾的是，如果">
+<meta property="og:locale">
+<meta property="og:image" content="http://kaiktang.github.io/2020/04/19/ZooKeeper%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/Untitled.png">
+<meta property="og:image" content="http://kaiktang.github.io/2020/04/19/ZooKeeper%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/Untitled%201.png">
+<meta property="article:published_time" content="2020-04-19T14:17:51.000Z">
+<meta property="article:modified_time" content="2022-02-07T12:08:59.000Z">
+<meta property="article:author" content="kaiktang">
+<meta property="article:tag" content="读书笔记">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://kaiktang.github.io/2020/04/19/ZooKeeper%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/Untitled.png">
+
+<link rel="canonical" href="http://kaiktang.github.io/2020/04/19/ZooKeeper%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>ZooKeeper论文阅读笔记 | kaiktang's blogs</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?8714a47efb513991b4862eafeadb6a3d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kaiktang's blogs</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+      
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://kaiktang.github.io/2020/04/19/ZooKeeper%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaiktang">
+      <meta itemprop="description" content="学而后知不足">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kaiktang's blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ZooKeeper论文阅读笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-19 22:17:51" itemprop="dateCreated datePublished" datetime="2020-04-19T22:17:51+08:00">2020-04-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-07 20:08:59" itemprop="dateModified" datetime="2022-02-07T20:08:59+08:00">2022-02-07</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/04/19/ZooKeeper%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/04/19/ZooKeeper论文阅读笔记/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文是我阅读<a href="https://pdos.csail.mit.edu/6.824/papers/zookeeper.pdf" target="_blank" rel="noopener">这篇论文</a>过程中的笔记，以及一些自己的思考。</p>
+<p>之前的<a href="http://tomkklalala.github.io/2020/04/09/Raft-extended/" target="_blank" rel="noopener">Raft文章</a>中，介绍了一个读写操作都是linearizable的系统。这类系统能够让集群提供的服务在用户看来仿佛在和单机系统交互。仿佛这种化零为整的效果应该就已经是完美的解决方法没有任何问题？</p>
+<p>但是这样的系统有一个致命的问题是：如果你为集群购置了N台机器，那么理想情况下你应该得到N倍的性能，再不济至少能提升一些性能吧。但是遗憾的是，如果回顾Raft中的设定，leader节点处理所有用户请求，负责协作所有follower，是整个系统的瓶颈所在。更神奇的是，如果在一个Raft集群中添加更多的机器，反而会让leader的工作负担更大，让整个系统的性能下降（但是获得了更高的容错性）。</p>
+<p>ZooKeeper就是这样一个系统，它的其中一个特点就是能够在增加服务器数量的同时，大幅度的提升读操作的性能。</p>
+<a id="more"></a>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>对于分布式系统而言，往往有很多关于协作（coordination）相关的不同需求，比如配置管理、成员管理、leader选举、互斥锁等等。但是如果看类似像Raft的算法，其实向外只暴露了一个接受Command并进行广播复制的接口，有些功能Raft内置了（所以难以针对应用需求自定义），但是有更多多样的需求比如像分布式锁这样的服务，Raft对外提供的接口还是太简单了。</p>
+<p>而ZooKeeper是一个通用的协作集群服务能够满足这些多样的协作需求。ZooKeeper是构建于名为<code>Zab</code>的原子广播协议之上的，<code>Zab</code>我们可以大致等效认为它是和Raft一样的基于leader的共识算法。</p>
+<p>为了展示ZooKeeper是如何能够对外提供如此多样的协作服务，我先对比一下使用ZooKeeper和Raft的应用的架构：</p>
+<ul>
+<li>使用Raft的应用：<ol>
+<li>应用程序层</li>
+<li>Raft层（共识层）</li>
+</ol>
+</li>
+<li>使用ZooKeeper的应用：<ol>
+<li>应用程序层</li>
+<li>ZooKeeper服务层</li>
+<li>Zab层（共识层）</li>
+</ol>
+</li>
+</ul>
+<p>如果我们把Zab换成Raft的话，可以看到ZooKeeper其实是在应用程序和最下面的共识服务之间，封装了一个中间层，该层中基于共识算法提供了一些更丰富的基础API给应用程序，然后应用程序基于这些API能够按需实现很多协作相关的功能。</p>
+<p>所以从设计者的角度来看，ZooKeeper究竟应该提供哪些API作为基础API，这些API接口应该如何设计，才是核心问题所在。</p>
+<h1 id="ZooKeeper服务层"><a href="#ZooKeeper服务层" class="headerlink" title="ZooKeeper服务层"></a>ZooKeeper服务层</h1><h2 id="术语"><a href="#术语" class="headerlink" title="术语"></a>术语</h2><p>在这篇论文中，使用客户端（<code>client</code>）来表示使用ZooKeeper服务的应用程序；使用服务器（<code>server</code>）表示运行着ZooKeeper服务（某个服务器上）的进程；使用<code>znode</code>来表示ZooKeeper服务层中的某个数据单元，众多<code>znode</code>通过树形结构进行组织，这种由<code>znode</code>组成的树形结构被称为<code>data tree</code>。客户端和一个服务器建立的通信连接被称为会话（<code>session</code>），客户端通过会话发送请求。</p>
+<h2 id="服务概览"><a href="#服务概览" class="headerlink" title="服务概览"></a>服务概览</h2><p>客户端使用ZooKeeper客户端库来发送请求使用服务，除了能用来使用服务，客户端库还会负责维护客户端和ZooKeeper服务器之间的网络连接。</p>
+<p>在客户端的眼中，ZooKeeper服务器将数据抽象为一个个znode，而且客户端能够通过ZooKeeper API来操作znode。</p>
+<p>因为在ZooKeeper中使用树状结构来组织znode，所以为了引用一个znode使用的是一个类似UNIX文件路径的形式。</p>
+<p><img src="Untitled.png" alt="ZooKeeper/Untitled.png"></p>
+<p>所有的znode都可以存放数据。除了<code>ephemeral znode</code>所有znode都可以有子znode。</p>
+<p>客户端可以创建两种类型的znode：</p>
+<ul>
+<li>Regular：需要客户端显式的删除和创建他们。</li>
+<li>Ephemeral：客户端创建他们后，可以显式的删除他们，也可以在会话失效时，让系统自动进行删除。</li>
+</ul>
+<p>另外作为Regular类型的znode的一种特例，还有一种特殊的sequential文件，这种文件会保证在文件名后追加一个单调递增的计数器，在同一个父节点下创建的sequential文件保证计数器单调递增。</p>
+<p>ZooKeeper实现了一个监听机制（watch）让客户端在无需轮询的情况在某个znode发生变更时收到通知。当客户端发起一个读请求的时候，可以同时设置一个watch标识，该操作会和其他调用一样正常退出，不同的地方在于，服务器会保证在指定路径对应的znode发生变动时给客户端发送一个通知。</p>
+<p>这种监听请求会在触发一次后或者会话终止时移除，所以客户端在收到一次通知时得到的讯息应该是：指定路径的znode至少被修改了一次，对应的数据已经变更。</p>
+<p>从宏观来看，ZooKeeper就像只提供了整体读写接口的文件系统。正是因为这种树状结构使得一个ZooKeeper能够提供应用间数据隔离以及权限访问的功能，以此更好的同时为多个应用提供协作服务。</p>
+<p>虽然看起来像一个文件系统，但是ZooKeeper并不是设计作为一个通用分布式存储服务的，ZooKeeper主要存储的是应用元数据，尤其是那些和协作相关的元数据。</p>
+<h2 id="客户端API"><a href="#客户端API" class="headerlink" title="客户端API"></a>客户端API</h2><p>这里列出了ZooKeeper提供的部分API：</p>
+<ul>
+<li><code>create(path, data, flags)</code>：在指定path创建一个znode，返回创建的znode的名字。flags支持三种类型：regular，ephemeral，sequential。</li>
+<li><code>delete(path, version)</code>：如果path位置的znode的版本号是指定的version的话，就删除它。</li>
+<li><code>exists(path, watch)</code>：返回一个布尔值表示path位置的znode是否存在。watch参数为true的话，会对对应znode注册一个监听器。</li>
+<li><code>getData(path, watch)</code>：返回对应znode的数据内容以及元信息。元信息包含版本信息等。这里的watch参数和<code>exists</code>类似，不同点在于如果对应znode不存在的话，不会设置监听器。</li>
+<li><code>setData(path, data, version)</code>：如果znode为指定版本的话，设置znode内容为data。</li>
+<li><code>getChildren(path, watch)</code>：返回指定znode的所有子znode的名字列表。</li>
+<li><code>sync(path)</code>：等待客户端直接连接的那个服务器将所有的pending的写操作执行完成。path参数目前是没有用的。</li>
+</ul>
+<p>以上所有接口都有同步版本和异步版本。</p>
+<p>在ZooKeeper中没有文件句柄的概念，操作文件需要使用文件的全路径名。这种实现使得服务端不用再维护一个句柄表。</p>
+<p>所有的和修改相关的接口都接受一个version参数，如果znode的实际的version和参数不符，那么操作会失败，并返回unexpected version错误。如果参数中version为-1的话，那么意味着不需要进行version检查。</p>
+<h2 id="操作顺序约束"><a href="#操作顺序约束" class="headerlink" title="操作顺序约束"></a>操作顺序约束</h2><p>ZooKeeper有两个基本的顺序保证：</p>
+<ul>
+<li><strong>Linearizable writes</strong></li>
+<li><strong>FIFO client order</strong></li>
+</ul>
+<p>第一个约束，保证了全局的来自所有客户端的<strong>更新操作</strong>请求都是有序执行的，是符合Linearizability定义的。</p>
+<p>第二个约束，保证了同一个客户端发出的所有读写请求均按序执行。所以这里并不保证不同客户端之间的读写请求之间的顺序，所以读请求会读到过期的数据。</p>
+<p>ZooKeeper的所有的写请求都会被转发给leader进行定序处理，而所有的读请求会被客户端直接相连的那个服务器本地直接处理。</p>
+<p>这里的第二条约束上对读一致性要求上的放松才使得ZooKeeper的读性能能随着服务器数量的上升而增长。因为读请求在服务器本地处理，而所有服务器中只有leader保证一直有最新的数据，所以读请求可能会读到全局过期的数据。</p>
+<p>如果具象一下这个可能的问题，我们假设有两个客户端A，B，在A向ZooKeeper发送一个写操作之后，B在发送一个读请求去读同样的znode，因为第二个约束中没有限制不同客户端之间读写请求的linearizability，所以B的读请求并不能保证读到A的写操作。</p>
+<p>为了解决这个问题，有两个方案：</p>
+<ol>
+<li>在B发送读请求之前先发送一个写请求。根据顺序性约束可以使得客户端B的读请求一定在B的写请求之后执行，而B的写请求一定是在A的写请求之后执行。</li>
+<li><p>在读请求前调用一个sync，直接强制等到所有pending的写操作结束后，再执行读操作。（sync的实现可能就是另一种形式的没有数据的写请求）</p>
+<p>为了更清楚体现这两个约束之间是如何相互影响的，考虑如下场景：</p>
+</li>
+</ol>
+<p>一个包含多个服务器的系统有一个leader和多个worker。当一个leader当选的时候，需要修改很多散落在不同znode的配置参数，并且在其修改成功后通知其他worker进行读取。</p>
+<p>在以上场景下，我们有两个要求：</p>
+<ol>
+<li>当新的leader开始修改配置的时候，我们不希望其他worker去读取使用这些正在被修改的配置信息。</li>
+<li>如果该leader在修改配置的过程中宕机了，我们不希望其他worker去使用这些被部分修改的配置信息。</li>
+</ol>
+<p>如果使用ZooKeeper来解决这个问题，可以当新的leader执行如下伪代码：</p>
+<pre><code>delete(&quot;ready&quot;, version)
+update configuration file1
+update configuration file2
+create(&quot;ready&quot;, data, flags)
+</code></pre><p>而worker使用如下伪代码，这里通过上面两种方法之一保证worker的读请求是在删除ready文件之后执行：</p>
+<pre><code>if !exists(&quot;ready&quot;, true):
+    wait notification
+read configuration file1
+read configuration file2
+</code></pre><p>服务器会保证发送通知和响应读请求是按序执行的，是不可能出现先响应读请求，再发送通知的情况，所以该代码将能够正常完成工作。</p>
+<h2 id="协作样例"><a href="#协作样例" class="headerlink" title="协作样例"></a>协作样例</h2><p>这一节展示了一些基于ZooKeeper API实现的一些功能更加强大的元语。</p>
+<h3 id="配置管理"><a href="#配置管理" class="headerlink" title="配置管理"></a>配置管理</h3><p>假设一个应用集群需要能够在运行过程中动态的修改集群配置。</p>
+<p>最简单的情况下，假设该集群的配置是存放在ZooKeeper中的一个znode中，记为Zc。那么可以让该集群中的所有节点在启动的时候都去watch配置信息Zc，这样只要Zc被更新了，所有节点都会收到通知，各自进行更新配置的操作，之后再各自重新注册watch。</p>
+<h3 id="Rendezvous"><a href="#Rendezvous" class="headerlink" title="Rendezvous"></a>Rendezvous</h3><p>有时候在分布式系统中，可能配置信息是动态生成的，只有在启动只有才能生成配置信息。比如，可能一个系统是由一个master和多个worker组成的，而master的启动是由调度器来负责的，所以worker节点启动的时候并不知道应该和哪个master建立连接。</p>
+<p>解决方案是，先约定一个znode，Zr，将其全路径作为启动参数传给所有节点，当master被启动之后，向Zr中写入它的信息，当worker被启动之后，他们去读取Zr并注册watch。这样即使worker启动的更早，Zr中还没有写入信息，worker也会在之后收到变动通知后进行读取。</p>
+<h3 id="成员管理"><a href="#成员管理" class="headerlink" title="成员管理"></a>成员管理</h3><p>成员管理主要利用的是ephemeral类型的znode的能够和会话同生同死的特性。</p>
+<p>可以将一个znode，Zg，作为启动参数传给集群中的所有节点，用来代表一个集群。每当一个该集群中的节点启动都会在Zg下面创建一个ephemeral类型的znode，当然还需要要求每个ephemeral znode都有一个唯一的名字，可以通过在创建znode时设置sequential flag来辅助得到。</p>
+<p>通过这种设置启动的节点，只需通过列出Zg下的所有znode，就可以得到其集群中所有节点的状态信息。当然如果有监控节点状态的需求的话，可以各自按需注册watch。</p>
+<h3 id="简单互斥锁实现（存疑）"><a href="#简单互斥锁实现（存疑）" class="headerlink" title="简单互斥锁实现（存疑）"></a>简单互斥锁实现（存疑）</h3><p>使用 ZooKeeper的API也可以实现一些同步元语。</p>
+<p>最简单的锁实现是使用“lock 文件”。一个互斥锁对象由一个znode表示。为了获取一个锁，所有客户端尝试去创建一个指定名称的ephemeral类型的znode。如果一个客户端成功的创建了该文件，那么就代表其成功获取到了该锁，而其他没有成功的客户端会注册watch等待对应的锁文件被删除后再次尝试获取。伪代码如下：</p>
+<pre><code>func Aquire(){
+    for{
+            if create(&quot;/l/lock&quot;, EPHEMERAL)
+                    return
+            if exists(&quot;/l/lock&quot;, true)
+                    wait the notification
+    }
+
+}
+</code></pre><p>在看到论文中这一段的时候，我对使用这种分布式锁的场景产生了一个疑问：</p>
+<p>一般来说获取一个互斥锁的意义在于保护一段操作的原子性，但是这种分布式锁真的能够保证吗？如果一个客户端A成功获取到了该互斥锁，然后开始处理一些临界区操作，如果此时在处理到一半客户单A奔溃了呢？对应的锁会自动被释放，下一个获取到该锁的客户端，将会访问到脏数据。</p>
+<p>为了解决这个问题，我觉得，可能让每个获取到锁的节点都先进行文件正确性的验证，然后进行修复或者进行其他的修正性处理。或者说，使用这个锁服务的是类似MapReduce中的worker，每次获取到锁，都将任务从头计算一遍。</p>
+<p>另一个想到的问题是，如果在create执行失败之后，exists执行之前，lock被删除了，那么在注册完监听器之后会直接进行下一轮循环，如果下一轮循环create执行成功了，那么该客户端就会因为自己的create而发送收到了一条通知，又或者这个注册的过程不断循环下去，会不会造成什么问题呢？</p>
+<p>论文中还针对该实现提出了其他的问题：herd effect，羊群效应，也就是说每次一旦一个锁被释放，会唤醒所有在等待的客户端，而最终只会有一个客户端能够成功获取到锁，所以这是不必要的网络消耗。</p>
+<p>为了解决这个羊群效应，可以使用下面锁实现。</p>
+<h3 id="无羊群效应的锁实现"><a href="#无羊群效应的锁实现" class="headerlink" title="无羊群效应的锁实现"></a>无羊群效应的锁实现</h3><p>约定一个znode l，代表该锁。然后将所有想要获取锁的客户端的请求进行排队，进行有序获取。下面是该设计的伪代码实现。</p>
+<pre><code>func Lock(){
+    n = create(l + &quot;/lock-&quot;, EPHEMERAL|SEQUENTIAL)
+    for {
+            C = getChildren(l, false)
+            if n is the lowest znode in C
+                    exit
+            p = znode in C ordered just before n
+            if exists(p, true) 
+                    wait for watch event
+    }
+}
+
+func Unlock(){
+        delete(n)
+}
+</code></pre><p>这里巧妙的利用sequential znode将所有客户端的请求进行了排队。</p>
+<p>为什么说这个解决了羊群效应呢？因为在这个实现中，每个没有等待锁的客户端只关注紧邻的排在前面一位的客户端，只有在前一位客户端对应的znode被删除后，才会被唤醒。</p>
+<p>读到这里的时候，我也有一个疑问，为什么需要循环呢？不是每个客户端只需要等待上一个客户端就好了吗？甚至为什么需要获取所有的节点呢？直接将自己的序号减一得到前一个客户端对应znode的名称不就好了么？但是不是这样的，循环是必要的，因为客户端可能会宕机，可能会放弃获取锁，所以前一个客户端的znode被删除了，并不能保证当前客户端一定能获取到锁。</p>
+<p>这种实现有如下好处：</p>
+<ol>
+<li>没有羊群效应</li>
+<li>无需轮询或者超时机制</li>
+<li>将获取锁的过程可视化，更加利于调试和干预。</li>
+</ol>
+<h3 id="读写锁"><a href="#读写锁" class="headerlink" title="读写锁"></a>读写锁</h3><pre><code>func WriteLock(){
+    n = create(l + &quot;/write-&quot;, EPHEMERAL|SEQUENTIAL)
+    for {
+            C = getChildren(l, false)
+            if n is lowest znode in C
+                    exit
+            p = znode before n  // 需要关心最近的无论write或者read znode
+            if exists(p, true)
+                    wait for event
+    }
+}
+
+func ReadLock(){
+        for {
+                n = create(l + &quot;/read-&quot;, EPHEMERAL|SEQUENTIAL)
+                C = getChildren(l, false)
+                if no write znodes lower than n in C
+                        exit
+                p = write znode just before n // 只关心最近的那个write znode
+                if exists(p, true)
+                        wait for event
+        }
+}
+</code></pre><h3 id="Double-Barrier"><a href="#Double-Barrier" class="headerlink" title="Double Barrier"></a>Double Barrier</h3><p>Double Barrier是一种能够让客户端同步的控制某个任务的开始和结束的协作模式。当barrier中注册客户端的数量超过某个预定阈值之后，所有barrier中注册的客户端都会开始他们的计算，当客户端结束了计算任务后，会自动退出barrier。</p>
+<p>我们使用一个ZooKeeper中的znode来表示一个barrier，称为b。客户端通过在b下创建或删除子znode来进行注册或者退出。</p>
+<p>所有就绪的客户端会监控一个名为ready的znode，一旦该文件被创建了代表计算任务开始。ready znode由打破阈值的那个客户端负责创建。而当所有的子znode都被删除后，控制任务进度的客户端就知道任务已经结束，可以继续推进了。为了高效实现检测整个计算任务的结束，可以通过随机watch一个子znode，当收到其被删除的通知后，再检查是否还有其他的znode没有被删除，如果有再随机选一个，如此循环。</p>
+<h3 id="补充：实现一个简单的累加器"><a href="#补充：实现一个简单的累加器" class="headerlink" title="补充：实现一个简单的累加器"></a>补充：实现一个简单的累加器</h3><p>比如说有个简单的需求，想要每次调用都让某个znode中的值累增1，那么可以这么实现吗？</p>
+<pre><code>func Increment(){
+    x = getData(&quot;counter&quot;, false)
+    setData(x+1, -1)
+}
+</code></pre><p>显然是不行的，因为在这个getData和setData之间可能因为网络延迟已经发生若干个Increment了。这两个操作之间并不是原子性的。</p>
+<p>正确的实现应该是如下：</p>
+<pre><code>func Increment(){
+    for{
+            x, v = getData(&quot;counter&quot;, false)
+            if setData(&quot;counter&quot;, x+1, v)
+                    return
+    }
+}
+</code></pre><p>当然这种实现也会有潜在的羊群效应，可以通过之前的无羊群效应的锁来解决。</p>
+<p>另外如果当前客户端连接的那个服务器被网络分区了，那么该客户端读到的version将永远是过期的，那么该循环可能不用终止，直到网络分区被修复。</p>
+<h1 id="ZooKeeper实现"><a href="#ZooKeeper实现" class="headerlink" title="ZooKeeper实现"></a>ZooKeeper实现</h1><p>ZooKeeper内部通过多副本技术提供了高可用性支持。下面是ZooKeeper内部的组件架构图。</p>
+<p><img src="Untitled 1.png" alt="ZooKeeper/Untitled%201.png"></p>
+<p>当ZooKeeper服务器收到一个请求后，将写请求转发给leader并通过原子广播协议进行提交，如果是读请求，则就在本机处理返回了。</p>
+<p>每个ZooKeeper服务器副本中运来存储data tree的数据库为一个内存数据库。每一个znode默认最多只能存放1MB的数据，当然，这个最大值是可以配置的。</p>
+<p>因为是内存数据库，所以ZooKeeper也是和大多数系统一样使用Write Ahead Log来实现可恢复性，并且为了不让Log占用空间过大，通过周期创建快照来清理空间。</p>
+<p>每一个ZooKeeper都可以服务客户端，但是每个客户端只能严格连接一个服务器来进行提交请求。</p>
+<h2 id="请求处理器Request-Processor"><a href="#请求处理器Request-Processor" class="headerlink" title="请求处理器Request Processor"></a>请求处理器Request Processor</h2><p>因为客户端支持异步发送请求，所以当leader收到一个请求时可能还有很多写请求没有处理完，所以服务器会先预计算应用该写请求后的系统状态。比如客户端发送了一个修改某个version的znode的setData请求，leadre在收到之后会由此生成一个包含了新数据、新版本号以及更新时间戳的setDataTXN。如果未来真正执行的时候，发生了比如版本号不匹配的错误，那么会产生一个errorTXN错误。</p>
+<h2 id="Replicated-Database"><a href="#Replicated-Database" class="headerlink" title="Replicated Database"></a>Replicated Database</h2><p>为了不让log占用太多磁盘空间，并且为了减少重启恢复状态的时间，ZooKeeper会定期的进行快照，并且每次恢复状态的时候只转发从最近一次快照之后的消息。</p>
+<p>ZooKeeper的快照为fuzzy snapshot。因为ZooKeeper在创建快照的过程中并不对锁定当时的状态数据或者说停止服务，ZooKeeper的实现为保证原子性的直接深度优先遍历，所以最终的生成的快照状态可能并不能和数据库历史中的某一时刻相对应。</p>
+<p>但是这并没有问题，因为即使使用这样一份快照，基于它重放快照时刻起后面的全部操作信息，最终还是能够保证恢复到最新状态的。这是因为ZooKeeper中，状态变更只要按照相同的顺序重放，即使重放多次，最终得到的状态都是一样的。</p>
+<p>比如，假设在data tree中有两个节点/foo和/goo，他们存储的内容分别为f1和g1，并且在快照开始时他们的版本号均为1。假设在生成快照期间，会执行以下状态变更：</p>
+<ol>
+<li>[SetDataTXN, /foo, f2, 2]</li>
+<li>[SetDataTXN, /goo, g2, 2]</li>
+<li>[SetDataTXN, /foo, f3, 3]</li>
+</ol>
+<p>格式为：[transactionType, path, value, new-version]</p>
+<p>在执行完这些状态变更后，/foo和/goo应该存储的值分别为f3和g2，版本号分别为3和2。但是生成的fuzzy snapshot可能记录的是f3和g1，该状态并不是一个合法的瞬时状态，但是如果重新按序执行上面的操作一遍，最终得到的还是一致的正确的最新的状态。</p>
+<h2 id="客户-服务端交互"><a href="#客户-服务端交互" class="headerlink" title="客户-服务端交互"></a>客户-服务端交互</h2><p>这一节主要讲的是如何做到前面提到过两个顺序性保证的。</p>
+<p>首先对于第一个全局linearizable的写操作，是因为所有的写操作都会被转发给leader，而leader在执行写操作的时候是一个一个执行的，并不会和其他读或者写操作进行并发，因此这也保证了文件变动通知发送的有序性。另外需要注意的是，监听事件的注册信息和事件的发送都是由和客户端直接相连的那个服务器处理的。</p>
+<p>对于第二个对于每个客户端的所有读写请求之间的顺序性关系，是通过让每个读请求中都加入一个参数：该客户端所见到过的最新的一个zxid。什么是zxid呢，其实论文中也没有具体的讲，我个人的理解是类似Raft中log的index，是一个全局唯一且累增的标识符。每次当客户端发送一个写请求后，服务端会立刻返回（不等待执行）该写请求在请求队列中的zxid，然后客户端会不断记录自己所收到过的最大的zxid，并附在读请求中，这样服务该客户端的服务器为了满足客户端的顺序性要求，一定等到zxid对应的请求提交（commit）以后，才能执行读请求，但是这是不足以保证让客户端读到最新的数据的。</p>
+<p>但是对于一个分布式系统，我们应该更多想的是各种奇怪的错误，比如，如果某个客户端所连接的那个服务器发生了故障，怎么办？此时客户端会自动的切换到另一个服务器上，服务器会保证在将数据同步到客户端所保存那个最大zxid的时间点前，不会和客户端建立session。但是不用担心，因为Zab协议提交的大多数原则，客户端总能找到一个数据至少和他一样新的服务器的。</p>
+<h1 id="附录：阅读过程中的问题"><a href="#附录：阅读过程中的问题" class="headerlink" title="附录：阅读过程中的问题"></a>附录：阅读过程中的问题</h1><ul>
+<li>如果客户端发送的写请求因为网络延迟，乱序到达了leader，那么leader怎么保证最终将这些请求按照客户端发出时的顺序进行执行呢？</li>
+</ul>
+<p>论文中没有提。猜想可能是每个客户端都维护了一个累增的sequnce number，然后leader也为每个客户端维护了一个expected sequnce number，类似TCP中解决乱序到达的实现。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="kaiktang WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="kaiktang Alipay">
+        <p>Alipay</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag"># 读书笔记</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/09/Raft-extended/" rel="prev" title="Raft extended论文阅读笔记">
+      <i class="fa fa-chevron-left"></i> Raft extended论文阅读笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/23/Object-Storage-on-CRAQ%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/" rel="next" title="Object Storage on CRAQ论文阅读笔记">
+      Object Storage on CRAQ论文阅读笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZooKeeper%E6%9C%8D%E5%8A%A1%E5%B1%82"><span class="nav-number">2.</span> <span class="nav-text">ZooKeeper服务层</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AF%E8%AF%AD"><span class="nav-number">2.1.</span> <span class="nav-text">术语</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E6%A6%82%E8%A7%88"><span class="nav-number">2.2.</span> <span class="nav-text">服务概览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AFAPI"><span class="nav-number">2.3.</span> <span class="nav-text">客户端API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E9%A1%BA%E5%BA%8F%E7%BA%A6%E6%9D%9F"><span class="nav-number">2.4.</span> <span class="nav-text">操作顺序约束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E4%BD%9C%E6%A0%B7%E4%BE%8B"><span class="nav-number">2.5.</span> <span class="nav-text">协作样例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86"><span class="nav-number">2.5.1.</span> <span class="nav-text">配置管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Rendezvous"><span class="nav-number">2.5.2.</span> <span class="nav-text">Rendezvous</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%90%E5%91%98%E7%AE%A1%E7%90%86"><span class="nav-number">2.5.3.</span> <span class="nav-text">成员管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E4%BA%92%E6%96%A5%E9%94%81%E5%AE%9E%E7%8E%B0%EF%BC%88%E5%AD%98%E7%96%91%EF%BC%89"><span class="nav-number">2.5.4.</span> <span class="nav-text">简单互斥锁实现（存疑）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A0%E7%BE%8A%E7%BE%A4%E6%95%88%E5%BA%94%E7%9A%84%E9%94%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.5.5.</span> <span class="nav-text">无羊群效应的锁实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E9%94%81"><span class="nav-number">2.5.6.</span> <span class="nav-text">读写锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Double-Barrier"><span class="nav-number">2.5.7.</span> <span class="nav-text">Double Barrier</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A5%E5%85%85%EF%BC%9A%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%B4%AF%E5%8A%A0%E5%99%A8"><span class="nav-number">2.5.8.</span> <span class="nav-text">补充：实现一个简单的累加器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZooKeeper%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text">ZooKeeper实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86%E5%99%A8Request-Processor"><span class="nav-number">3.1.</span> <span class="nav-text">请求处理器Request Processor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Replicated-Database"><span class="nav-number">3.2.</span> <span class="nav-text">Replicated Database</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%BA%A4%E4%BA%92"><span class="nav-number">3.3.</span> <span class="nav-text">客户-服务端交互</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%84%E5%BD%95%EF%BC%9A%E9%98%85%E8%AF%BB%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">附录：阅读过程中的问题</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaiktang"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaiktang</p>
+  <div class="site-description" itemprop="description">学而后知不足</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:tomkklalala@qq.com" title="E-Mail → mailto:tomkklalala@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaiktang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://kaiktang.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://kaiktang.github.io/2020/04/19/ZooKeeper%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/";
+    this.page.identifier = "2020/04/19/ZooKeeper论文阅读笔记/";
+    this.page.title = "ZooKeeper论文阅读笔记";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://kaiktang.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>
