@@ -261,7 +261,7 @@
 <li>根据用户请求的时间局部性，同一个用户的请求最好能够被同一个机器处理，来提高缓存命中率。</li>
 <li>在服务器数量变更时，能够尽可能小的影响客户端和服务器。</li>
 </ol>
-<a id="more"></a>
+<span id="more"></span>
 <h2 id="hash-table"><a href="#hash-table" class="headerlink" title="hash table"></a>hash table</h2><p>对于特性1和特性2，可以使用的常见的散列表，散列表能够将通过使用哈希算法，理论上能够将数据均匀的散列在数组中。</p>
 <p><img src="Untitled.png" alt="Consistent%20hash%20962755a35fb04231959064b304fe915b/Untitled.png"></p>
 <p>考虑如果使用上述哈希表来实现我们的需求的话，我们把服务器按顺序编号，并将服务器和数组元素进行一对多或者一对一的映射，至于映射关系可以根据需要进行权重的设置。</p>

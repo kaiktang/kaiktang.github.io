@@ -255,9 +255,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本文是看<a href="https://research.swtch.com/tlog" target="_blank" rel="noopener">这篇文章</a>过程中的笔记，还有自己的一些思考。</p>
+        <p>本文是看<a target="_blank" rel="noopener" href="https://research.swtch.com/tlog">这篇文章</a>过程中的笔记，还有自己的一些思考。</p>
 <p>前面写的文章讲述的都是封闭的系统，集群的服务器都是由一家公司所掌控，所以是默认可信的，不会发生拜占庭错误。但是现实中有的系统是公开的所有的人都可以使用的，且系统的服务器可能由多家不同的机构或者公司所维护，那么用户在访问服务的时候，难免会有一个疑问：“我是否在和正确的服务器通信？”</p>
-<a id="more"></a>
+<span id="more"></span>
 <h1 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h1><h2 id="HTTP时代"><a href="#HTTP时代" class="headerlink" title="HTTP时代"></a>HTTP时代</h2><p>在20世纪90年代，人们都在使用的是HTTP协议来进行网页浏览，那时诞生了一种几乎无法防御的攻击手段，中间人攻击（man-in-the-middle-attack）。</p>
 <p>该攻击的主要原理就是：</p>
 <ol>
@@ -364,11 +364,11 @@
 </ol>
 <p>那么浏览器端的验证逻辑的伪代码如下：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">validate(bits B as record R):</span><br><span class="line">    <span class="keyword">if</span> R ≥ cached.N:</span><br><span class="line">        N, T = server.Latest()</span><br><span class="line">        <span class="keyword">if</span> server.TreeProof(cached.N, N) cannot be verified:</span><br><span class="line">            fail loudly</span><br><span class="line">        cached.N, cached.T = N, T</span><br><span class="line">    <span class="keyword">if</span> server.RecordProof(R, cached.N) cannot be verified using B:</span><br><span class="line">        fail loudly</span><br><span class="line">    accept B as record R</span><br></pre></td></tr></table></figure>
-<h1 id="拓展阅读"><a href="#拓展阅读" class="headerlink" title="拓展阅读"></a>拓展阅读</h1><p><a href="https://tools.ietf.org/html/rfc6962#section-4.5" target="_blank" rel="noopener">RFC 6962 - Certificate Transparency</a></p>
-<p><a href="https://www.certificate-transparency.org/" target="_blank" rel="noopener">Certificate Transparency</a></p>
-<p><a href="https://www.ssl.com/article/how-do-browsers-handle-revoked-ssl-tls-certificates/" target="_blank" rel="noopener">How Do Browsers Handle Revoked SSL/TLS Certificates?</a></p>
-<p><a href="https://www.facebook.com/notes/protect-the-graph/introducing-our-certificate-transparency-monitoring-tool/1811919779048165/" target="_blank" rel="noopener">Facebook</a></p>
-<p><a href="https://blog.cloudflare.com/introducing-certificate-transparency-monitoring/" target="_blank" rel="noopener">Introducing Certificate Transparency Monitoring</a></p>
+<h1 id="拓展阅读"><a href="#拓展阅读" class="headerlink" title="拓展阅读"></a>拓展阅读</h1><p><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc6962#section-4.5">RFC 6962 - Certificate Transparency</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.certificate-transparency.org/">Certificate Transparency</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.ssl.com/article/how-do-browsers-handle-revoked-ssl-tls-certificates/">How Do Browsers Handle Revoked SSL/TLS Certificates?</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.facebook.com/notes/protect-the-graph/introducing-our-certificate-transparency-monitoring-tool/1811919779048165/">Facebook</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.cloudflare.com/introducing-certificate-transparency-monitoring/">Introducing Certificate Transparency Monitoring</a></p>
 
     </div>
 

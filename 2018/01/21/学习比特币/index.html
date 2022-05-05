@@ -259,11 +259,11 @@
       
         <h1 id="比特币基本概念"><a href="#比特币基本概念" class="headerlink" title="比特币基本概念"></a>比特币基本概念</h1><p>区块链的一个典型应用就是比特币。本质是一个数字资产的公开分布式账本的P2P网络。该账本的正确性和安全性由矿工组成的子网保证，并由矿工审核和记录所有的交易，以获取比特币作为奖励。</p>
 <h2 id="参考博文"><a href="#参考博文" class="headerlink" title="参考博文"></a>参考博文</h2><blockquote>
-<p><a href="http://www.infoq.com/cn/articles/bitcoin-and-block-chain-part01" target="_blank" rel="noopener">揭秘比特币和区块链（一）：什么是区块链？</a></p>
-<p><a href="http://www.infoq.com/cn/articles/bitcoin-and-block-chain-part02" target="_blank" rel="noopener">揭秘比特币和区块链（二）：什么是工作量证明？</a></p>
-<p><a href="http://www.infoq.com/cn/articles/bitcoin-and-block-chain-part03" target="_blank" rel="noopener">揭秘比特币和区块链（三）：比特币的私钥、公钥与地址</a></p>
-<p><a href="http://www.infoq.com/cn/articles/bitcoin-and-block-chain-part04" target="_blank" rel="noopener">揭秘比特币和区块链（四）：比特币的交易</a></p>
-<p><a href="http://www.360doc.com/content/17/0518/20/30659864_655093247.shtml" target="_blank" rel="noopener">揭秘比特币和区块链（五）：深入理解比特币交易的脚本</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.infoq.com/cn/articles/bitcoin-and-block-chain-part01">揭秘比特币和区块链（一）：什么是区块链？</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.infoq.com/cn/articles/bitcoin-and-block-chain-part02">揭秘比特币和区块链（二）：什么是工作量证明？</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.infoq.com/cn/articles/bitcoin-and-block-chain-part03">揭秘比特币和区块链（三）：比特币的私钥、公钥与地址</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.infoq.com/cn/articles/bitcoin-and-block-chain-part04">揭秘比特币和区块链（四）：比特币的交易</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.360doc.com/content/17/0518/20/30659864_655093247.shtml">揭秘比特币和区块链（五）：深入理解比特币交易的脚本</a></p>
 </blockquote>
 <h2 id="PoW-Proof-of-Work"><a href="#PoW-Proof-of-Work" class="headerlink" title="PoW(Proof of Work)"></a>PoW(Proof of Work)</h2><p>PoW也被称为挖矿，例如BItcoin中不断尝试哈希值的过程，实际是花费较昂的计算资源。</p>
 <p>在产生下一个区块的过程中，奖励总数给第一个解决数学难题的矿工。</p>
@@ -510,7 +510,7 @@
 </li>
 <li><p>交易验证：<strong>运行解锁脚本 + 锁定脚本</strong> =&gt; True</p>
 </li>
-<li><p><a href="https://pic1.zhimg.com/80/v2-7676302038a33c5527b88961eec0673d_hd.jpg" target="_blank" rel="noopener">揭秘比特币和区块链（五）：深入理解比特币交易的脚本</a></p>
+<li><p><a target="_blank" rel="noopener" href="https://pic1.zhimg.com/80/v2-7676302038a33c5527b88961eec0673d_hd.jpg">揭秘比特币和区块链（五）：深入理解比特币交易的脚本</a></p>
 <blockquote>
 <p>疑问：验证发送者公钥哈希是否多余？</p>
 <p>答：不是的，因为如果没有这一步，任何人只要根据自己的私钥生成一个签名和公钥都可以通过验证。通过验证公钥哈希，首先可以确定目前的发送者的公钥和当初UTXO生成时指定的接收者的公钥是相同的。然后再来判断你是否还能提供跟进一步的签名。</p>
@@ -651,7 +651,7 @@
 </li>
 </ul>
 <h2 id="私钥的生成建议"><a href="#私钥的生成建议" class="headerlink" title="私钥的生成建议"></a>私钥的生成建议</h2><p>可以选用一串中文<code>C</code>和一串英文<code>E</code>，分别利用MD5进行hash，得到两个128bit的哈希字符串<code>H(C)</code>和<code>H(E)</code>，然后首尾相连（正好256bit）<code>H(C)+H(E)</code>，再将最后的 8位替换成某人的生日</p>
-<h2 id="挖矿"><a href="#挖矿" class="headerlink" title="挖矿"></a>挖矿</h2><p><a href="http://www.infoq.com/cn/articles/bitcoin-and-block-chain-part02" target="_blank" rel="noopener">揭秘比特币和区块链（二）：什么是工作量证明？</a></p>
+<h2 id="挖矿"><a href="#挖矿" class="headerlink" title="挖矿"></a>挖矿</h2><p><a target="_blank" rel="noopener" href="http://www.infoq.com/cn/articles/bitcoin-and-block-chain-part02">揭秘比特币和区块链（二）：什么是工作量证明？</a></p>
 <p><strong>区块头部</strong></p>
 <table>
 <thead>

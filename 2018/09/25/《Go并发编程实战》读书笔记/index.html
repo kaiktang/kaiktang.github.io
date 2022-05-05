@@ -345,7 +345,7 @@
 <li>……</li>
 </ul>
 </li>
-<li>可以通过<code>go test -race 包名</code>来检测程序是否存在竞态条件。参考：<a href="https://blog.golang.org/race-detector" target="_blank" rel="noopener">https://blog.golang.org/race-detector</a><ul>
+<li>可以通过<code>go test -race 包名</code>来检测程序是否存在竞态条件。参考：<a target="_blank" rel="noopener" href="https://blog.golang.org/race-detector">https://blog.golang.org/race-detector</a><ul>
 <li>通过加上<code>-race</code>选项来处理</li>
 </ul>
 </li>
@@ -360,7 +360,7 @@
 <li><strong>不应该被复制。</strong></li>
 </ul>
 <h3 id="临时对象池：sync-Pool"><a href="#临时对象池：sync-Pool" class="headerlink" title="临时对象池：sync.Pool"></a>临时对象池：sync.Pool</h3><ul>
-<li>该类型有一个公开字段<code>New</code>，类型为<code>func() interface{}</code>是一个函数类型。该函数会被用来创建对象值，不过，一般该函数仅在池中无可用对象值的时候才被调用。</li>
+<li>该类型有一个公开字段<code>New</code>，类型为<code>func() interface&#123;&#125;</code>是一个函数类型。该函数会被用来创建对象值，不过，一般该函数仅在池中无可用对象值的时候才被调用。</li>
 <li>该类型有两个公开的指针方法<ul>
 <li><code>Get</code>：从池中获取一个interface{}类型的值。获取到的值是任意的，如果从未”Put”，而且“New”字段也没有被初始化过，那么将返回nil。该方法返回的值不一定就是存在池中的值，但是如果这个结果是池中的，那么在该方法返回它之前，就一定会把它从池中删除。</li>
 <li><code>Put</code>：向池中放入一个interface{}类型的变量。</li>

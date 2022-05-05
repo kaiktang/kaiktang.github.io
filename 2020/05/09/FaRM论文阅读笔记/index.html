@@ -254,8 +254,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本文是我阅读<a href="https://pdos.csail.mit.edu/6.824/papers/farm-2015.pdf" target="_blank" rel="noopener">这篇论文</a>过程中的笔记，以及自己的思考。</p>
-<a id="more"></a>
+        <p>本文是我阅读<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/farm-2015.pdf">这篇论文</a>过程中的笔记，以及自己的思考。</p>
+<span id="more"></span>
 <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>通常来说分布式系统、分布式事务、可用性、高性能和一致性之间往往都需要进行取舍，过去的分布式系统为了提高性能要么就压根不支持事务，或者只支持单机事务，又或者需要在一致性上做出牺牲。</p>
 <p>FaRM是一个分布式对象存储系统，只支持单个数据中心内部署，支持数据分片、分布式事务，高容错性，支持的接口有读、写、事务开始、事务提交。虽然FaRM只是微软的一个实验室项目并没有投产，但是由于其良好的设计充分发掘了硬件设备的潜力，得到了超高的性能，所以其设计思路值得参考。</p>
 <p>下面是一个典型的FaRM事务伪代码：</p>

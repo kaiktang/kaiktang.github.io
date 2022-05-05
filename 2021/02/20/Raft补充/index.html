@@ -268,8 +268,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本文阅读<a href="https://github.com/ongardie/dissertation/blob/master/stanford.pdf" target="_blank" rel="noopener">这篇论文</a>的笔记，也是对之前那篇<a href="http://kaiktang.github.io/2020/04/09/Raft-extended/">Raft论文阅读笔记</a>的补充。</p>
-<a id="more"></a>
+        <p>本文阅读<a target="_blank" rel="noopener" href="https://github.com/ongardie/dissertation/blob/master/stanford.pdf">这篇论文</a>的笔记，也是对之前那篇<a href="http://kaiktang.github.io/2020/04/09/Raft-extended/">Raft论文阅读笔记</a>的补充。</p>
+<span id="more"></span>
 <h1 id="Basic-Raft-Algorithm"><a href="#Basic-Raft-Algorithm" class="headerlink" title="Basic Raft Algorithm"></a>Basic Raft Algorithm</h1><h2 id="提交之前term的log条目"><a href="#提交之前term的log条目" class="headerlink" title="提交之前term的log条目"></a>提交之前term的log条目</h2><p>Raft中只有当前term的log条目被提交时，根据Log Matching规则，之前的term的log条目都会被一起提交。</p>
 <p>之所以Raft不通过计数机制来提交之前term的log条目，这是因为：</p>
 <p><img src="Untitled.png" alt="Raft%208914fe7a446c4f7cb908d55e56983105/Untitled.png"></p>

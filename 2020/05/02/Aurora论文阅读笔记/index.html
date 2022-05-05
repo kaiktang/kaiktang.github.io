@@ -254,13 +254,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本文是在读<a href="https://pdos.csail.mit.edu/6.824/papers/aurora.pdf" target="_blank" rel="noopener">这篇论文</a>过程中的一些笔记，还有一些自己的思考。</p>
-<p>因为大部分内容<a href="http://www.yunweipai.com/archives/18411.html" target="_blank" rel="noopener">这篇文章</a>已经讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。</p>
-<a id="more"></a>
+        <p>本文是在读<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/aurora.pdf">这篇论文</a>过程中的一些笔记，还有一些自己的思考。</p>
+<p>因为大部分内容<a target="_blank" rel="noopener" href="http://www.yunweipai.com/archives/18411.html">这篇文章</a>已经讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。</p>
+<span id="more"></span>
 <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><h2 id="历史背景"><a href="#历史背景" class="headerlink" title="历史背景"></a>历史背景</h2><p>最初亚马逊提供了一个EC2（Elastic Compute Cloud）服务，该服务就是AWS在一台服务器上运行一个VMM（vitural machine monitor），然后在上层创建很多的虚拟机向外租售，然后客户获取存储的方式是该从服务器的一个物理挂载的磁盘上分一块存储区域使用，但是当然在用户的感知上就仿佛是自己运行的机器上的硬盘一样。</p>
 <p>EC2非常适合那种无状态的服务，能够非常容易的通过购买更多的EC2实例来获得更多的性能。</p>
 <p>但是也有很多用户租EC2用来跑一些有状态服务，比如数据库。此时EC2将显得不那么适合，因为像如果在EC2中跑数据库，那么数据都是存放在物理挂载的磁盘上，如果该宿主服务器宕机了，那么用户将无法访问到数据。为了解决这个AWS提供了S3（Amazon Simple Storage Service）来进行定期为EC2存储快照进行备份，但是在宕机时这种模式下可能会丢失最近一次快照之后的所有数据。 </p>
-<p>随后AWS提供了服务EBS（Amazon Elastic Block Store） ，当用户使用该服务时感知上就像本地的硬盘一样，但是实际上该服务是通过在一对服务器上使用<a href="http://tomkklalala.github.io/2020/04/23/Object-Storage-on-CRAQ%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/" target="_blank" rel="noopener">Chain Replication</a>实现的一个网络存储服务。此时，如果跑数据库的EC2宕机了，只需要重启一个EC2然后挂载到相同的EBS，这样就能够保证数据不丢失。</p>
+<p>随后AWS提供了服务EBS（Amazon Elastic Block Store） ，当用户使用该服务时感知上就像本地的硬盘一样，但是实际上该服务是通过在一对服务器上使用<a target="_blank" rel="noopener" href="http://tomkklalala.github.io/2020/04/23/Object-Storage-on-CRAQ%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">Chain Replication</a>实现的一个网络存储服务。此时，如果跑数据库的EC2宕机了，只需要重启一个EC2然后挂载到相同的EBS，这样就能够保证数据不丢失。</p>
 <p>但是EBS还是有缺陷，一个是数据库写操作向EBS发送的数据太多了，这会让性能下降。此时网络通信成了性能的瓶颈所在，另一个是EBS并不能提供非常强的容错性，因为实现EBS的服务器都是放在同一个数据中心中的，如果整个数据中心因为某种原因（地震、洪水等等）失效了，那么会丢失数据。用AWS的说法来说，EBS是在同一个AZ（Availability Zone）中实现的。</p>
 <blockquote>
 <p>如果某个区域内的某个数据中心通过低延迟可靠网络（能够容忍大部分网络错误）和同区域内的其他数据中心相连，那么这些互相连接的同区域的内的数据中心都是一个个AZ。</p>
@@ -356,7 +356,7 @@
 <li>事务的log会被原子的一起应用。</li>
 </ol>
 <h3 id="故障恢复"><a href="#故障恢复" class="headerlink" title="故障恢复"></a>故障恢复</h3><p>当数据库重启时，需要通过一次去quorum读来重建其运行时状态，当数据库对所有的PG都进行了quorum读，那么它就能计算出VDL，之后会将VDL之后的所有log都会被抛弃，同时还需要将这些被抛弃的log对应的部分提交的事务进行回滚。</p>
-<p>更详细的看<a href="http://www.yunweipai.com/archives/18411.html" target="_blank" rel="noopener">这篇文章</a>。</p>
+<p>更详细的看<a target="_blank" rel="noopener" href="http://www.yunweipai.com/archives/18411.html">这篇文章</a>。</p>
 
     </div>
 

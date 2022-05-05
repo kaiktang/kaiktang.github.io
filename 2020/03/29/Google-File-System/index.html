@@ -252,8 +252,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本文主要是对于<a href="https://pdos.csail.mit.edu/6.824/papers/gfs.pdf" target="_blank" rel="noopener">GFS论文</a>的一些笔记，并穿插了一些自己的思考。</p>
-<a id="more"></a>
+        <p>本文主要是对于<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/gfs.pdf">GFS论文</a>的一些笔记，并穿插了一些自己的思考。</p>
+<span id="more"></span>
 <h1 id="设计概览"><a href="#设计概览" class="headerlink" title="设计概览"></a>设计概览</h1><h2 id="一些假设"><a href="#一些假设" class="headerlink" title="一些假设"></a>一些假设</h2><p>GFS在设计时根据观察，总结出了一些他们数据访问的一些特征，根据这些特征做出了以下假设：</p>
 <ul>
 <li>该文件系统是有很多廉价的商业机器组成的，所以应该认为系统中发生错误是常态。文件系统需要能够进行自我监控并自我恢复。</li>

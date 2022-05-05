@@ -252,11 +252,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本文是我阅读<a href="https://pdos.csail.mit.edu/6.824/papers/zookeeper.pdf" target="_blank" rel="noopener">这篇论文</a>过程中的笔记，以及一些自己的思考。</p>
-<p>之前的<a href="http://tomkklalala.github.io/2020/04/09/Raft-extended/" target="_blank" rel="noopener">Raft文章</a>中，介绍了一个读写操作都是linearizable的系统。这类系统能够让集群提供的服务在用户看来仿佛在和单机系统交互。仿佛这种化零为整的效果应该就已经是完美的解决方法没有任何问题？</p>
+        <p>本文是我阅读<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/zookeeper.pdf">这篇论文</a>过程中的笔记，以及一些自己的思考。</p>
+<p>之前的<a target="_blank" rel="noopener" href="http://tomkklalala.github.io/2020/04/09/Raft-extended/">Raft文章</a>中，介绍了一个读写操作都是linearizable的系统。这类系统能够让集群提供的服务在用户看来仿佛在和单机系统交互。仿佛这种化零为整的效果应该就已经是完美的解决方法没有任何问题？</p>
 <p>但是这样的系统有一个致命的问题是：如果你为集群购置了N台机器，那么理想情况下你应该得到N倍的性能，再不济至少能提升一些性能吧。但是遗憾的是，如果回顾Raft中的设定，leader节点处理所有用户请求，负责协作所有follower，是整个系统的瓶颈所在。更神奇的是，如果在一个Raft集群中添加更多的机器，反而会让leader的工作负担更大，让整个系统的性能下降（但是获得了更高的容错性）。</p>
 <p>ZooKeeper就是这样一个系统，它的其中一个特点就是能够在增加服务器数量的同时，大幅度的提升读操作的性能。</p>
-<a id="more"></a>
+<span id="more"></span>
 <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>对于分布式系统而言，往往有很多关于协作（coordination）相关的不同需求，比如配置管理、成员管理、leader选举、互斥锁等等。但是如果看类似像Raft的算法，其实向外只暴露了一个接受Command并进行广播复制的接口，有些功能Raft内置了（所以难以针对应用需求自定义），但是有更多多样的需求比如像分布式锁这样的服务，Raft对外提供的接口还是太简单了。</p>
 <p>而ZooKeeper是一个通用的协作集群服务能够满足这些多样的协作需求。ZooKeeper是构建于名为<code>Zab</code>的原子广播协议之上的，<code>Zab</code>我们可以大致等效认为它是和Raft一样的基于leader的共识算法。</p>
 <p>为了展示ZooKeeper是如何能够对外提供如此多样的协作服务，我先对比一下使用ZooKeeper和Raft的应用的架构：</p>
@@ -348,15 +348,15 @@ read configuration file2
 <p>通过这种设置启动的节点，只需通过列出Zg下的所有znode，就可以得到其集群中所有节点的状态信息。当然如果有监控节点状态的需求的话，可以各自按需注册watch。</p>
 <h3 id="简单互斥锁实现（存疑）"><a href="#简单互斥锁实现（存疑）" class="headerlink" title="简单互斥锁实现（存疑）"></a>简单互斥锁实现（存疑）</h3><p>使用 ZooKeeper的API也可以实现一些同步元语。</p>
 <p>最简单的锁实现是使用“lock 文件”。一个互斥锁对象由一个znode表示。为了获取一个锁，所有客户端尝试去创建一个指定名称的ephemeral类型的znode。如果一个客户端成功的创建了该文件，那么就代表其成功获取到了该锁，而其他没有成功的客户端会注册watch等待对应的锁文件被删除后再次尝试获取。伪代码如下：</p>
-<pre><code>func Aquire(){
-    for{
+<pre><code>func Aquire()&#123;
+    for&#123;
             if create(&quot;/l/lock&quot;, EPHEMERAL)
                     return
             if exists(&quot;/l/lock&quot;, true)
                     wait the notification
-    }
+    &#125;
 
-}
+&#125;
 </code></pre><p>在看到论文中这一段的时候，我对使用这种分布式锁的场景产生了一个疑问：</p>
 <p>一般来说获取一个互斥锁的意义在于保护一段操作的原子性，但是这种分布式锁真的能够保证吗？如果一个客户端A成功获取到了该互斥锁，然后开始处理一些临界区操作，如果此时在处理到一半客户单A奔溃了呢？对应的锁会自动被释放，下一个获取到该锁的客户端，将会访问到脏数据。</p>
 <p>为了解决这个问题，我觉得，可能让每个获取到锁的节点都先进行文件正确性的验证，然后进行修复或者进行其他的修正性处理。或者说，使用这个锁服务的是类似MapReduce中的worker，每次获取到锁，都将任务从头计算一遍。</p>
@@ -364,21 +364,21 @@ read configuration file2
 <p>论文中还针对该实现提出了其他的问题：herd effect，羊群效应，也就是说每次一旦一个锁被释放，会唤醒所有在等待的客户端，而最终只会有一个客户端能够成功获取到锁，所以这是不必要的网络消耗。</p>
 <p>为了解决这个羊群效应，可以使用下面锁实现。</p>
 <h3 id="无羊群效应的锁实现"><a href="#无羊群效应的锁实现" class="headerlink" title="无羊群效应的锁实现"></a>无羊群效应的锁实现</h3><p>约定一个znode l，代表该锁。然后将所有想要获取锁的客户端的请求进行排队，进行有序获取。下面是该设计的伪代码实现。</p>
-<pre><code>func Lock(){
+<pre><code>func Lock()&#123;
     n = create(l + &quot;/lock-&quot;, EPHEMERAL|SEQUENTIAL)
-    for {
+    for &#123;
             C = getChildren(l, false)
             if n is the lowest znode in C
                     exit
             p = znode in C ordered just before n
             if exists(p, true) 
                     wait for watch event
-    }
-}
+    &#125;
+&#125;
 
-func Unlock(){
+func Unlock()&#123;
         delete(n)
-}
+&#125;
 </code></pre><p>这里巧妙的利用sequential znode将所有客户端的请求进行了排队。</p>
 <p>为什么说这个解决了羊群效应呢？因为在这个实现中，每个没有等待锁的客户端只关注紧邻的排在前面一位的客户端，只有在前一位客户端对应的znode被删除后，才会被唤醒。</p>
 <p>读到这里的时候，我也有一个疑问，为什么需要循环呢？不是每个客户端只需要等待上一个客户端就好了吗？甚至为什么需要获取所有的节点呢？直接将自己的序号减一得到前一个客户端对应znode的名称不就好了么？但是不是这样的，循环是必要的，因为客户端可能会宕机，可能会放弃获取锁，所以前一个客户端的znode被删除了，并不能保证当前客户端一定能获取到锁。</p>
@@ -388,20 +388,20 @@ func Unlock(){
 <li>无需轮询或者超时机制</li>
 <li>将获取锁的过程可视化，更加利于调试和干预。</li>
 </ol>
-<h3 id="读写锁"><a href="#读写锁" class="headerlink" title="读写锁"></a>读写锁</h3><pre><code>func WriteLock(){
+<h3 id="读写锁"><a href="#读写锁" class="headerlink" title="读写锁"></a>读写锁</h3><pre><code>func WriteLock()&#123;
     n = create(l + &quot;/write-&quot;, EPHEMERAL|SEQUENTIAL)
-    for {
+    for &#123;
             C = getChildren(l, false)
             if n is lowest znode in C
                     exit
             p = znode before n  // 需要关心最近的无论write或者read znode
             if exists(p, true)
                     wait for event
-    }
-}
+    &#125;
+&#125;
 
-func ReadLock(){
-        for {
+func ReadLock()&#123;
+        for &#123;
                 n = create(l + &quot;/read-&quot;, EPHEMERAL|SEQUENTIAL)
                 C = getChildren(l, false)
                 if no write znodes lower than n in C
@@ -409,25 +409,25 @@ func ReadLock(){
                 p = write znode just before n // 只关心最近的那个write znode
                 if exists(p, true)
                         wait for event
-        }
-}
+        &#125;
+&#125;
 </code></pre><h3 id="Double-Barrier"><a href="#Double-Barrier" class="headerlink" title="Double Barrier"></a>Double Barrier</h3><p>Double Barrier是一种能够让客户端同步的控制某个任务的开始和结束的协作模式。当barrier中注册客户端的数量超过某个预定阈值之后，所有barrier中注册的客户端都会开始他们的计算，当客户端结束了计算任务后，会自动退出barrier。</p>
 <p>我们使用一个ZooKeeper中的znode来表示一个barrier，称为b。客户端通过在b下创建或删除子znode来进行注册或者退出。</p>
 <p>所有就绪的客户端会监控一个名为ready的znode，一旦该文件被创建了代表计算任务开始。ready znode由打破阈值的那个客户端负责创建。而当所有的子znode都被删除后，控制任务进度的客户端就知道任务已经结束，可以继续推进了。为了高效实现检测整个计算任务的结束，可以通过随机watch一个子znode，当收到其被删除的通知后，再检查是否还有其他的znode没有被删除，如果有再随机选一个，如此循环。</p>
 <h3 id="补充：实现一个简单的累加器"><a href="#补充：实现一个简单的累加器" class="headerlink" title="补充：实现一个简单的累加器"></a>补充：实现一个简单的累加器</h3><p>比如说有个简单的需求，想要每次调用都让某个znode中的值累增1，那么可以这么实现吗？</p>
-<pre><code>func Increment(){
+<pre><code>func Increment()&#123;
     x = getData(&quot;counter&quot;, false)
     setData(x+1, -1)
-}
+&#125;
 </code></pre><p>显然是不行的，因为在这个getData和setData之间可能因为网络延迟已经发生若干个Increment了。这两个操作之间并不是原子性的。</p>
 <p>正确的实现应该是如下：</p>
-<pre><code>func Increment(){
-    for{
+<pre><code>func Increment()&#123;
+    for&#123;
             x, v = getData(&quot;counter&quot;, false)
             if setData(&quot;counter&quot;, x+1, v)
                     return
-    }
-}
+    &#125;
+&#125;
 </code></pre><p>当然这种实现也会有潜在的羊群效应，可以通过之前的无羊群效应的锁来解决。</p>
 <p>另外如果当前客户端连接的那个服务器被网络分区了，那么该客户端读到的version将永远是过期的，那么该循环可能不用终止，直到网络分区被修复。</p>
 <h1 id="ZooKeeper实现"><a href="#ZooKeeper实现" class="headerlink" title="ZooKeeper实现"></a>ZooKeeper实现</h1><p>ZooKeeper内部通过多副本技术提供了高可用性支持。下面是ZooKeeper内部的组件架构图。</p>

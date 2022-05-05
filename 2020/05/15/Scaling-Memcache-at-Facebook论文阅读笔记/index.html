@@ -253,9 +253,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本文是我阅读<a href="https://pdos.csail.mit.edu/6.824/papers/memcache-fb.pdf" target="_blank" rel="noopener">这篇论文</a>过程中的笔记，以及自己的思考。</p>
+        <p>本文是我阅读<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/memcache-fb.pdf">这篇论文</a>过程中的笔记，以及自己的思考。</p>
 <p>这篇文章并没有提出什么新概念，而是主要讲述的是Facebook如何通过开源的memcache系统来构架他们的集群以此来支撑全球最大社交网络公司的巨大用户请求。</p>
-<a id="more"></a>
+<span id="more"></span>
 <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>一般来说系统最初的架构为单机架构，代码和数据库处于同一台机器上。随着用户量的增加，这种单机系统最先出现的瓶颈一般是业务代码层，此时可以通过将数据库和代码分离到不同机器，并且通过不断增加代码服务器的数量来提升整体系统的性能。</p>
 <p>但是如果用户量继续增长的话，数据库将会逐渐变为新的瓶颈。这时，一般会将数据进行分片存储，这样理想上能够让数据库所能支持的请求数与分片数正比增长。</p>
 <p>假设用户数还在不断增长，由于数据库是不能无限制细分下去的，当分片到一定程度，请求的网络通信将耗费大量时间。</p>

@@ -332,7 +332,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>本文主要是我阅读<a href="https://pdos.csail.mit.edu/6.824/papers/thekkath-frangipani.pdf" target="_blank" rel="noopener">这篇论文</a>过程中做的笔记，以及自己的思考。</p>
+          <p>本文主要是我阅读<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/thekkath-frangipani.pdf">这篇论文</a>过程中做的笔记，以及自己的思考。</p>
 <p>该篇论文是在1997年发表的，虽然是个很老的系统，但是里面对于分布式锁、缓存一致性等等的设计思想还是值得学习的。</p>
           <!--noindex-->
             <div class="post-button">
@@ -419,8 +419,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>本文是在读<a href="https://pdos.csail.mit.edu/6.824/papers/aurora.pdf" target="_blank" rel="noopener">这篇论文</a>过程中的一些笔记，还有一些自己的思考。</p>
-<p>因为大部分内容<a href="http://www.yunweipai.com/archives/18411.html" target="_blank" rel="noopener">这篇文章</a>已经讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。</p>
+          <p>本文是在读<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/aurora.pdf">这篇论文</a>过程中的一些笔记，还有一些自己的思考。</p>
+<p>因为大部分内容<a target="_blank" rel="noopener" href="http://www.yunweipai.com/archives/18411.html">这篇文章</a>已经讲的很详细，所以我会在这篇文章的基础上加上自己的思考和理解。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/05/02/Aurora%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/#more" rel="contents">
@@ -506,7 +506,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>本文是我阅读<a href="https://pdos.csail.mit.edu/6.824/papers/craq.pdf" target="_blank" rel="noopener">这篇论文</a>过程中的笔记，以及自己的一些思考。</p>
+          <p>本文是我阅读<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/craq.pdf">这篇论文</a>过程中的笔记，以及自己的一些思考。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/04/23/Object-Storage-on-CRAQ%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/#more" rel="contents">
@@ -592,8 +592,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>本文是我阅读<a href="https://pdos.csail.mit.edu/6.824/papers/zookeeper.pdf" target="_blank" rel="noopener">这篇论文</a>过程中的笔记，以及一些自己的思考。</p>
-<p>之前的<a href="http://tomkklalala.github.io/2020/04/09/Raft-extended/" target="_blank" rel="noopener">Raft文章</a>中，介绍了一个读写操作都是linearizable的系统。这类系统能够让集群提供的服务在用户看来仿佛在和单机系统交互。仿佛这种化零为整的效果应该就已经是完美的解决方法没有任何问题？</p>
+          <p>本文是我阅读<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/zookeeper.pdf">这篇论文</a>过程中的笔记，以及一些自己的思考。</p>
+<p>之前的<a target="_blank" rel="noopener" href="http://tomkklalala.github.io/2020/04/09/Raft-extended/">Raft文章</a>中，介绍了一个读写操作都是linearizable的系统。这类系统能够让集群提供的服务在用户看来仿佛在和单机系统交互。仿佛这种化零为整的效果应该就已经是完美的解决方法没有任何问题？</p>
 <p>但是这样的系统有一个致命的问题是：如果你为集群购置了N台机器，那么理想情况下你应该得到N倍的性能，再不济至少能提升一些性能吧。但是遗憾的是，如果回顾Raft中的设定，leader节点处理所有用户请求，负责协作所有follower，是整个系统的瓶颈所在。更神奇的是，如果在一个Raft集群中添加更多的机器，反而会让leader的工作负担更大，让整个系统的性能下降（但是获得了更高的容错性）。</p>
 <p>ZooKeeper就是这样一个系统，它的其中一个特点就是能够在增加服务器数量的同时，大幅度的提升读操作的性能。</p>
           <!--noindex-->
@@ -681,7 +681,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>本文是阅读<a href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf" target="_blank" rel="noopener">这篇论文</a>过程中的一些笔记和个人思考。</p>
+          <p>本文是阅读<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">这篇论文</a>过程中的一些笔记和个人思考。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/04/09/Raft-extended/#more" rel="contents">
@@ -767,7 +767,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>本文是我在阅读这篇<a href="https://pdos.csail.mit.edu/6.824/papers/vm-ft.pdf" target="_blank" rel="noopener">论文</a>过程中的笔记，以及一些自己的思考。</p>
+          <p>本文是我在阅读这篇<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/vm-ft.pdf">论文</a>过程中的笔记，以及一些自己的思考。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/04/01/VMWare-FT/#more" rel="contents">
@@ -853,7 +853,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>本文主要是对于<a href="https://pdos.csail.mit.edu/6.824/papers/gfs.pdf" target="_blank" rel="noopener">GFS论文</a>的一些笔记，并穿插了一些自己的思考。</p>
+          <p>本文主要是对于<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/gfs.pdf">GFS论文</a>的一些笔记，并穿插了一些自己的思考。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/03/29/Google-File-System/#more" rel="contents">

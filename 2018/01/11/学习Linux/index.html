@@ -302,7 +302,7 @@
 </ul>
 <h3 id="head"><a href="#head" class="headerlink" title="head"></a>head</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@study ~]# head [-n number] 文件</span><br><span class="line">选项与参数：</span><br><span class="line">-n  ：后面接数字，代表显示几行的意思</span><br></pre></td></tr></table></figure>
 <h3 id="tail"><a href="#tail" class="headerlink" title="tail"></a>tail</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@study ~]# tail [-n number] 文件</span><br><span class="line">选项与参数：</span><br><span class="line">-n  ：后面接数字，代表显示几行的意思</span><br><span class="line">-f  ：表示持续侦测后面所接的文件名，要等到按下[ctrl]-c才会结束tail的侦测</span><br></pre></td></tr></table></figure>
-<h1 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h1><p><code>$变量名</code>或者<code>${变量名}</code>用来引用变量</p>
+<h1 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h1><p><code>$变量名</code>或者<code>$&#123;变量名&#125;</code>用来引用变量</p>
 <p><code>$(命令)</code>返回命令执行结果</p>
 <p>给变量赋值：变量名=值【后面的值中如果使用双引号包裹那么将会解引用其中出现的变量，如果单引号包裹那么将原样引用】</p>
 <p>给变量追加值：变量名=$变量名+追加的内容</p>

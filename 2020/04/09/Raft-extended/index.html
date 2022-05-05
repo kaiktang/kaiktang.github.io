@@ -259,8 +259,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本文是阅读<a href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf" target="_blank" rel="noopener">这篇论文</a>过程中的一些笔记和个人思考。</p>
-<a id="more"></a>
+        <p>本文是阅读<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/raft-extended.pdf">这篇论文</a>过程中的一些笔记和个人思考。</p>
+<span id="more"></span>
 <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Raft是一个共识算法，一般作为一个共识模块为某个分布式应用服务，为上层的应用层提供透明的log备份（容错能力），以及修改操作定序的服务（正确性）。</p>
 <p>在应用收到客户端的请求后，先委托下层共识层进行log备份，在下层共识模块成功备份操作log返回后，应用才会开始真正执行用户请求并相应客户端。</p>
 <p>上层应用层的分布式应用应该可以被看作一个状态机，每次客户端的一次写请求都会触发一次状态机的状态变迁，这些写操作会以log的形式在状态机实例间传递，只要所有的状态机实例都以相同的初始状态开始并都接受相同的log输入（状态变迁），最终将得到一致的状态。</p>

@@ -252,8 +252,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本文是我在阅读这篇<a href="https://pdos.csail.mit.edu/6.824/papers/vm-ft.pdf" target="_blank" rel="noopener">论文</a>过程中的笔记，以及一些自己的思考。</p>
-<a id="more"></a>
+        <p>本文是我在阅读这篇<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/papers/vm-ft.pdf">论文</a>过程中的笔记，以及一些自己的思考。</p>
+<span id="more"></span>
 <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文主要介绍了一个如何构建一个具有容错能力的虚拟机主从集群。</p>
 <p>这个论题具有极高的价值，因为这里试图容错备份的不是应用，而是整个虚拟机，理论上来说只要能实现虚拟机级别的高效容错性，那么就能让所有在虚拟机上运行的所有应用都有了同级别的容错性，并且这种容错性是对应用透明的。</p>
 <p>一般对于一个虚拟机的同步备份有两种方式：</p>
@@ -433,7 +433,7 @@
 <li><strong>什么是原子性的“test-and-set”操作？</strong></li>
 </ul>
 <p>在共享的存储服务上维护了一个flag，该flag的初始值为false。当primary和backup都认为对方下线，都想进行故障处理的时候就会执行类似如下的伪代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">test-and-set()&#123;</span><br><span class="line">	acquire_lock()</span><br><span class="line">	if flag == true:</span><br><span class="line">		release_lock()</span><br><span class="line">		return false</span><br><span class="line">	else:</span><br><span class="line">  	flag = true</span><br><span class="line">  	release_lock()</span><br><span class="line">  	return true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">test-and-set()&#123;</span><br><span class="line">	acquire_lock()</span><br><span class="line">	if flag == true:</span><br><span class="line">		release_lock()</span><br><span class="line">		return false</span><br><span class="line">	else:</span><br><span class="line">  	flag = true</span><br><span class="line">  	release_lock()</span><br><span class="line">  	return true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>只有在该函数返回true的时候，故障处理才会被允许。</p>
 <ul>
 <li>如果在primary刚发出output后，立刻就宕机了怎么办？</li>
